@@ -62,7 +62,7 @@
     David Magis \cr
     Research Group of Quantitative Psychology and Individual Differences \cr
     Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/}
+    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
     Universite du Quebec a Montreal \cr
@@ -83,7 +83,8 @@ data(verbal)
 items.1PL<-itemParEst(verbal[,1:24],model="1PL")
 
 # Estimation of the item parameters (1PL model, "lme4" engine)
-items.1PL<-itemParEst(verbal[,1:24],model="1PL", engine="lme4")
+# (remove #)
+# items.1PL<-itemParEst(verbal[,1:24],model="1PL", engine="lme4")
 
 # Estimation of the item parameters (2PL model)
 items.2PL<-itemParEst(verbal[,1:24],model="2PL")

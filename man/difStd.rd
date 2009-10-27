@@ -83,7 +83,7 @@ A list of class "PDIF" with the following arguments:
     David Magis \cr
     Research Group of Quantitative Psychology and Individual Differences \cr
     Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/}
+    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
     Universite du Quebec a Montreal \cr

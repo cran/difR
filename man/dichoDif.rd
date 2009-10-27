@@ -105,7 +105,7 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
     David Magis \cr
     Research Group of Quantitative Psychology and Individual Differences \cr
     Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/}
+    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
     Universite du Quebec a Montreal \cr
@@ -126,14 +126,14 @@ verbal<-verbal[colnames(verbal)!="Anger"]
 
 # Comparing Mantel-Haenszel, standardization and logistic regression
 # Standardization threshold of 0.08, no continutiy correction, 
-# with item purification
+# with item purification (remove #)
 
-dichoDif(verbal, group=25, focal.name=1, method=c("MH","Std","Logistic"),
-correct=FALSE, thr=0.08, purify=TRUE)
+# dichoDif(verbal, group=25, focal.name=1, method=c("MH","Std","Logistic"),
+# correct=FALSE, thr=0.08, purify=TRUE)
 
-# Comparing Lord and Raju results
-# 2PL model, with item purification
+# Comparing Lord and Raju results with 2PL model and
+# with item purification (remove #)
 
-dichoDif(verbal, group=25, focal.name=1, method=c("Lord","Raju"),
-model="2PL", purify=TRUE)
+# dichoDif(verbal, group=25, focal.name=1, method=c("Lord","Raju"),
+# model="2PL", purify=TRUE)
 }

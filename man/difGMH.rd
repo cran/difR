@@ -85,7 +85,7 @@
     David Magis \cr
     Research Group of Quantitative Psychology and Individual Differences \cr
     Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/}
+    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
     Universite du Quebec a Montreal \cr
@@ -119,8 +119,9 @@ difGMH(Verbal, group=25, focal.names=names)
 difGMH(Verbal, group="group", focal.name=names)
 difGMH(Verbal[,1:24], group=Verbal[,25], focal.names=names)
 
-# With item purification
-difGMH(Verbal, group=25, focal.names=names, purify=TRUE)
-difGMH(Verbal, group=25, focal.names=names, purify=TRUE, nrIter=5)
+# With item purification (remove #)
+
+# difGMH(Verbal, group=25, focal.names=names, purify=TRUE)
+# difGMH(Verbal, group=25, focal.names=names, purify=TRUE, nrIter=5)
 }
 

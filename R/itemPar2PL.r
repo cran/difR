@@ -3,8 +3,8 @@ library(ltm)
 itemPar2PL<-function(data){
 J<-ncol(data)
 mod<-ltm(data~z1)
-par<-cbind(mod$coefficients[,2],
-mod$coefficients[,1],
+par<-cbind(summary(mod)$coefficients[(J+1):(2*J),1],
+summary(mod)$coefficients[1:J,1],
 sqrt(diag(vcov(mod)))[(J+1):(2*J)],
 sqrt(diag(vcov(mod)))[1:J],
 diag(vcov(mod)[1:J,(J+1):(2*J)]))

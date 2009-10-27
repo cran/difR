@@ -49,7 +49,7 @@ Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research
     David Magis \cr
     Research Group of Quantitative Psychology and Individual Differences \cr
     Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/}
+    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
     Universite du Quebec a Montreal \cr
@@ -67,7 +67,7 @@ data(verbal)
 # With all items as anchor items
 breslowDay(verbal[,1:24], verbal[,26])
 
-# Removing item 6 from the set of anchor items
+# Removing item 3 from the set of anchor items
 breslowDay(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
 }
 

@@ -125,7 +125,7 @@ A list of class "GenLord" with the following arguments:
     David Magis \cr
     Research Group of Quantitative Psychology and Individual Differences \cr
     Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/}
+    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
     Universite du Quebec a Montreal \cr
@@ -155,18 +155,21 @@ Verbal<-cbind(verbal[,1:24],group)
 names<-c("WomanHigh","ManLow","ManHigh")
 
 # Three equivalent settings of the data matrix and the group membership
-# 1PL model, "ltm" engine
-difGenLord(Verbal, group=25, focal.names=names, model="1PL")
-difGenLord(Verbal, group="group", focal.name=names, model="1PL")
+# 1PL model, "ltm" engine (remove #)
+
+# difGenLord(Verbal, group=25, focal.names=names, model="1PL")
+# difGenLord(Verbal, group="group", focal.name=names, model="1PL")
 difGenLord(Verbal[,1:24], group=Verbal[,25], focal.names=names, 
 model="1PL")
 
-# 1PL model, "lme4" engine
-difGenLord(Verbal, group="group", focal.name=names, model="1PL", 
-engine="lme4")
+# 1PL model, "lme4" engine (remove #)
 
-# With item purification
-difGenLord(Verbal, group=25, focal.names=names, model="1PL", purify=TRUE)
+# difGenLord(Verbal, group="group", focal.name=names, model="1PL", 
+# engine="lme4")
+
+# With item purification (remove #)
+
+# difGenLord(Verbal, group=25, focal.names=names, model="1PL", purify=TRUE)
 
 # Splitting the data into the four subsets according to "group"
 data0<-data1<-data2<-data3<-NULL

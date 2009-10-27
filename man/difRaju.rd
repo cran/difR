@@ -123,7 +123,7 @@ A list of class "Raj" with the following arguments:
     David Magis \cr
     Research Group of Quantitative Psychology and Individual Differences \cr
     Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/}
+    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
     Universite du Quebec a Montreal \cr
@@ -143,26 +143,27 @@ attach(verbal)
 verbal<-verbal[colnames(verbal)!="Anger"]
 
 # Three equivalent settings of the data matrix and the group membership 
-# (1PL model, "ltm" engine)
+# (1PL model, "ltm" engine) (remove #)
 difRaju(verbal, group=25, focal.name=1, model="1PL")
-difRaju(verbal, group="Gender", focal.name=1, model="1PL")
-difRaju(verbal[,1:24], group=verbal[,25], focal.name=1, model="1PL")
+# difRaju(verbal, group="Gender", focal.name=1, model="1PL")
+# difRaju(verbal[,1:24], group=verbal[,25], focal.name=1, model="1PL")
 
-# (1PL model, "lme4" engine)
-difRaju(verbal, group="Gender", focal.name=1, model="1PL", 
-engine="lme4")
+# (1PL model, "lme4" engine) (remove #)
+# difRaju(verbal, group="Gender", focal.name=1, model="1PL", 
+# engine="lme4")
 
-# 2PL model
-difRaju(verbal, group="Gender", focal.name=1, model="2PL")
+# 2PL model (remove #)
+# difRaju(verbal, group="Gender", focal.name=1, model="2PL")
 
 # 3PL model with all pseudo-guessing parameters constrained to 0.05
-difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05)
+# (remove #)
+# difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05)
 
-# Same models, with item purification
-difRaju(verbal, group="Gender", focal.name=1, model="1PL", purify=TRUE)
-difRaju(verbal, group="Gender", focal.name=1, model="2PL", purify=TRUE)
-difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05, 
-purify=TRUE)
+# Same models, with item purification (remove #)
+# difRaju(verbal, group="Gender", focal.name=1, model="1PL", purify=TRUE)
+# difRaju(verbal, group="Gender", focal.name=1, model="2PL", purify=TRUE)
+# difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05, 
+# purify=TRUE)
 
 ## Splitting the data into reference and focal groups
 nF<-sum(Gender)
@@ -176,17 +177,19 @@ itemParEst(data.focal,model="1PL"))
 difRaju(irtParam=item.1PL,same.scale=FALSE)
 
 ## Pre-estimation of the item parameters (1PL model, "lme4" engine)
-item.1PL<-rbind(itemParEst(data.ref, model="1PL", engine="lme4"),
-itemParEst(data.focal, model="1PL", engine="lme4"))
-difRaju(irtParam=item.1PL, same.scale=FALSE)
+# (remove #)
+# item.1PL<-rbind(itemParEst(data.ref, model="1PL", engine="lme4"),
+# itemParEst(data.focal, model="1PL", engine="lme4"))
+# difRaju(irtParam=item.1PL, same.scale=FALSE)
 
-## Pre-estimation of the item parameters (2PL model)
-item.2PL<-rbind(itemParEst(data.ref, model="2PL"),
-itemParEst(data.focal, model="2PL"))
-difRaju(irtParam=item.2PL, same.scale=FALSE)
+## Pre-estimation of the item parameters (2PL model) (remove #)
+# item.2PL<-rbind(itemParEst(data.ref, model="2PL"),
+# itemParEst(data.focal, model="2PL"))
+# difRaju(irtParam=item.2PL, same.scale=FALSE)
 
 ## Pre-estimation of the item parameters (constrained 3PL model)
-item.3PL<-rbind(itemParEst(data.ref, model="3PL", c=0.05),
-itemParEst(data.focal, model="3PL", c=0.05))
-difRaju(irtParam=item.3PL, same.scale=FALSE)
+# (remove #)
+# item.3PL<-rbind(itemParEst(data.ref, model="3PL", c=0.05),
+# itemParEst(data.focal, model="3PL", c=0.05))
+# difRaju(irtParam=item.3PL, same.scale=FALSE)
 }

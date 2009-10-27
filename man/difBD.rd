@@ -85,7 +85,7 @@ A list of class "BD" with the following arguments:
     David Magis \cr
     Research Group of Quantitative Psychology and Individual Differences \cr
     Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/}
+    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
     Universite du Quebec a Montreal \cr
@@ -109,7 +109,8 @@ difBD(verbal, group=25, focal.name=1)
 difBD(verbal, group="Gender", focal.name=1)
 difBD(verbal[,1:24], group=verbal[,25], focal.name=1)
 
-# With item purification
-difBD(verbal, group="Gender", focal.name=1, purify=TRUE)
-difBD(verbal, group="Gender", focal.name=1, purify=TRUE, nrIter=5)
+# With item purification (remove #)
+
+# difBD(verbal, group="Gender", focal.name=1, purify=TRUE)
+# difBD(verbal, group="Gender", focal.name=1, purify=TRUE, nrIter=5)
 }

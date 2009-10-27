@@ -1,0 +1,27 @@
+        **************************************************
+        *                                                *
+        *  Changes and Developments in the difR Package  *
+        *                                                *
+        **************************************************
+
+-----------------------------------
+- Changes in diR 1.1 (2009-10-27) -
+-----------------------------------
+
+  o  The output of 'itemPar2PL' function was corrected to fix a bug. The parameter 
+     estimates of the item difficulties were actually not returned as item 
+     difficulties (in the IRT sense) but as additive intercept parameters as 
+     described in the help file of the 'ltm' function of the eponym package. 
+     Version 1.1 of difR was corrected to return the correct item difficulty 
+     estimates. Note that functions 'itemPar1PL', 'itemPar3PL' and 'itemPar3PLconst'
+     were not affected by this bug.
+
+  o  The listing of the authors was corrected in the reference manual to fix a 
+     printing mistake.
+
+  o  Several R codes in the Example sections have been preceded by the '#' symbol,
+     so that they are not executed when copy-pasting the full R code from these
+     sections. However, the R code itself remains functioning but it was not executed
+     during the building of the difR package version 1.1. Anyone interested in seeing
+     how the command works has just to copy-paste the R code without the '#' symbol.
+     This is mentioned in the help files by the '(remove #)' message.
