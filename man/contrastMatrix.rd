@@ -57,14 +57,14 @@
 }
 
 \examples{
-# Contrast matrices with 1PL model and several focal groups
-contrastMatrix(2, "1PL")
-contrastMatrix(3, "1PL")
-contrastMatrix(4, "1PL")
+ # Contrast matrices with 1PL model and several focal groups
+ contrastMatrix(2, "1PL")
+ contrastMatrix(3, "1PL")
+ contrastMatrix(4, "1PL")
 
-# Contrast matrices with 2PL, constrained and unconstrained 3PL models, 
-# and three focal groups
-contrastMatrix(3, "2PL")
-contrastMatrix(3, "3PLc")
-contrastMatrix(3, "3PL")
-}
+ # Contrast matrices with 2PL, constrained and unconstrained 3PL models,
+ # and three focal groups
+ contrastMatrix(3, "2PL")
+ contrastMatrix(3, "3PLc")
+ contrastMatrix(3, "3PL")
+ }

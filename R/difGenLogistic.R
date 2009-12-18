@@ -1,7 +1,11 @@
 # LOGISTIC REGRESSION
-difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05, 
+difGenLogistic<-function (Data, group, focal.names, type="both", alpha = 0.05, 
     purify = FALSE, nrIter = 10) 
 {
+  if (length(focal.names)==1) 
+	RES <- difLogistic(Data, group, focal.name = focal.names, type = type,
+                         alpha = alpha, purify = purify, nrIter = nrIter)
+  else{
     if (length(group) == 1) {
         if (is.numeric(group) == TRUE) {
             gr <- Data[, group]
@@ -21,12 +25,13 @@ difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05,
         DATA <- Data
     }
     Group <- rep(0, nrow(DATA))
-    Group[gr == focal.name] <- 1
-    Q<-switch(type,both=qchisq(1-alpha,2),
-        udif=qchisq(1-alpha,1),
-        nudif=qchisq(1-alpha,1))
+    DF <- length(focal.names)
+    for (i in 1:DF) Group[gr == focal.names[i]] <- i
+    Q<-switch(type,both=qchisq(1-alpha,2*DF),
+        udif=qchisq(1-alpha,DF),
+        nudif=qchisq(1-alpha,DF))
     if (purify == FALSE) {
-        PROV <- Logistik(DATA, Group, type=type)
+        PROV <- genLogistik(DATA, Group, type=type)
         STATS <- PROV$deviance
 	  deltaR2 <- PROV$deltaR2
         if (max(STATS) <= Q) {
@@ -39,15 +44,16 @@ difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05,
 		for (idif in 1:length(DIFitems))
                 logitPar[DIFitems[idif],] <- PROV$parM0[DIFitems[idif],]
 		}
-        RES <- list(Logistik = STATS, logitPar = logitPar, deltaR2 = deltaR2,
+        RES <- list(genLogistik = STATS, logitPar = logitPar, deltaR2=deltaR2,
 		alpha = alpha, thr = Q, DIFitems = DIFitems, type = type,
-		purification = purify, names = colnames(DATA))
+		purification = purify, names = colnames(DATA), 
+            focal.names=focal.names)
     }
     else {
         nrPur <- 0
         difPur <- NULL
         noLoop <- FALSE
-	  prov1 <- Logistik(DATA, Group, type = type)
+	  prov1 <- genLogistik(DATA, Group, type = type)
         stats1 <- prov1$deviance
 	  deltaR2 <- prov1$deltaR2
         if (max(stats1) <= Q) {
@@ -73,7 +79,7 @@ difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05,
                         nodif <- c(nodif, i)
                     }
                   }
-			prov2 <- Logistik(DATA, Group, anchor = nodif, type = type)
+			prov2 <- genLogistik(DATA, Group, anchor = nodif, type = type)
                   stats2 <- prov2$deviance
 			deltaR2 <- prov2$deltaR2
                   if (max(stats2) <= Q) dif2 <- NULL
@@ -110,19 +116,21 @@ difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05,
             rownames(difPur) <- ro
             colnames(difPur) <- co
         }
-        RES <- list(Logistik = stats1, logitPar = logitPar, deltaR2 = deltaR2,
+        RES <- list(genLogistik = stats1, logitPar = logitPar, deltaR2=deltaR2,
 		alpha = alpha, thr = Q, DIFitems = DIFitems, type = type,
 		purification = purify, nrPur = nrPur, difPur = difPur, 
-		convergence = noLoop, names = colnames(DATA))
+		convergence = noLoop, names = colnames(DATA),
+            focal.names=focal.names)
     }
-    class(RES) <- "Logistic"
-    return(RES)
+    class(RES) <- "genLogistic"
+  }
+  return(RES)
 }
 
-
 # METHODS
-plot.Logistic <- function (x, plot = "lrStat", item = 1, pch = 8, number = TRUE, col = "red", 
-colIC = rep("black",2), ltyIC = c(1,2), ...) 
+plot.genLogistic <- function (x, plot = "lrStat", item = 1, pch = 8, number = TRUE, col = "red", 
+colIC = rep("black",length(x$focal.names)+1), 
+ltyIC = 1:(length(x$focal.names)+1), ...) 
 {
     res <- x
     plotType <- switch(plot, lrStat=1, itemCurve=2)
@@ -130,20 +138,20 @@ colIC = rep("black",2), ltyIC = c(1,2), ...)
     else {
 	if (plotType==1){
     	 if (number == FALSE) {
-        plot(res$Logistik, xlab = "Item", ylab = "Logistic regression statistic", 
-            ylim = c(0, max(c(res$Logistik, res$thr) + 1)), pch = pch, 
-            main = "Logistic regression")
+        plot(res$genLogistik, xlab = "Item", ylab = "Generalized logistic regression statistic", 
+            ylim = c(0, max(c(res$genLogistik, res$thr) + 1)), pch = pch, 
+            main = "Generalized logistic regression")
         if (is.character(res$DIFitems) == FALSE) 
-            points(res$DIFitems, res$Logistik[res$DIFitems], 
+            points(res$DIFitems, res$genLogistik[res$DIFitems], 
                 pch = pch, col = col)
        }
        else {
-        plot(res$Logistik, xlab = "Item", ylab = "Logistic regression statistic", 
-            ylim = c(0, max(c(res$Logistik, res$thr) + 1)), col = "white", 
-            main = "Logistic regression")
-        text(1:length(res$Logistik), res$Logistik, 1:length(res$Logistik))
+        plot(res$genLogistik, xlab = "Item", ylab = "Generalized logistic regression statistic", 
+            ylim = c(0, max(c(res$genLogistik, res$thr) + 1)), col = "white", 
+            main = "Generalized logistic regression")
+        text(1:length(res$genLogistik), res$genLogistik, 1:length(res$genLogistik))
         if (is.character(res$DIFitems) == FALSE) 
-            text(res$DIFitems, res$Logistik[res$DIFitems], res$DIFitems, 
+            text(res$DIFitems, res$genLogistik[res$DIFitems], res$DIFitems, 
                 col = col)
        }
        abline(h = res$thr)
@@ -152,23 +160,31 @@ colIC = rep("black",2), ltyIC = c(1,2), ...)
       it <- ifelse(is.character(item) | is.factor(item),
 	           (1:length(res$names))[res$names==item],item)
 	logitPar <- res$logitPar[it,]
-	s <- seq(0,length(res$Logistik),0.1)
+	s <- seq(0,length(res$genLogistik),0.1)
  	expit <- function(t) exp(t)/(1+exp(t))
-      mainName <- ifelse(is.character(res$names[it]),res$names[it],
-				   paste("Item ", it, sep=""))
+      mainName <- ifelse(is.character(res$names[it]),res$names[it],paste("Item ", it, sep=""))
       plot(s, expit(logitPar[1]+logitPar[2]*s), col = colIC[1], type = "l",
-		lty = ltyIC[1], ylim = c(0,1), xlab = "Score", 
-		ylab = "Probability", main=mainName)
+		lty = ltyIC[1], ylim = c(0,1), xlab = "Score", ylab = "Probability",
+            main=mainName)
       if (res$type=="nudif" | (res$type!="nudif" & is.character(res$DIFitems) == FALSE & sum(res$DIFitems==it)==1)){
-	lines(s, expit(logitPar[1]+logitPar[2]*s+logitPar[3]+logitPar[4]*s),
-		col = colIC[2], lty = ltyIC[2])
-	legend(0, 1, c("Reference","Focal"), col = colIC, lty = ltyIC, bty = "n")
+	for (i in 1:length(res$focal.names))
+           lines(s, expit(logitPar[1]+logitPar[2]*s+logitPar[2+i]+logitPar[2+length(res$focal.names)+i]*s),
+		  col = colIC[1+i], lty = ltyIC[1+i])
+      legnames <- "Reference"      
+      if (is.character(res$focal.names) == TRUE | is.factor(res$focal.names) == 
+        TRUE) legnames <- c(legnames,res$focal.names)
+      else{
+      for (t in 1:length(res$focal.names)) legnames <- c(legnames,paste("Focal ",
+                res$focal.names[t],sep=""))
+      }
+	legend(0, 1, legnames, col = colIC, lty = ltyIC, bty = "n")
 	}
-	}
+      }
     }
 }
 
-print.Logistic <- function (x, ...) 
+
+print.genLogistic <- function (x, ...) 
 {
     res <- x
     cat("\n")
@@ -181,7 +197,18 @@ print.Logistic <- function (x, ...)
     if (res$purification == TRUE) 
         pur <- "with "
     else pur <- "without "
-    cat(pur, "item purification", "\n", "\n", sep = "")
+    cat(pur, "item purification", "\n", sep="")
+    cat("and with ", length(res$focal.names), " focal groups", 
+    "\n", "\n", sep = "")
+    if (is.character(res$focal.names) == TRUE | is.factor(res$focal.names) == 
+        TRUE) {
+        cat("Focal groups:", "\n")
+        nagr <- cbind(res$focal.names)
+        rownames(nagr) <- rep("", nrow(nagr))
+        colnames(nagr) <- ""
+        print(nagr, quote = FALSE)
+        cat("\n")
+    }
     if (res$purification == TRUE) {
         if (res$nrPur <= 1) 
             word <- " iteration"
@@ -192,11 +219,11 @@ print.Logistic <- function (x, ...)
             loop <- NULL
             for (i in 1:res$nrPur) loop[i] <- sum(res$difPur[1, 
                 ] == res$difPur[i + 1, ])
-            if (max(loop) != length(res$Logistik)) 
+            if (max(loop) != length(res$genLogistik)) 
                 cat("(Note: no loop detected in less than ", 
                   res$nrPur, word, ")", "\n", sep = "")
             else cat("(Note: loop of length ", min((1:res$nrPur)[loop == 
-                length(res$Logistik)]), " in the item purification process)", 
+                length(res$genLogistik)]), " in the item purification process)", 
                 "\n", sep = "")
             cat("WARNING: following results based on the last iteration of the purification", 
                 "\n", "\n")
@@ -204,12 +231,13 @@ print.Logistic <- function (x, ...)
         else cat("Convergence reached after ", res$nrPur, word, 
             "\n", "\n", sep = "")
     }
-    cat("Logistic regression statistic:", "\n", "\n")
-    df <- switch(res$type, both = 2, udif = 1, nudif = 1)
-    pval <- round(1 - pchisq(res$Logistik, df), 4)
+    cat("Generalized Logistic regression statistic:", "\n", "\n")
+    nGroups <- length(res$focal.names)
+    df <- switch(res$type, both = 2*nGroups, udif = nGroups, nudif = nGroups)
+    pval <- round(1 - pchisq(res$genLogistik, df), 4)
     symb <- symnum(pval, c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", 
         "**", "*", ".", ""))
-    m1 <- cbind(round(res$Logistik, 4), pval)
+    m1 <- cbind(round(res$genLogistik, 4), pval)
     m1 <- noquote(cbind(format(m1, justify = "right"), symb))
     if (is.null(res$names) == FALSE) 
         rownames(m1) <- res$names

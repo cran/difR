@@ -14,7 +14,9 @@
  irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, 
  nrIter=10)
  \method{print}{Lord}(x, ...)
- \method{plot}{Lord}(x, pch=8, number=TRUE, col="red", ...)
+ \method{plot}{Lord}(x, plot = "lordStat", item = 1, pch = 8, number = TRUE, 
+    col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), ...) 
+
  }
 
 \arguments{
@@ -30,8 +32,11 @@
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
  \item{x}{the result from a \code{Lord} class object.}
+ \item{plot}{character: the type of plot, either \code{"lordStat"} or \code{"itemCurve"}. See \bold{Details}.}
+ \item{item}{numeric or character: either the number or the name of the item for which ICC curves are plotted. Used only when \code{plot="itemCurve"}.}
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
+ \item{colIC, ltyIC}{vectors of two elements of the usual \code{col} and \code{lty} arguments for ICC curves. Used only when \code{plot="itemCurve"}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
  }
 
@@ -99,6 +104,16 @@ A list of class "Lord" with the following arguments:
  detected as DIF are iteratively removed from the set of items used for equal means anchoring, and the procedure is repeated until either the same items
  are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
  See Candell and Drasgow (1988) for further details.
+
+ Two types of plots are available. The first one is obtained by setting \code{plot="lordStat"} and it is the default option. The chi-square statistics are displayed 
+ on the Y axis, for each item. The detection threshold is displayed by a horizontal line, and items flagged as DIF are printed with the color defined by argument \code{col}.
+ By default, items are spotted with their number identification (\code{number=TRUE}); otherwise they are simply drawn as dots whose form is given by the option \code{pch}.
+
+ The other type of plot is obtained by setting \code{plot="itemCurve"}. In this case, the fitted ICC curves are displayed for one specific item set by the argument 
+ \code{item}. The latter argument can hold either the name of the item or its number identification. The item parameters are extracted from the \code{itemParFinal} matrix
+ if the output argument \code{purification} is \code{TRUE}, otherwise from the \code{itemParInit} matrix and after a rescaling of the item parameters using the 
+ \code{\link{itemRescale}} command. A legend is displayed in the upper left corner of the plot. The colors and types of traits for these curves are defined by means of 
+ the arguments \code{colIC} and \code{ltyIC} respectively. These are set as vectors of length 2, the first element for the reference group and the second for the focal group.
 }
 
 \references{
@@ -134,61 +149,64 @@ A list of class "Lord" with the following arguments:
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Excluding the "Anger" variable
-verbal<-verbal[colnames(verbal)!="Anger"]
+ # Excluding the "Anger" variable
+ verbal<-verbal[colnames(verbal)!="Anger"]
 
-# Three equivalent settings of the data matrix and the group membership 
-# (1PL model, "ltm" engine) (remove #)
-difLord(verbal, group=25, focal.name=1, model="1PL")
-# difLord(verbal, group="Gender", focal.name=1, model="1PL")
-# difLord(verbal[,1:24], group=verbal[,25], focal.name=1, model="1PL")
+ # Three equivalent settings of the data matrix and the group membership
+ # (1PL model, "ltm" engine) 
+ r <- difLord(verbal, group=25, focal.name=1, model="1PL")
+ difLord(verbal, group="Gender", focal.name=1, model="1PL")
+ difLord(verbal[,1:24], group=verbal[,25], focal.name=1, model="1PL")
 
-# 1PL model, "lme4" engine (remove #)
-# difLord(verbal, group=25, focal.name=1, model="1PL", engine="lme4")
+ # 1PL model, "lme4" engine 
+ difLord(verbal, group=25, focal.name=1, model="1PL", engine="lme4")
 
-# 2PL model (remove #)
-# difLord(verbal, group="Gender", focal.name=1, model="2PL")
+ # 2PL model   
+ difLord(verbal, group="Gender", focal.name=1, model="2PL")
 
-# 3PL model with all pseudo-guessing parameters constrained to 0.05
-# (remove #)
-# difLord(verbal, group="Gender", focal.name=1, model="3PL", c=0.05)
+ # 3PL model with all pseudo-guessing parameters constrained to 0.05
+ difLord(verbal, group="Gender", focal.name=1, model="3PL", c=0.05)
 
-# Same models, with item purification (remove #)
-difLord(verbal, group=25, focal.name=1, model="1PL", purify=TRUE)
-# difLord(verbal, group="Gender", focal.name=1, model="2PL", purify=TRUE)
-# difLord(verbal, group="Gender", focal.name=1, model="3PL", c=0.05, 
-# purify=TRUE)
+ # Same models, with item purification 
+ difLord(verbal, group=25, focal.name=1, model="1PL", purify=TRUE)
+ difLord(verbal, group="Gender", focal.name=1, model="2PL", purify=TRUE)
+ difLord(verbal, group="Gender", focal.name=1, model="3PL", c=0.05,
+ purify=TRUE)
 
-# Splitting the data into reference and focal groups
-nF<-sum(Gender)
-nR<-nrow(verbal)-nF
-data.ref<-verbal[,1:24][order(Gender),][1:nR,]
-data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
+ # Splitting the data into reference and focal groups
+ nF<-sum(Gender)
+ nR<-nrow(verbal)-nF
+ data.ref<-verbal[,1:24][order(Gender),][1:nR,]
+ data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
 
-## Pre-estimation of the item parameters (1PL model, "ltm" engine)
-item.1PL<-rbind(itemParEst(data.ref, model="1PL"),
-itemParEst(data.focal, model="1PL"))
-difLord(irtParam=item.1PL, same.scale=FALSE)
+ ## Pre-estimation of the item parameters (1PL model, "ltm" engine)
+ item.1PL<-rbind(itemParEst(data.ref, model="1PL"),
+ itemParEst(data.focal, model="1PL"))
+ difLord(irtParam=item.1PL, same.scale=FALSE)
 
-## Pre-estimation of the item parameters (1PL model, "lme4" engine)
-# (remove #)
+ ## Pre-estimation of the item parameters (1PL model, "lme4" engine)
+ item.1PL<-rbind(itemParEst(data.ref, model="1PL", engine="lme4"),
+ itemParEst(data.focal, model="1PL", engine="lme4"))
+ difLord(irtParam=item.1PL, same.scale=FALSE)
 
-# item.1PL<-rbind(itemParEst(data.ref, model="1PL", engine="lme4"),
-# itemParEst(data.focal, model="1PL", engine="lme4"))
-# difLord(irtParam=item.1PL, same.scale=FALSE)
+ ## Pre-estimation of the item parameters (2PL model) 
+ item.2PL<-rbind(itemParEst(data.ref, model="2PL"),
+ itemParEst(data.focal, model="2PL"))
+ difLord(irtParam=item.2PL, same.scale=FALSE)
 
-## Pre-estimation of the item parameters (2PL model) (remove #)
-# item.2PL<-rbind(itemParEst(data.ref, model="2PL"),
-# itemParEst(data.focal, model="2PL"))
-# difLord(irtParam=item.2PL, same.scale=FALSE)
+ ## Pre-estimation of the item parameters (constrained 3PL model)
+ item.3PL<-rbind(itemParEst(data.ref, model="3PL", c=0.05),
+ itemParEst(data.focal, model="3PL", c=0.05))
+ difLord(irtParam=item.3PL, same.scale=FALSE)
 
-## Pre-estimation of the item parameters (constrained 3PL model)
-# (remove #)
-# item.3PL<-rbind(itemParEst(data.ref, model="3PL", c=0.05),
-# itemParEst(data.focal, model="3PL", c=0.05))
-# difLord(irtParam=item.3PL, same.scale=FALSE)
-}
+ # Graphical devices
+ plot(r)
+ plot(r, plot="itemCurve", item=1)
+ plot(r, plot="itemCurve", item=6)
+ }
+ }

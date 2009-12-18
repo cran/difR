@@ -39,7 +39,7 @@
 
 \source{
  The Verbal agression data set is taken originally from Vansteelandt (2000) and has been used as an illustrative example in De Boeck (2008), De Boeck and Wilson (2004) 
- and Smits, De Boeck and Vansteelandt (2004), among others. The full data set is available at the website \emph{http://bear.soe.berkely.edu/EIRM/}.
+ and Smits, De Boeck and Vansteelandt (2004), among others. The following URL \emph{http://bear.soe.berkely.edu/EIRM/} permits to get access to the full data set.
 }
 
 

@@ -55,18 +55,20 @@
     }
 
 \seealso{
- \code{\link{itemPar2PL}}, \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}}, 
+ \code{\link{itemPar2PL}}, \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}},
  \code{\link{difRaju}}, \code{\link{difGenLord}}
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
  
-# Getting item parameter estimates ('ltm' engine)
-itemPar1PL(verbal[,1:24])
+ # Getting item parameter estimates ('ltm' engine)
+ itemPar1PL(verbal[,1:24])
 
-# Getting item parameter estimates ('lme4' engine) (remove #)
-# itemPar1PL(verbal[,1:24], engine="lme4")
-}
+ # Getting item parameter estimates ('lme4' engine) 
+ itemPar1PL(verbal[,1:24], engine="lme4")
+ }
+ }
 

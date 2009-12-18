@@ -63,13 +63,15 @@
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
 
-# Constraining all pseudo-guessing parameters to be equal to 0.05
-itemPar3PLconst(verbal[,1:24], c=0.05)
+ # Constraining all pseudo-guessing parameters to be equal to 0.05
+ itemPar3PLconst(verbal[,1:24], c=0.05)
 
-# Constraining pseudo-guessing values to  0.1 for the first 10 items, 
-# and to 0.05 for the remaining ones
-itemPar3PLconst(verbal[,1:24], c=c(rep(0.1,10),rep(0.05,14)))
-}
+ # Constraining pseudo-guessing values to  0.1 for the first 10 items,
+ # and to 0.05 for the remaining ones
+ itemPar3PLconst(verbal[,1:24], c=c(rep(0.1,10),rep(0.05,14)))
+ }
+ }

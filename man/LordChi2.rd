@@ -56,31 +56,33 @@
 }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Splitting the data into reference and focal groups
-nF<-sum(Gender)
-nR<-nrow(verbal)-nF
-data.ref<-verbal[,1:24][order(Gender),][1:nR,]
-data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
+ # Splitting the data into reference and focal groups
+ nF<-sum(Gender)
+ nR<-nrow(verbal)-nF
+ data.ref<-verbal[,1:24][order(Gender),][1:nR,]
+ data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
 
-# Pre-estimation of the item parameters (1PL model)
-mR<-itemParEst(data.ref,model="1PL")
-mF<-itemParEst(data.focal,model="1PL")
-mF<-itemRescale(mR, mF)
-LordChi2(mR, mF)
+ # Pre-estimation of the item parameters (1PL model)
+ mR<-itemParEst(data.ref,model="1PL")
+ mF<-itemParEst(data.focal,model="1PL")
+ mF<-itemRescale(mR, mF)
+ LordChi2(mR, mF)
 
-# Pre-estimation of the item parameters (2PL model)
-mR<-itemParEst(data.ref,model="2PL")
-mF<-itemParEst(data.focal,model="2PL")
-mF<-itemRescale(mR, mF)
-LordChi2(mR, mF)
+ # Pre-estimation of the item parameters (2PL model)
+ mR<-itemParEst(data.ref,model="2PL")
+ mF<-itemParEst(data.focal,model="2PL")
+ mF<-itemRescale(mR, mF)
+ LordChi2(mR, mF)
 
-# Pre-estimation of the item parameters (constrained 3PL model)
-mR<-itemParEst(data.ref,model="3PL",c=0.05)
-mF<-itemParEst(data.focal,model="3PL",c=0.05)
-mF<-itemRescale(mR, mF)
-LordChi2(mR, mF)
-}
+ # Pre-estimation of the item parameters (constrained 3PL model)
+ mR<-itemParEst(data.ref,model="3PL",c=0.05)
+ mF<-itemParEst(data.focal,model="3PL",c=0.05)
+ mF<-itemRescale(mR, mF)
+ LordChi2(mR, mF)
+ }
+ }

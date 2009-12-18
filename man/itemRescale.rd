@@ -58,31 +58,33 @@
 }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Splitting the data set into reference and focal groups
-nF<-sum(Gender)
-nR<-nrow(verbal)-nF
-data.ref<-verbal[,1:24][order(Gender),][1:nR,]
-data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
+ # Splitting the data set into reference and focal groups
+ nF<-sum(Gender)
+ nR<-nrow(verbal)-nF
+ data.ref<-verbal[,1:24][order(Gender),][1:nR,]
+ data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
 
-# Estimating item parfameters in each data set with 1PL model
-mR<-itemPar1PL(data.ref)
-mF<-itemPar1PL(data.focal)
+ # Estimating item parfameters in each data set with 1PL model
+ mR<-itemPar1PL(data.ref)
+ mF<-itemPar1PL(data.focal)
 
-# Rescaling focal group item parameters, using all items for anchoring
-itemRescale(mR, mF)
+ # Rescaling focal group item parameters, using all items for anchoring
+ itemRescale(mR, mF)
 
-# Rescaling focal group item parameters, using the first 10 items for 
-# anchoring
-itemRescale(mR, mF, items=1:10)
+ # Rescaling focal group item parameters, using the first 10 items for
+ # anchoring
+ itemRescale(mR, mF, items=1:10)
 
-# Estimating item parfameters in each data set with 2PL model
-mR<-itemPar2PL(data.ref)
-mF<-itemPar2PL(data.focal)
+ # Estimating item parfameters in each data set with 2PL model
+ mR<-itemPar2PL(data.ref)
+ mF<-itemPar2PL(data.focal)
 
-# Rescaling focal group item parameters, using all items for anchoring
-itemRescale(mR, mF)
-}
+ # Rescaling focal group item parameters, using all items for anchoring
+ itemRescale(mR, mF)
+ }
+ }

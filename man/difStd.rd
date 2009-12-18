@@ -60,6 +60,11 @@ A list of class "PDIF" with the following arguments:
  The threshold (or cut-score) for classifying items as DIF has to be set by the user by the argument \code{thr}. Default value is 0.10 
  but Dorans (1989) also recommends value 0.05. For this reason it is not possible to provide asymptotic \emph{p}-values.
  
+ In addition, the standardized P-DIF statistics are used to measure the effect sizes of the items. According to Dorans, Schmitt and 
+ Bleistein (1992), the effect size of an item is classified as negligible if \eqn{|St-P-DIF| \leq 0.05}, moderate if
+ \eqn{0.05 \leq |St-P-DIF| \leq 0.10}, and large if if \eqn{|St-P-DIF| \geq 0.10}. The values of the effect sizes, together with
+ the Dorans, Schmitt and Bleistein (DSB) classsification, are printed with the output.
+
  Item purification can be performed by setting \code{purify} to \code{TRUE}. Purification works as follows: if at least one item was detected as functioning 
  differently at some step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor, 1998),
@@ -73,7 +78,10 @@ A list of class "PDIF" with the following arguments:
  Dorans, N. J. (1989). Two new approaches to assessing differential item functioning. Standardization and the Mantel-Haenszel method. \emph{Applied Measurement in Education, 2}, 217-233. 
  
  Dorans, N. J. and Kullick, E. (1986). Demonstrating the utility of the standardization approach to assessing unexpected differential item performance on the Scholastic Aptitude Test. \emph{Journal of Educational Measurement, 23}, 355-368.
- }
+ 
+ Dorans, N. J., Schmitt, A. P. and Bleistein, C. A. (1992). The standardization approach to assessing comprehensive differential item functioning. \emph{Journal of Educational Measurement, 29},
+ 309-319.
+}
  
 \author{
     Sebastien Beland \cr
@@ -95,22 +103,24 @@ A list of class "PDIF" with the following arguments:
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
 
-# Excluding the "Anger" variable
-verbal<-verbal[colnames(verbal)!="Anger"]
+ # Excluding the "Anger" variable
+ verbal<-verbal[colnames(verbal)!="Anger"]
 
-# Three equivalent settings of the data matrix and the group membership
-difStd(verbal, group=25, focal.name=1)
-difStd(verbal, group="Gender", focal.name=1)
-difStd(verbal[,1:24], group=verbal[,25], focal.name=1)
+ # Three equivalent settings of the data matrix and the group membership
+ difStd(verbal, group=25, focal.name=1)
+ difStd(verbal, group="Gender", focal.name=1)
+ difStd(verbal[,1:24], group=verbal[,25], focal.name=1)
 
-# With item purification
-difStd(verbal, group="Gender", focal.name=1, purify=TRUE)
-difStd(verbal, group="Gender", focal.name=1, purify=TRUE, nrIter=5)
+ # With item purification
+ difStd(verbal, group="Gender", focal.name=1, purify=TRUE)
+ difStd(verbal, group="Gender", focal.name=1, purify=TRUE, nrIter=5)
 
-# With detection threshold of 0.05
-difStd(verbal, group="Gender", focal.name=1, thr=0.05)
-}
+ # With detection threshold of 0.05
+ difStd(verbal, group="Gender", focal.name=1, thr=0.05)
+ }
+ }
 

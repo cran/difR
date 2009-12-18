@@ -97,31 +97,32 @@
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Creating four groups according to gender ("Man" or "Woman") and 
-# trait anger score ("Low" or "High")
-group<-rep("WomanLow",nrow(verbal))
-group[Anger>20 & Gender==0]<-"WomanHigh"
-group[Anger<=20 & Gender==1]<-"ManLow"
-group[Anger>20 & Gender==1]<-"ManHigh"
+ # Creating four groups according to gender ("Man" or "Woman") and
+ # trait anger score ("Low" or "High")
+ group<-rep("WomanLow",nrow(verbal))
+ group[Anger>20 & Gender==0]<-"WomanHigh"
+ group[Anger<=20 & Gender==1]<-"ManLow"
+ group[Anger>20 & Gender==1]<-"ManHigh"
 
-# New data set
-Verbal<-cbind(verbal[,1:24],group)
+ # New data set
+ Verbal<-cbind(verbal[,1:24],group)
 
-# Reference group: "WomanLow"
-names<-c("WomanHigh","ManLow","ManHigh")
+ # Reference group: "WomanLow"
+ names<-c("WomanHigh","ManLow","ManHigh")
 
-# Three equivalent settings of the data matrix and the group membership
-difGMH(Verbal, group=25, focal.names=names)
-difGMH(Verbal, group="group", focal.name=names)
-difGMH(Verbal[,1:24], group=Verbal[,25], focal.names=names)
+ # Three equivalent settings of the data matrix and the group membership
+ difGMH(Verbal, group=25, focal.names=names)
+ difGMH(Verbal, group="group", focal.name=names)
+ difGMH(Verbal[,1:24], group=Verbal[,25], focal.names=names)
 
-# With item purification (remove #)
-
-# difGMH(Verbal, group=25, focal.names=names, purify=TRUE)
-# difGMH(Verbal, group=25, focal.names=names, purify=TRUE, nrIter=5)
-}
+ # With item purification 
+ difGMH(Verbal, group=25, focal.names=names, purify=TRUE)
+ difGMH(Verbal, group=25, focal.names=names, purify=TRUE, nrIter=5)
+ }
+ }
 

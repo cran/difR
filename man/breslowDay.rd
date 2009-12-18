@@ -37,8 +37,15 @@ breslowDay(data, member, anchor=1:ncol(data))
  primarily designed to perform item purification.
 }
 
+\note{
+ The statistic currently implemented is the Breslow-Day statistic for the generalm test of odds ratio heterogeneity, and not the statistic for the 
+ test of trend in heterogeneity as displayed by Penfield (2003).
+}
+
 \references{
 Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research, vol. I: The analysis of case-control studies}. Scientific Publication N° 32. International Agency for Research on Cancer, Lyon, France.
+
+Penfield, R.D. (2003). Application of the Breslow-Day test of trend in odds ratio heterogeneity to the detection of nonuniform DIF. \emph{Alberta Journal of Educational Research, 49}, 231-243.
 }
 
 \author{
@@ -61,13 +68,15 @@ Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
 
-# With all items as anchor items
-breslowDay(verbal[,1:24], verbal[,26])
+ # With all items as anchor items
+ breslowDay(verbal[,1:24], verbal[,26])
 
-# Removing item 3 from the set of anchor items
-breslowDay(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
-}
+ # Removing item 3 from the set of anchor items
+ breslowDay(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
+ }
+ }
 

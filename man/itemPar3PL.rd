@@ -59,9 +59,11 @@
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
 
-# Getting item parameter estimates 
-# itemPar3PL(verbal[,1:24])
-}
+ # Getting item parameter estimates
+ # itemPar3PL(verbal[,1:24])
+ }
+ }

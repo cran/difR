@@ -14,7 +14,9 @@
  irtParam=NULL, nrFocal=2, same.scale=TRUE, alpha=0.05, 
  purify=FALSE, nrIter=10)
  \method{print}{GenLord}(x, ...)
- \method{plot}{GenLord}(x, pch=8, number=TRUE, col="red", ...)
+ \method{plot}{GenLord}(x, plot = "lordStat", item = 1, pch = 8,
+    number = TRUE, col = "red", colIC = rep("black", length(x$focal.names)
+    + 1), ltyIC = 1:(length(x$focal.names) + 1), ...)
  }
 
 \arguments{
@@ -31,8 +33,11 @@
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
  \item{x}{the result from a \code{GenLord} class object.}
+ \item{plot}{character: the type of plot, either \code{"lordStat"} or \code{"itemCurve"}. See \bold{Details}.}
+ \item{item}{numeric or character: either the number or the name of the item for which ICC curves are plotted. Used only when \code{plot="itemCurve"}.}
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
+ \item{colIC, ltyIC}{vectors of elements of the usual \code{col} and \code{lty} arguments for ICC curves. Used only when \code{plot="itemCurve"}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
  }
 
@@ -54,11 +59,12 @@ A list of class "GenLord" with the following arguments:
   \item{c}{The value of the \code{c} argument.}
   \item{engine}{The value of the \code{engine} argument.}
   \item{itemParInit}{the matrix of initial parameter estimates,with the same format as \code{irtParam} either provided by the user (through \code{irtParam}) or estimated from the data
-   (and displayed without rescaling).}
+   (and displayed after rescaling).}
   \item{itemParFinal}{the matrix of final parameter estimates, with the same format as \code{irtParam}, obtained after item purification. Returned 
    only if \code{purify} is \code{TRUE}.}
   \item{estPar}{a logical value indicating whether the item parameters were estimated (\code{TRUE}) or provided by the user (\code{FALSE}).}
   \item{names}{the names of the items.}
+  \item{focal.names}{the value of the \code{focal.names} argument.}
  }
  
 \details{
@@ -101,6 +107,16 @@ A list of class "GenLord" with the following arguments:
  detected as DIF are iteratively removed from the set of items used for equal means anchoring, and the procedure is repeated until either the same items
  are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
  See Candell and Drasgow (1988) for further details.
+
+ Two types of plots are available. The first one is obtained by setting \code{plot="lordStat"} and it is the default option. The chi-square statistics are displayed 
+ on the Y axis, for each item. The detection threshold is displayed by a horizontal line, and items flagged as DIF are printed with the color defined by argument \code{col}.
+ By default, items are spotted with their number identification (\code{number=TRUE}); otherwise they are simply drawn as dots whose form is given by the option \code{pch}.
+
+ The other type of plot is obtained by setting \code{plot="itemCurve"}. In this case, the fitted ICC curves are displayed for one specific item set by the argument 
+ \code{item}. The latter argument can hold either the name of the item or its number identification. The item parameters are extracted from the \code{itemParFinal} matrix
+ if the output argument \code{purification} is \code{TRUE}, otherwise from the \code{itemParInit} matrix and after a rescaling of the item parameters using the 
+ \code{\link{itemRescale}} command. A legend is displayed in the upper left corner of the plot. The colors and types of traits for these curves are defined by means of 
+ the arguments \code{colIC} and \code{ltyIC} respectively. These are set as vectors of length 2, the first element for the reference group and the second for the focal group.
 }
 
 
@@ -137,68 +153,72 @@ A list of class "GenLord" with the following arguments:
 }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Creating four groups according to gender ("Man" or "Woman") and trait 
-# anger score ("Low" or "High")
-group<-rep("WomanLow",nrow(verbal))
-group[Anger>20 & Gender==0]<-"WomanHigh"
-group[Anger<=20 & Gender==1]<-"ManLow"
-group[Anger>20 & Gender==1]<-"ManHigh"
+ # Creating four groups according to gender ("Man" or "Woman") and trait
+ # anger score ("Low" or "High")
+ group<-rep("WomanLow",nrow(verbal))
+ group[Anger>20 & Gender==0]<-"WomanHigh"
+ group[Anger<=20 & Gender==1]<-"ManLow"
+ group[Anger>20 & Gender==1]<-"ManHigh"
 
-# New data set
-Verbal<-cbind(verbal[,1:24],group)
+ # New data set
+ Verbal<-cbind(verbal[,1:24],group)
 
-# Reference group: "WomanLow"
-names<-c("WomanHigh","ManLow","ManHigh")
+ # Reference group: "WomanLow"
+ names<-c("WomanHigh","ManLow","ManHigh")
 
-# Three equivalent settings of the data matrix and the group membership
-# 1PL model, "ltm" engine (remove #)
+ # Three equivalent settings of the data matrix and the group membership
+ # 1PL model, "ltm" engine 
+ r <- difGenLord(Verbal, group=25, focal.names=names, model="1PL")
+ difGenLord(Verbal, group="group", focal.name=names, model="1PL")
+ difGenLord(Verbal[,1:24], group=Verbal[,25], focal.names=names,
+ model="1PL")
 
-# difGenLord(Verbal, group=25, focal.names=names, model="1PL")
-# difGenLord(Verbal, group="group", focal.name=names, model="1PL")
-difGenLord(Verbal[,1:24], group=Verbal[,25], focal.names=names, 
-model="1PL")
+ # 1PL model, "lme4" engine 
+ difGenLord(Verbal, group="group", focal.name=names, model="1PL",
+ engine="lme4")
 
-# 1PL model, "lme4" engine (remove #)
+ # With item purification
+ difGenLord(Verbal, group=25, focal.names=names, model="1PL", purify=TRUE)
 
-# difGenLord(Verbal, group="group", focal.name=names, model="1PL", 
-# engine="lme4")
+ # Splitting the data into the four subsets according to "group"
+ data0<-data1<-data2<-data3<-NULL
+ for (i in 1:nrow(verbal)){
+  if (group[i]=="WomanLow") data0<-rbind(data0,as.numeric(verbal[i,1:24]))
+  if (group[i]=="WomanHigh") data1<-rbind(data1,as.numeric(verbal[i,1:24]))
+  if (group[i]=="ManLow") data2<-rbind(data2,as.numeric(verbal[i,1:24]))
+  if (group[i]=="ManHigh") data3<-rbind(data3,as.numeric(verbal[i,1:24]))
+  }
 
-# With item purification (remove #)
+ # Estimation of the item parameters (1PL model)
+ m0.1PL<-itemParEst(data0, model="1PL")
+ m1.1PL<-itemParEst(data1, model="1PL")
+ m2.1PL<-itemParEst(data2, model="1PL")
+ m3.1PL<-itemParEst(data3, model="1PL")
 
-# difGenLord(Verbal, group=25, focal.names=names, model="1PL", purify=TRUE)
+ # Merging the item parameters WITHOUT rescaling
+ irt.noscale<-rbind(m0.1PL,m1.1PL,m2.1PL,m3.1PL)
+ rownames(irt.noscale)<-rep(colnames(verbal[,1:24]),4)
 
-# Splitting the data into the four subsets according to "group"
-data0<-data1<-data2<-data3<-NULL
-for (i in 1:nrow(verbal)){
-if (group[i]=="WomanLow") data0<-rbind(data0,as.numeric(verbal[i,1:24]))
-if (group[i]=="WomanHigh") data1<-rbind(data1,as.numeric(verbal[i,1:24]))
-if (group[i]=="ManLow") data2<-rbind(data2,as.numeric(verbal[i,1:24]))
-if (group[i]=="ManHigh") data3<-rbind(data3,as.numeric(verbal[i,1:24]))
-}
+ # merging the item parameters WITH rescaling
+ irt.scale<-rbind(m0.1PL, itemRescale(m0.1PL,m1.1PL),
+ itemRescale(m0.1PL,m2.1PL) ,itemRescale(m0.1PL,m3.1PL))
+ rownames(irt.scale)<-rep(colnames(verbal[,1:24]),4)
 
-# Estimation of the item parameters (1PL model)
-m0.1PL<-itemParEst(data0, model="1PL")
-m1.1PL<-itemParEst(data1, model="1PL")
-m2.1PL<-itemParEst(data2, model="1PL")
-m3.1PL<-itemParEst(data3, model="1PL")
+ # Equivalent calculations
+ difGenLord(irtParam=irt.noscale, nrFocal=3, same.scale=FALSE)
+ difGenLord(irtParam=irt.scale, nrFocal=3, same.scale=TRUE)
 
-# Merging the item parameters WITHOUT rescaling
-irt.noscale<-rbind(m0.1PL,m1.1PL,m2.1PL,m3.1PL)
-rownames(irt.noscale)<-rep(colnames(verbal[,1:24]),4)
+ # With item purification
+ difGenLord(irtParam=irt.noscale, nrFocal=3, same.scale=FALSE, purify=TRUE)
 
-# merging the item parameters WITH rescaling
-irt.scale<-rbind(m0.1PL, itemRescale(m0.1PL,m1.1PL),
-itemRescale(m0.1PL,m2.1PL) ,itemRescale(m0.1PL,m3.1PL))
-rownames(irt.scale)<-rep(colnames(verbal[,1:24]),4)
-
-# Equivalent calculations
-difGenLord(irtParam=irt.noscale, nrFocal=3, same.scale=FALSE)
-difGenLord(irtParam=irt.scale, nrFocal=3, same.scale=TRUE)
-
-# With item purification
-difGenLord(irtParam=irt.noscale, nrFocal=3, same.scale=FALSE, purify=TRUE)
-}
+ # Graphical devices
+ plot(r)
+ plot(r, plot="itemCurve", item=1)
+ plot(r, plot="itemCurve", item=6)
+ }
+ }

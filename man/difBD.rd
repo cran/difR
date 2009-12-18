@@ -67,6 +67,11 @@ A list of class "BD" with the following arguments:
  or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
 }
 
+\note{
+ The current test of Breslow-Day makes use of the statistic for testing odds ratio heterogeneity as given by Aguerri et al. (in press). This is not the Breslow-Day test
+ of trend in odds ratio heterogeneity displayed by Penfield (2003).
+}
+
 \references{
  Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (in press). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity}. 
 
@@ -97,20 +102,20 @@ A list of class "BD" with the following arguments:
  }
 
 \examples{
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
 
-# Loading of the verbal data
-data(verbal)
+ # Excluding the "Anger" variable
+ verbal<-verbal[colnames(verbal)!="Anger"]
 
-# Excluding the "Anger" variable
-verbal<-verbal[colnames(verbal)!="Anger"]
+ # Three equivalent settings of the data matrix and the group membership
+ difBD(verbal, group=25, focal.name=1)
+ difBD(verbal, group="Gender", focal.name=1)
+ difBD(verbal[,1:24], group=verbal[,25], focal.name=1)
 
-# Three equivalent settings of the data matrix and the group membership
-difBD(verbal, group=25, focal.name=1)
-difBD(verbal, group="Gender", focal.name=1)
-difBD(verbal[,1:24], group=verbal[,25], focal.name=1)
-
-# With item purification (remove #)
-
-# difBD(verbal, group="Gender", focal.name=1, purify=TRUE)
-# difBD(verbal, group="Gender", focal.name=1, purify=TRUE, nrIter=5)
-}
+ # With item purification  
+ difBD(verbal, group="Gender", focal.name=1, purify=TRUE)
+ difBD(verbal, group="Gender", focal.name=1, purify=TRUE, nrIter=5)
+ }
+ }

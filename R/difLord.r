@@ -145,19 +145,67 @@ return(RES)
 
 
 # METHODS
-plot.Lord<-function(x,pch=8,number=TRUE,col="red",...){
-res<-x
-title<-expression(paste("Lord's ",chi^2))
-if (number==FALSE) {
-plot(res$LordChi,xlab="Item",ylab=expression(paste(chi^2," statistic")),ylim=c(0,max(c(res$LordChi,res$thr)+1)),pch=pch,main=title)
-if (is.character(res$DIFitems)==FALSE) points(res$DIFitems,res$LordChi[res$DIFitems],pch=pch,col=col)
-}
-else {
-plot(res$LordChi,xlab="Item",ylab=expression(paste(chi^2," statistic")),ylim=c(0,max(c(res$LordChi,res$thr)+1)),col="white",main=title)
-text(1:length(res$LordChi),res$LordChi,1:length(res$LordChi))
-if (is.character(res$DIFitems)==FALSE) text(res$DIFitems,res$LordChi[res$DIFitems],res$DIFitems,col=col)
-}
-abline(h=res$thr)
+
+plot.Lord<-function (x, plot = "lordStat", item = 1, pch = 8, number = TRUE, 
+    col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), ...) 
+{
+    res <- x
+    title <- expression(paste("Lord's ", chi^2))
+    plotType <- switch(plot, lordStat = 1, itemCurve = 2)
+    if (is.null(plotType) == TRUE) 
+        return("Error: misspecified 'type' argument")
+    else {
+       if (plotType == 1) {
+    		if (number == FALSE) {
+       	 plot(res$LordChi, xlab = "Item", ylab = expression(paste(chi^2, 
+         	   " statistic")), ylim = c(0, max(c(res$LordChi, res$thr) + 
+       	     1)), pch = pch, main = title)
+      	  if (is.character(res$DIFitems) == FALSE) 
+       	     points(res$DIFitems, res$LordChi[res$DIFitems], pch = pch, 
+           	     col = col)
+   	 	}
+   		else {
+     	   	plot(res$LordChi, xlab = "Item", ylab = expression(paste(chi^2, 
+      	      " statistic")), ylim = c(0, max(c(res$LordChi, res$thr) + 
+      	      1)), col = "white", main = title)
+      	  text(1:length(res$LordChi), res$LordChi, 1:length(res$LordChi))
+      	  if (is.character(res$DIFitems) == FALSE) 
+      	      text(res$DIFitems, res$LordChi[res$DIFitems], res$DIFitems, 
+       	         col = col)
+       	}
+   	 abline(h = res$thr)
+	}
+	else{
+            it <- ifelse(is.character(item) | is.factor(item), 
+                (1:length(res$names))[res$names == item], item)
+		J<-length(res$LordChi)
+		if (res$purification==TRUE) matPar<-res$itemParFinal
+		else matPar<-rbind(res$itemParInit[1:J,],
+				   itemRescale(res$itemParInit[1:J,],
+						res$itemParInit[(J+1):(2*J),]))
+		nrpar<-ncol(matPar)
+		nrpar<-paste("N",nrpar,sep="")
+		parRef<-switch(nrpar,N2=c(1,matPar[it,1],0),
+					   N5=c(matPar[it,1:2],0),
+					   N6=matPar[it,c(1,2,6)],
+					   N9=matPar[it,1:3])
+		parFoc<-switch(nrpar,N2=c(1,matPar[J+it,1],0),
+					   N5=c(matPar[J+it,1:2],0),
+					   N6=matPar[J+it,c(1,2,6)],
+					   N9=matPar[J+it,1:3])
+            seq <- seq(-4,4, 0.1)
+            mod <- function(t,s) t[3]+(1-t[3])*exp(t[1]*(s-t[2]))/(1+exp(t[1]*(s-t[2])))
+            mainName <- ifelse(is.character(res$names[it]), res$names[it], 
+                paste("Item ", it, sep = ""))
+            plot(seq, mod(parRef,seq), col = colIC[1], 
+                type = "l", lty = ltyIC[1], ylim = c(0, 1), xlab = expression(theta), 
+                ylab = "Probability", main = mainName)
+            lines(seq, mod(parFoc,seq), col = colIC[2], 
+                  lty = ltyIC[2])
+            legend(-4, 1, c("Reference", "Focal"), col = colIC, 
+                  lty = ltyIC, bty = "n")
+      }
+   }
 }
 
 

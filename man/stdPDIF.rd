@@ -58,12 +58,14 @@ A vector with the values of the standardization DIF statistics.
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
 
-# All items as anchor items
-stdPDIF(verbal[,1:24], verbal[,26])
+ # All items as anchor items
+ stdPDIF(verbal[,1:24], verbal[,26])
 
-# Removing item 6 from the set of anchor items
-stdPDIF(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
-}
+ # Removing item 6 from the set of anchor items
+ stdPDIF(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
+ }
+ }

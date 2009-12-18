@@ -75,23 +75,23 @@
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
+\dontrun{
+ # Loading of the verbal data
+ data(verbal)
 
+ # Estimation of the item parameters (1PL model, "ltm" engine)
+ items.1PL<-itemParEst(verbal[,1:24],model="1PL")
 
-# Estimation of the item parameters (1PL model, "ltm" engine)
-items.1PL<-itemParEst(verbal[,1:24],model="1PL")
+ # Estimation of the item parameters (1PL model, "lme4" engine)
+ items.1PL<-itemParEst(verbal[,1:24],model="1PL", engine="lme4")
 
-# Estimation of the item parameters (1PL model, "lme4" engine)
-# (remove #)
-# items.1PL<-itemParEst(verbal[,1:24],model="1PL", engine="lme4")
+ # Estimation of the item parameters (2PL model)
+ items.2PL<-itemParEst(verbal[,1:24],model="2PL")
 
-# Estimation of the item parameters (2PL model)
-items.2PL<-itemParEst(verbal[,1:24],model="2PL")
+ # Estimation of the item parameters (3PL model)
+ # items.3PL<-itemParEst(verbal[,1:24],model="3PL")
 
-# Estimation of the item parameters (3PL model)
-# items.3PL<-itemParEst(verbal[,1:24],model="3PL")
-
-# Constraining all pseudo-guessing values to be equal to 0.05
-items.3PLc<-itemParEst(verbal[,1:24],model="3PL",c=0.05)
+ # Constraining all pseudo-guessing values to be equal to 0.05
+ items.3PLc<-itemParEst(verbal[,1:24],model="3PL",c=0.05)
+}
 }

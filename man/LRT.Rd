@@ -63,19 +63,21 @@ A vector with the values of the LRT DIF statistics.
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Excluding the "Anger" variable
-verbal<-verbal[colnames(verbal)!="Anger"]
+ # Excluding the "Anger" variable
+ verbal<-verbal[colnames(verbal)!="Anger"]
 
-# Keeping the first 5 items and the first 50 subjects
-# (this is an artificial simplification to reduce the computational time)
-# Sixth column holds the group membership
-verbal<-verbal[1:50,c(1:5,25)]
+ # Keeping the first 5 items and the first 50 subjects
+ # (this is an artificial simplification to reduce the computational time)
+ # Sixth column holds the group membership
+ verbal<-verbal[1:50,c(1:5,25)]
 
-# Likelihood-ratio statistics
-LRT(verbal[,1:5],verbal[,6])
-}
+ # Likelihood-ratio statistics
+ LRT(verbal[,1:5],verbal[,6])
+ }
+ }
 

@@ -32,7 +32,8 @@
 
 \value{
 A list of class "MH" with the following arguments:
-  \item{MH}{the values of the Mantel-Haenszel statistics.}
+  \item{MH}{the values of the Mantel-Haenszel DIF statistics.}
+  \item{alphaMH}{the values of the mantel-Haenszel estimates of common odds ratios.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{DIFitems}{either the column indicators of the items which were detected as DIF items, or "No DIF item detected".}
@@ -49,7 +50,7 @@ A list of class "MH" with the following arguments:
  
 \details{
  The method of Mantel-Haenszel (1959) allows for detecting uniform differential item functioning 
- without requiring an item response model approach.
+ without requiring an item response model approach. 
  
  The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
  In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
@@ -64,6 +65,11 @@ A list of class "MH" with the following arguments:
  
  By default, the continuity correction factor -0.5 is used (Holland and Thayer, 1988). One can nevertheless remove it by specifying \code{correct=FALSE}.
  
+ In addition, the Mantel-Haenszel estimates of the common odds ratios \eqn{\alpha_{MH}} are used to measure the effect sizes of the items. These are obtained by
+ \eqn{\Delta_{MH} = -2.35 \log \alpha_{MH}} (Holland and Thayer, 1985). According to the ETS delta scale, the effect size of an item is classified as negligible
+ if \eqn{|\Delta_{MH}| \leq 1}, moderate  if \eqn{1 \leq |\Delta_{MH}| \leq 1.5}, and large if \eqn{|\Delta_{MH}| \geq 1.5}. The values of the effect sizes, together with
+ the ETS classsification, are printed with the output.
+
  Item purification can be performed by setting \code{purify} to \code{TRUE}. Purification works as follows: if at least one item was detected as functioning 
  differently at some step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor, 1998),
@@ -72,6 +78,9 @@ A list of class "MH" with the following arguments:
 
 
 \references{
+ Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, New-Jersey:
+ Educational Testing Service.
+
  Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Ed.), \emph{Test validity}. Hillsdale, New Jersey: Lawrence Erlbaum Associates.
  
  Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer Institute, 22}, 719-748.
@@ -101,6 +110,7 @@ A list of class "MH" with the following arguments:
  }
 
 \examples{
+ \dontrun{
  # Loading of the verbal data
  data(verbal)
 
@@ -118,6 +128,7 @@ A list of class "MH" with the following arguments:
 
  # Without continuity correction and with 0.01 significance level
  difMH(verbal, group="Gender", focal.name=1, alpha=0.01, correct=FALSE)
+ }
  }
 
 

@@ -71,7 +71,7 @@ if (purify==FALSE) {
 STATS<-genLordChi2(irtParam,nrFocal)
 if ((max(STATS))<=Q) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrItems)[STATS>Q]
-RES<-list(genLordChi=STATS,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,itemParinit=itemParInit,estPar=estPar,names=dataName)
+RES<-list(genLordChi=STATS,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,itemParInit=itemParInit,estPar=estPar,names=dataName,focal.names=focal.names)
 }
 else{
 nrPur<-0
@@ -82,7 +82,7 @@ if (max(stats1)<=Q){
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 itemParFinal=irtParam
-RES<-list(genLordChi=stats1,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParinit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName)
+RES<-list(genLordChi=stats1,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names)
 }
 else{
 dif<-(1:nrItems)[stats1>Q]
@@ -131,7 +131,7 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(genLordChi=stats2,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParinit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName)
+RES<-list(genLordChi=stats2,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names)
 }
 }
 class(RES)<-"GenLord"
@@ -141,21 +141,73 @@ return(RES)
 
 
 # METHODS
-plot.GenLord<-function(x,pch=8,number=TRUE,col="red",...){
-res<-x
-title<-expression(paste("Generalized Lord's ",chi^2))
-if (number==FALSE) {
-plot(res$genLordChi,xlab="Item",ylab=expression(paste("Generalized Lord's ",chi^2," statistic")),ylim=c(0,max(c(res$genLordChi,res$thr)+1)),pch=pch,main=title)
-if (is.character(res$DIFitems)==FALSE) points(res$DIFitems,res$genLordChi[res$DIFitems],pch=pch,col=col)
-}
-else {
-plot(res$genLordChi,xlab="Item",ylab=expression(paste("Generalized Lord's ",chi^2," statistic")),ylim=c(0,max(c(res$genLordChi,res$thr)+1)),col="white",main=title)
-text(1:length(res$genLordChi),res$genLordChi,1:length(res$genLordChi))
-if (is.character(res$DIFitems)==FALSE) text(res$DIFitems,res$genLordChi[res$DIFitems],res$DIFitems,col=col)
-}
-abline(h=res$thr)
-}
-
+plot.GenLord<-function (x, plot = "lordStat", item = 1, pch = 8, number = TRUE, 
+    col = "red", colIC = rep("black", length(x$focal.names) + 
+        1), ltyIC = 1:(length(x$focal.names) + 1), ...) 
+{
+    res <- x
+    title <- expression(paste("Generalized Lord's ", chi^2))
+    plotType <- switch(plot, lordStat = 1, itemCurve = 2)
+    if (is.null(plotType) == TRUE) 
+        return("Error: misspecified 'type' argument")
+    else {
+        if (plotType == 1) {
+    		if (number == FALSE) {
+     			plot(res$genLordChi, xlab = "Item", ylab = expression(paste("Generalized Lord's ", 
+          	 	chi^2, " statistic")), ylim = c(0, max(c(res$genLordChi, 
+           		res$thr) + 1)), pch = pch, main = title)
+       	if (is.character(res$DIFitems) == FALSE) 
+           		points(res$DIFitems, res$genLordChi[res$DIFitems], 
+                	pch = pch, col = col)
+   	 	}
+    	  	else {
+       		 plot(res$genLordChi, xlab = "Item", ylab = expression(paste("Generalized Lord's ", 
+          		 chi^2, " statistic")), ylim = c(0, max(c(res$genLordChi, 
+          		 res$thr) + 1)), col = "white", main = title)
+       		 text(1:length(res$genLordChi), res$genLordChi, 1:length(res$genLordChi))
+       		 if (is.character(res$DIFitems) == FALSE) 
+         	 	  text(res$DIFitems, res$genLordChi[res$DIFitems], 
+              	  res$DIFitems, col = col)
+    		}
+    	  abline(h = res$thr)
+	  }
+	  else {
+            it <- ifelse(is.character(item) | is.factor(item), 
+                (1:length(res$names))[res$names == item], item)
+            J <- length(res$genLordChi)
+		if (res$purification == TRUE) matPar <- res$itemParFinal
+            else matPar <- res$itemParInit
+		nrFocal<-nrow(matPar)/J-1
+		parItems<-matPar[it,]
+		for (gr in 1:nrFocal) parItems<-rbind(parItems,matPar[it+gr*J,])
+            nrpar <- ncol(matPar)
+            nrpar <- paste("N", nrpar, sep = "")
+           	parItem <- switch(nrpar, N2 = cbind(rep(1,nrFocal+1), parItems[, 1], 
+                rep(0,nrFocal+1)), N5 = cbind(parItems[, 1:2], rep(0,nrFocal+1)),
+		    N6 = parItems[,c(1, 2, 6)], N9 = parItems[, 1:3])
+            seq <- seq(-4, 4, 0.1)
+            mod <- function(t, s) t[3] + (1 - t[3]) * exp(t[1] * 
+                (s - t[2]))/(1 + exp(t[1] * (s - t[2])))
+            mainName <- ifelse(is.character(res$names[it]), res$names[it], 
+                paste("Item ", it, sep = ""))
+            plot(seq, mod(parItem[1,], seq), col = colIC[1], type = "l", 
+                lty = ltyIC[1], ylim = c(0, 1), xlab = expression(theta), 
+                ylab = "Probability", main = mainName)
+		for (gr in 1:nrFocal) lines(seq, mod(parItem[gr+1,], seq),
+			 col = colIC[gr+1], lty = ltyIC[gr+1])
+           legnames <- "Reference"
+                if (is.character(res$focal.names) == TRUE | is.factor(res$focal.names) == 
+                  TRUE) 
+                  legnames <- c(legnames, res$focal.names)
+                else {
+                  for (t in 1:length(res$focal.names)) legnames <- c(legnames, 
+                    paste("Focal ", res$focal.names[t], sep = ""))
+                }
+                legend(-4, 1, legnames, col = colIC, lty = ltyIC, 
+                  bty = "n")
+          }
+     }
+ }
 
 print.GenLord<-function(x,...){
 res<-x

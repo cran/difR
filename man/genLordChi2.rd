@@ -63,38 +63,39 @@
 }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Creating four groups according to gender ("Man" or "Woman") and 
-# trait anger score ("Low" or "High")
-group<-rep("WomanLow",nrow(verbal))
-group[Anger>20 & Gender==0]<-"WomanHigh"
-group[Anger<=20 & Gender==1]<-"ManLow"
-group[Anger>20 & Gender==1]<-"ManHigh"
+ # Creating four groups according to gender ("Man" or "Woman") and
+ # trait anger score ("Low" or "High")
+ group<-rep("WomanLow",nrow(verbal))
+ group[Anger>20 & Gender==0]<-"WomanHigh"
+ group[Anger<=20 & Gender==1]<-"ManLow"
+ group[Anger>20 & Gender==1]<-"ManHigh"
 
-# Splitting the data into the four subsets according to "group"
-data0<-data1<-data2<-data3<-NULL
-for (i in 1:nrow(verbal)){
-if (group[i]=="WomanLow") data0<-rbind(data0,as.numeric(verbal[i,1:24]))
-if (group[i]=="WomanHigh") data1<-rbind(data1,as.numeric(verbal[i,1:24]))
-if (group[i]=="ManLow") data2<-rbind(data2,as.numeric(verbal[i,1:24]))
-if (group[i]=="ManHigh") data3<-rbind(data3,as.numeric(verbal[i,1:24]))
-}
+ # Splitting the data into the four subsets according to "group"
+ data0<-data1<-data2<-data3<-NULL
+ for (i in 1:nrow(verbal)){
+ if (group[i]=="WomanLow") data0<-rbind(data0,as.numeric(verbal[i,1:24]))
+ if (group[i]=="WomanHigh") data1<-rbind(data1,as.numeric(verbal[i,1:24]))
+ if (group[i]=="ManLow") data2<-rbind(data2,as.numeric(verbal[i,1:24]))
+ if (group[i]=="ManHigh") data3<-rbind(data3,as.numeric(verbal[i,1:24]))
+ }
 
-# Estimation of the item parameters (1PL model)
-m0.1PL<-itemParEst(data0, model="1PL")
-m1.1PL<-itemParEst(data1, model="1PL")
-m2.1PL<-itemParEst(data2, model="1PL")
-m3.1PL<-itemParEst(data3, model="1PL")
+ # Estimation of the item parameters (1PL model)
+ m0.1PL<-itemParEst(data0, model="1PL")
+ m1.1PL<-itemParEst(data1, model="1PL")
+ m2.1PL<-itemParEst(data2, model="1PL")
+ m3.1PL<-itemParEst(data3, model="1PL")
 
+ # merging the item parameters with rescaling
+ irt.scale<-rbind(m0.1PL,itemRescale(m0.1PL,m1.1PL),
+ itemRescale(m0.1PL,m2.1PL),itemRescale(m0.1PL,m3.1PL))
 
-# merging the item parameters with rescaling
-irt.scale<-rbind(m0.1PL,itemRescale(m0.1PL,m1.1PL),
-itemRescale(m0.1PL,m2.1PL),itemRescale(m0.1PL,m3.1PL))
-
-# Generalized Lord's chi-square statistics
-genLordChi2(irt.scale, nrFocal=3)
-}
+ # Generalized Lord's chi-square statistics
+ genLordChi2(irt.scale, nrFocal=3)
+ }
+ }
 

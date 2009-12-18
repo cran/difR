@@ -19,7 +19,9 @@
  }
 
 \value{
- A vector with the values of the Mantel-Haenszel DIF statistics.
+ A list with wto components:
+ \item{resMH}{the vector of the Mantel-Haenszel DIF statistics.}
+ \item{resAlpha}{the vector of the Mantel-Haenszel estimates of the common odds ratios.}
  }
  
 \details{
@@ -35,9 +37,15 @@
 
  Option \code{anchor} sets the items which are considered as anchor items for computing Mantel-Haenszel statistics. Items other than the anchor items and the tested item 
  are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is primarily designed to perform item purification.
- }
+ 
+ In addition to the Mantel-Haenszel statistics to identify DIF items, \code{mantelHaenszel} computes the estimates of the common odds ratio \eqn{\alpha_{MH}} which are used
+ for measuring the effect size of the items (Holland and Thayer, 1985, 1988).
+}
 
 \references{
+ Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, New-Jersey:
+ Educational Testing Service.
+
  Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Ed.), \emph{Test validity}. Hillsdale, New Jersey: Lawrence Erlbaum Associates.
  
  Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer Institute, 22}, 719-748.
@@ -63,15 +71,17 @@
  }
 
 \examples{
+ \dontrun{
  # Loading of the verbal data
  data(verbal)
 
  # With and without continuity correction
- mantelHaenszel(verbal[,1:23], verbal[,25])
- mantelHaenszel(verbal[,1:23], verbal[,25],correct=FALSE)
+ mantelHaenszel(verbal[,1:24], verbal[,26])
+ mantelHaenszel(verbal[,1:24], verbal[,26],correct=FALSE)
  
  # Removing item 6 from the set of anchor items
  mantelHaenszel(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
+ }
  }
 
 

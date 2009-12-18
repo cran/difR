@@ -10,8 +10,9 @@
 
 \usage{
  selectDif(Data, group, focal.name, method, alpha=0.05, 
- correct=TRUE,thr=0.1, model="2PL", c=NULL, irtParam=NULL, 
- same.scale=TRUE, purify=FALSE, nrIter=10)
+ correct=TRUE, thr=0.1, type="both", model="2PL", c=NULL,
+ engine="ltm", irtParam=NULL, same.scale=TRUE, 
+ purify=FALSE, nrIter=10)
  }
  
 \arguments{
@@ -22,8 +23,10 @@
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{correct}{logical: should the continuity correction be used? (default is TRUE).}
  \item{thr}{numeric: the threshold (cut-score) for standardized P-DIF statistic (default is 0.10).}
+ \item{type}{a character string specifying which DIF effects must be tested (default is \code{"both"}). See \bold{Details}.}
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}). Default is \code{"2PL"}.}
  \item{c}{optional numeric value or vector giving the values of the constrained pseudo-guessing parameters. See \bold{Details}.}
+ \item{engine}{character: the engine for estimating the 1PL model, either \code{"ltm"} (default) or \code{"lme4"}.}
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
@@ -49,7 +52,7 @@
  The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by the value
  of the argument \code{focal.name}. 
 
- For Lord and Raju methods, one can specify either the IRT model to be fitted (by means of \code{model} and \code{c} arguments), 
+ For Lord and Raju methods, one can specify either the IRT model to be fitted (by means of \code{model}, \code{c} and \code{engine} arguments), 
  or the item parameter estimates with arguments \code{irtParam} and \code{same.scale}. See \code{\link{difLord}} and \code{\link{difRaju}} 
  for further details. 
 
@@ -57,6 +60,9 @@
  while for the other methods it is depending on the significance level set by \code{alpha}.
 
  Option \code{correct} specifies whether the continuity correction has to be applied to Mantel-Haenszel statistic (see \code{\link{difMH}}).
+
+ For logistic regression, the argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform
+ DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). See \code{\link{Logistik}} for further details.
 
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification is slightly different 
  for IRT and for non-IRT based methods. See the corresponding methods for further information.
@@ -100,18 +106,20 @@
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Excluding the "Anger" variable
-verbal<-verbal[colnames(verbal)!="Anger"]
+ # Excluding the "Anger" variable
+ verbal<-verbal[colnames(verbal)!="Anger"]
 
-# Calling Mantel-Haenszel
-selectDif(verbal, group=25, focal.name=1, method="MH")
+ # Calling Mantel-Haenszel
+ selectDif(verbal, group=25, focal.name=1, method="MH")
 
-# Calling Lord method
-# 2PL model, with item purification
-selectDif(verbal, group=25, focal.name=1, method="Lord",model="2PL", 
-purify=TRUE)
-}
+ # Calling Lord method
+ # 2PL model, with item purification
+ selectDif(verbal, group=25, focal.name=1, method="Lord",model="2PL",
+ purify=TRUE)
+ }
+ }

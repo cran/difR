@@ -129,7 +129,7 @@ else word<-" iterations"
 }
  else cat("Convergence reached after ",res$nrPur,word,"\n","\n",sep="")
  }
-cat("Generalized Mantel-Haenszel statistic:","\n","\n")
+cat("Generalized Mantel-Haenszel chi-square statistic:","\n","\n")
 pval<-round(1-pchisq(res$GMH,length(res$focal.names)),4)
 symb<-symnum(pval,c(0,0.001,0.01,0.05,0.1,1),symbols=c("***","**","*",".",""))
 m1<-cbind(round(res$GMH,4),pval)

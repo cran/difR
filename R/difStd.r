@@ -132,7 +132,7 @@ rownames(m1)<-rn
 colnames(m1)<-c("Stat.","")
 print(m1)
 cat("\n")
-cat("Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 ","\n")
+cat("Signif. codes (abs. values): 0 ' ' 0.04 '.' 0.05 '*' 0.1 '**' 0.2 '***' 1 ","\n")
 cat("\n","Detection thresholds: ",-round(res$thr,4)," and ",round(res$thr,4),"\n","\n",sep="")
 if (is.character(res$DIFitems)==TRUE) cat("Items detected as DIF items:",res$DIFitems,"\n","\n")
 else {
@@ -143,4 +143,25 @@ colnames(m2)<-""
 print(m2,quote=FALSE)
 cat("\n","\n")
 }
+  cat("Effect size (Dorans, Schmitt and Bleistein scale):", "\n", "\n")
+  cat("Effect size code:", "\n")
+  cat(" '*': negligible effect", "\n")
+  cat(" '**': moderate effect", "\n")
+  cat(" '***': large effect", "\n", "\n")
+  r2 <- round(res$PDIF,4)
+  symb1 <- symnum(abs(r2), c(0, 0.05, 0.1, Inf), symbols = c("*", 
+      "**", "***"))
+  matR2<- noquote(cbind(format(r2, justify="right"), symb1))
+  if (is.null(res$names) == FALSE) 
+      rownames(matR2) <- res$names
+  else {
+      rn <- NULL
+      for (i in 1:nrow(matR2)) rn[i] <- paste("Item", i, sep = "")
+      rownames(matR2) <- rn
+  }
+  colnames(matR2) <- c("St-P-DIF", "")
+  print(matR2)
+  cat("\n")
+  cat("Signif. codes: 0 '*' 0.05 '**' 0.10 '***'","\n")
+  cat(" (for absolute values of 'St-P-DIF')","\n")
 }

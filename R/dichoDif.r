@@ -1,6 +1,6 @@
 # DIF: COMPARING DIF STATISTICS
 
-dichoDif<-function(Data,group,focal.name,method,alpha=0.05,correct=TRUE,thr=0.1,model="2PL",c=NULL,irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10){
+dichoDif<-function(Data,group,focal.name,method,alpha=0.05,correct=TRUE,thr=0.1,type="both",model="2PL",c=NULL,engine="ltm",irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10){
 mets<-c("MH","Std","Logistic","BD","Lord","Raju","LRT")
 prov.met<-rep(0,length(method))
 for (i in 1:length(method)){
@@ -13,11 +13,11 @@ class(RES)<-"dichoDif"
 return(RES)
 }
 else{
-if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,alpha=alpha,correct=correct,thr=thr,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter))
+if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,alpha=alpha,correct=correct,thr=thr,type=type,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter))
 else{
 mat<-iters<-conv<-NULL
 for (met in 1:length(method)){
-prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],alpha=alpha,correct=correct,thr=thr,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter)
+prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],alpha=alpha,correct=correct,thr=thr,type=type,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter)
 if (method[met]=="BD") mat<-cbind(mat,rep("NoDIF",nrow(prov[[1]])))
 else mat<-cbind(mat,rep("NoDIF",length(prov[[1]])))
 if (is.character(prov$DIFitems)==FALSE) mat[prov$DIFitems,met]<-"DIF"
@@ -37,7 +37,7 @@ rname<-NULL
 for (i in 1:nrow(mat)) rname<-c(rname,paste("Item",i,sep=""))
 rownames(mat)<-rname
 }
-RES<-list(DIF=mat,correct=correct,alpha=alpha,thr=thr,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purify=purify,nrPur=iters,convergence=conv)
+RES<-list(DIF=mat,correct=correct,alpha=alpha,thr=thr,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv)
 class(RES)<-"dichoDif"
 return(RES)}
 }
@@ -79,7 +79,7 @@ else corr<-"No"
 cat("Mantel-Haenszel continuity correction:",corr,"\n")
 }
 if (sum(methods=="Lord" | methods=="Raju")>=1) cat("Item response model:",res$model,"\n")
-if (res$purify==TRUE) {
+if (res$purification==TRUE) {
 cat("Item purification: Yes","\n","\n")
 cat("Item purification results:","\n","\n")
 co<-rep("Yes",length(res$convergence))

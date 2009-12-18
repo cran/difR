@@ -62,25 +62,26 @@ A vector with the values of the generalized Mantel-Haenszel DIF statistics.
 }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Creating four groups according to gender (0 or 1) and trait anger score
-# ("Low" or "High")
-# Reference group: women with low trait anger score (<=20)
+ # Creating four groups according to gender (0 or 1) and trait anger score
+ # ("Low" or "High")
+ # Reference group: women with low trait anger score (<=20)
+ group<-rep(0,nrow(verbal))
+ group[Anger>20 & Gender==0]<-1
+ group[Anger<=20 & Gender==1]<-2
+ group[Anger>20 & Gender==1]<-3
 
-group<-rep(0,nrow(verbal))
-group[Anger>20 & Gender==0]<-1
-group[Anger<=20 & Gender==1]<-2
-group[Anger>20 & Gender==1]<-3
+ # Without continuity correction
+ genMantelHaenszel(verbal[,1:24], group)
 
-# Without continuity correction
-genMantelHaenszel(verbal[,1:24], group)
-
-# Removing item 6 from the set of anchor items
-genMantelHaenszel(verbal[,1:24], group, anchor=c(1:5,7:24))
-}
+ # Removing item 6 from the set of anchor items
+ genMantelHaenszel(verbal[,1:24], group, anchor=c(1:5,7:24))
+ }
+ }
 
 
 

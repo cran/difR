@@ -106,25 +106,27 @@ A list of class "LRT" with the following arguments:
  }
 
 \examples{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
+ \dontrun{
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# Excluding the "Anger" variable
-verbal<-verbal[colnames(verbal)!="Anger"]
+ # Excluding the "Anger" variable
+ verbal<-verbal[colnames(verbal)!="Anger"]
 
-# Keeping the first 5 items and the first 50 subjects
-# (this is an artificial simplification to reduce the computational time)
-verbal<-verbal[1:50,c(1:5,25)]
+ # Keeping the first 5 items and the first 50 subjects
+ # (this is an artificial simplification to reduce the computational time)
+ verbal<-verbal[1:50,c(1:5,25)]
 
-# Three equivalent settings of the data matrix and the group membership 
-difLRT(verbal, group=6, focal.name=1)
-difLRT(verbal, group="Gender", focal.name=1)
-difLRT(verbal[,1:5], group=verbal[,6], focal.name=1)
+ # Three equivalent settings of the data matrix and the group membership
+ difLRT(verbal, group=6, focal.name=1)
+ difLRT(verbal, group="Gender", focal.name=1)
+ difLRT(verbal[,1:5], group=verbal[,6], focal.name=1)
 
-# With item purification 
-difLRT(verbal, group=6, focal.name=1, purify=TRUE)
+ # With item purification
+ difLRT(verbal, group=6, focal.name=1, purify=TRUE)
 
-# WARNING: do not trust the results above since they are based on 
-# a selected subset of the verbal data set!
-}
+ # WARNING: do not trust the results above since they are based on
+ # a selected subset of the verbal data set!
+ }
+ }
