@@ -4,6 +4,26 @@
         *                                                *
         **************************************************
 
+
+-----------------------------------
+- Changes in diR 2.1 (2010-01-13) -
+-----------------------------------
+
+MINOR UPDATES
+
+  o  The file CITATION has been created and added to the difR package.
+
+  o  The display of the output of Mantel-Haenszel, standardization,
+     logistic regression and generalized logistic regression have been
+     slightly modified: the codes for the effect sizes are now returned
+     as "Effect size codes" and not "Signif. codes" as in the previous
+     version of difR.
+
+  o  Several issues regarding non-ASCII characters in the help files 
+     have been fixed.
+
+ 
+
 -----------------------------------
 - Changes in diR 2.0 (2009-12-18) -
 -----------------------------------
@@ -88,6 +108,8 @@ MINOR UPDATES
 -----------------------------------
 - Changes in diR 1.1 (2009-10-27) -
 -----------------------------------
+
+MINOR UPDATES
 
   o  The output of 'itemPar2PL' function was corrected to fix a bug. The 
      parameter estimates of the item difficulties were actually not returned

@@ -27,7 +27,7 @@ A vector with the values of the generalized Mantel-Haenszel DIF statistics.
 
  The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
 
- The vector of group membership, specified with \code{member} argument, must hold only zeros and positive integers. The value zero corresponds to the reference group,
+ The vector of group membership, specified with \code{member} argument, must hold only zeros and positive integers. The value zero corresponds to the reference group,
  and each positive integer value corresponds to one focal group. At least two different positive integers must be supplied.
 
  Option \code{anchor} sets the items which are considered as anchor items for computing generalized Mantel-Haenszel statistics. Items other than the anchor items and

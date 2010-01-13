@@ -49,7 +49,7 @@
  corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise,
  \code{group} must be a vector of same length as \code{nrow(Data)}.
  
- The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by the value
+ The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  of the argument \code{focal.name}. 
 
  For Lord and Raju methods, one can specify either the IRT model to be fitted (by means of \code{model}, \code{c} and \code{engine} arguments), 

@@ -162,6 +162,6 @@ cat("\n","\n")
   colnames(matR2) <- c("St-P-DIF", "")
   print(matR2)
   cat("\n")
-  cat("Signif. codes: 0 '*' 0.05 '**' 0.10 '***'","\n")
+  cat("Effect size codes: 0 '*' 0.05 '**' 0.10 '***'","\n")
   cat(" (for absolute values of 'St-P-DIF')","\n")
 }

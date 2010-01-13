@@ -27,7 +27,7 @@ A vector with the values of the standardization DIF statistics.
  
  The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
   
- The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
+ The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
  
  Option \code{anchor} sets the items which are considered as anchor items for computing standardized P-DIF statistics. Items other than the anchor items and the tested item 

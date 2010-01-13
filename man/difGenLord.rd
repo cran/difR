@@ -78,7 +78,7 @@ A list of class "GenLord" with the following arguments:
  corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must 
  be a vector of same length as \code{nrow(Data)}.
  
- The vector of group membership must hold only at least three different values, either as numeric or character. The focal groups are defined by
+ The vector of group membership must hold at least three different values, either as numeric or character. The focal groups are defined by
  the values of the argument \code{focal.names}. 
  
  If the model is not the 1PL model, or if \code{engine} is equal to \code{"ltm"}, the selected IRT model is fitted using marginal maximum likelihood

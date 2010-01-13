@@ -262,7 +262,7 @@ print.Logistic <- function (x, ...)
     colnames(matR2) <- c("R^2", "ZT", "JG")
     print(matR2)
     cat("\n")
-    cat("Signif. codes:", "\n")
+    cat("Effect size codes:", "\n")
     cat(" Zumbo & Thomas (ZT): 0 '*' 0.13 '**' 0.26 '***' 1","\n")
     cat(" Jodoign & Gierl (JG): 0 '*' 0.035 '**' 0.07 '***' 1","\n")
 }

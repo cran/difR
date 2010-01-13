@@ -26,7 +26,7 @@ A vector with the values of the LRT DIF statistics.
  
  The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
   
- The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
+ The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
  
   The LRT DIF statistic is computed for each item separately, using all other items as anchor items.

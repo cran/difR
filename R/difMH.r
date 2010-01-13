@@ -170,7 +170,7 @@ print.MH <- function(x, ...){
   colnames(matR2) <- c("alphaMH", "deltaMH", "")
   print(matR2)
   cat("\n")
-  cat("Signif. codes: 0 '*' 1.0 '**' 1.5 '***'","\n")
+  cat("Effect size codes: 0 '*' 1.0 '**' 1.5 '***'","\n")
   cat(" (for absolute values of 'deltaMH')","\n")
 }
 

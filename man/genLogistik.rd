@@ -60,7 +60,7 @@ genLogistik(data, member, anchor=1:ncol(data), type="both")
 
  The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
   
- The vector of group membership, specified with \code{member} argument, must hold only zeros and positive integers. The value zero corresponds to the
+ The vector of group membership, specified with \code{member} argument, must hold only zeros and positive integers. The value zero corresponds to the
  reference group, and each positive integer value corresponds to one focal group. At least two different positive integers must be supplied.
 
  Option \code{anchor} sets the items which are considered as anchor items for computing logistic regression DIF statistics. Items other than the anchor 

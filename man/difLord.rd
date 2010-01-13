@@ -76,7 +76,7 @@ A list of class "Lord" with the following arguments:
  corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must 
  be a vector of same length as \code{nrow(Data)}.
  
- The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
+ The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  the value of the argument \code{focal.name}. 
  
  If the model is not the 1PL model, or if \code{engine} is equal to \code{"ltm"}, the selected IRT model is fitted using marginal maximum likelihood

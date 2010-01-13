@@ -54,7 +54,7 @@ A list of class "PDIF" with the following arguments:
  corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise,
  \code{group} must be a vector of same length as \code{nrow(Data)}.
  
- The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
+ The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  the value of the argument \code{focal.name}. 
  
  The threshold (or cut-score) for classifying items as DIF has to be set by the user by the argument \code{thr}. Default value is 0.10 

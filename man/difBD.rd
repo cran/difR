@@ -54,7 +54,7 @@ A list of class "BD" with the following arguments:
  corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise,
  \code{group} must be a vector of same length as \code{nrow(Data)}.
  
- The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
+ The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  the value of the argument \code{focal.name}. 
  
  The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-square distribution with lower-tail
@@ -75,7 +75,7 @@ A list of class "BD" with the following arguments:
 \references{
  Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (in press). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity}. 
 
- Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research, vol. I: The analysis of case-control studies}. Scientific Publication N° 32. International Agency for Research on Cancer, Lyon.
+ Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research, vol. I: The analysis of case-control studies}. Scientific Publication No 32. International Agency for Research on Cancer, Lyon.
 
  Clauser, B.E. and Mazor, K.M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues and Practice, 17}, 31-44. 
 

@@ -29,7 +29,7 @@ breslowDay(data, member, anchor=1:ncol(data))
  
  The data are supplied by the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
   
- The vector of group membership, specified by the \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
+ The vector of group membership, specified by the \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
 
  Option \code{anchor} sets the items which are considered as anchor items for computing Breslow-Day DIF statistics. Items other than the anchor items and
@@ -43,7 +43,7 @@ breslowDay(data, member, anchor=1:ncol(data))
 }
 
 \references{
-Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research, vol. I: The analysis of case-control studies}. Scientific Publication N° 32. International Agency for Research on Cancer, Lyon, France.
+Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research, vol. I: The analysis of case-control studies}. Scientific Publication No 32. International Agency for Research on Cancer, Lyon, France.
 
 Penfield, R.D. (2003). Application of the Breslow-Day test of trend in odds ratio heterogeneity to the detection of nonuniform DIF. \emph{Alberta Journal of Educational Research, 49}, 231-243.
 }

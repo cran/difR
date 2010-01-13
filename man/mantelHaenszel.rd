@@ -30,7 +30,7 @@
  
  The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
   
- The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
+ The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
  
  By default, the continuity correction factor -0.5 is used (Holland and Thayer, 1988). One can nevertheless remove it by specifying \code{correct=FALSE}.

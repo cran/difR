@@ -55,7 +55,7 @@
  corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must be
  a vector of same length as \code{nrow(Data)}.
  
- The vector of group membership must hold at least three value, either as numeric or character. The focal groups are defined by the values of the argument \code{focal.names}. 
+ The vector of group membership must hold at least three value, either as numeric or character. The focal groups are defined by the values of the argument \code{focal.names}. 
  If there is a unique focal group, then \code{difGMH} returns the output of \code{\link{difMH}} (\bold{without} continuity correction).
 
  The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-square distribution with lower-tail
