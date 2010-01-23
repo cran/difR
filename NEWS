@@ -6,6 +6,18 @@
 
 
 -----------------------------------
+- Changes in diR 2.2 (2010-01-23) -
+-----------------------------------
+
+MINOR UPDATES
+
+  o  The system files LICENSE and NEWS have been rewritten for an 
+     easier display in Rgui. Several non-ASCII characters have also
+     been removed.
+
+
+
+-----------------------------------
 - Changes in diR 2.1 (2010-01-13) -
 -----------------------------------
 
@@ -15,8 +27,9 @@ MINOR UPDATES
 
   o  The display of the output of Mantel-Haenszel, standardization,
      logistic regression and generalized logistic regression have been
-     slightly modified: the codes for the effect sizes are now returned
-     as "Effect size codes" and not "Signif. codes" as in the previous
+     slightly modified: the codes for the effect sizes are now 
+     returned as "Effect size codes" and not "Signif. codes" as in the
+     previous
      version of difR.
 
   o  Several issues regarding non-ASCII characters in the help files 
@@ -30,78 +43,85 @@ MINOR UPDATES
 
 MAJOR UPDATES
 
-  o  The logistic regression method has been improved. In addition to the
-     deviance statistics, the function 'Logistik' also returns the fitted
-     parameters of the two nested models which are compared by means of the
-     likelihood-ratio test. Moreover, the argument 'type' has been added to
-     test either nonuniform ('type="nudif"'), uniform ('type="udif"') or 
-     both DIF effects simultaneously ('type="both"'). The 'difLogistic' 
-     function has been updated acordingly, and returns the matrix with the
-     fitted parameteres of the best model for each item.
+  o  The logistic regression method has been improved. In addition to 
+     the deviance statistics, the function 'Logistik' also returns the
+     fitted parameters of the two nested models which are compared by 
+     means of the likelihood-ratio test. Moreover, the argument 'type'
+     has been added to test either nonuniform ('type="nudif"'), 
+     uniform ('type="udif"') or both DIF effects simultaneously 
+    ('type="both"'). The 'difLogistic' function has been updated 
+     acordingly, and returns the matrix with the fitted parameters of
+     the best model for each item.
 
-  o  The 'plot.Logistic' function has been improved to allow for plotting
-     the logistic curves of any selected item according to the best model
-     retained in the 'difLogistic' function.
+  o  The 'plot.Logistic' function has been improved to allow for 
+     plotting the logistic curves of any selected item according to
+     the best model retained in the 'difLogistic' function.
 
-  o  The 'plot.Lord' function has been improved to allow for plotting the
-     item characteristic curves of any selected item, according to the model
-     fitted and the returned item parameter estimates by the 'difLord' 
-     function.
+  o  The 'plot.Lord' function has been improved to allow for plotting
+     the item characteristic curves of any selected item, according to
+     the model fitted and the returned item parameter estimates by the
+     'difLord' function.
 
-  o  The 'plot.GenLord' function has been improved to allow for plotting the
-     item characteristic curves of any selected item, according to the model
-     fitted and the returned item parameter estimates by the 'difGenLord' 
-     function.
+  o  The 'plot.GenLord' function has been improved to allow for 
+     plotting the item characteristic curves of any selected item, 
+     according to the model fitted and the returned item parameter 
+     estimates by the 'difGenLord' function.
 
-  o  The generalized logistic regression method is now available. It extends
-     the logistic regression to more than one focal group, by an appropriate 
-     extension of the logistic models and the comparison of model parameters.
-     The functions 'genLogistik' and 'difGenlogistic' are the corresponding
-     versions of 'Logistik' and 'difLogistic' for this generalized method. 
+  o  The generalized logistic regression method is now available. It 
+     extends the logistic regression to more than one focal group, by 
+     an appropriate extension of the logistic models and the 
+     comparison of model parameters. The functions 'genLogistik' and 
+     'difGenlogistic' are the corresponding versions of 'Logistik' and
+     'difLogistic' for this generalized method. 
 
-  o  Generalized versions of the functions 'selectDif' and 'dichoDif' have
-     been developed for comparing the results of the generalized tests that
-     are currently available (generalized Mantel-Haenszel, generalized Lord's
-     chi-square test and generalized logistic regression). These are the
-     'genSelectDif' and 'genDichoDif' functions. They operate similarly to
-     their "non-generalized" versions.
+  o  Generalized versions of the functions 'selectDif' and 'dichoDif' 
+     have been developed for comparing the results of the generalized 
+     tests that are currently available (generalized Mantel-Haenszel, 
+     generalized Lord's chi-square test and generalized logistic 
+     regression). These are the 'genSelectDif' and 'genDichoDif' 
+     functions. They operate similarly to their "non-generalized" 
+     versions.
 
-  o  Some measures of effect size are now available. For Mantel-Haenszel
-     method, the effect size is the estimated common odds ratio, up to a
-     transformation, to get the Delta measure on the ETS delta scale. For the
-     standardization method, the standardized P-DIF statistic is used as the
-     measure of effect size and the classification proposed by Dorans, Schmitt
-     and Bleistein (1992) is adopted. For logistic regression and generalized
-     logistic regression, the effect size is the difference in nagelkerke's
-     R^2 coefficients between the two tested models. Both classification scales
-     of Zumbo and Thomas (1997) and Jodoign and Gierl (2001) are available.
-     These measures of effect sizes are displayed by the 'print' functions of
-     the different methods. 
+  o  Some measures of effect size are now available. For 
+     Mantel-Haenszel method, the effect size is the estimated common 
+     odds ratio, up to a transformation, to get the Delta measure on 
+     the ETS delta scale. For the standardization method, the 
+     standardized P-DIF statistic is used as the measure of effect 
+     size and the classification proposed by Dorans, Schmitt and 
+     Bleistein (1992) is adopted. For logistic regression and 
+     generalized logistic regression, the effect size is the 
+     difference in nagelkerke's R^2 coefficients between the two 
+     tested models. Both classification scales of Zumbo and Thomas 
+     (1997) and Jodoign and Gierl (2001) are available. These measures
+     of effect sizes are displayed by the 'print' functions of the 
+     different methods. 
     
 
 MINOR UPDATES
 
-  o  The functions 'selectDif' and 'dichoDif' have been updated to fix a minor
-     bug occuring when Lord or Raju method was requested: the arguments 
-     'engine', 'irtParam' and 'same.scale' were not passed correctly to these
-     functions.
+  o  The functions 'selectDif' and 'dichoDif' have been updated to fix
+     a minor bug occuring when Lord or Raju method was requested: the
+     arguments 'engine', 'irtParam' and 'same.scale' were not passed
+     correctly to thes functions.
 
-  o  The examples taking a long time to run have been fixed using the 'Not run'
-     approach.
+  o  The examples taking a long time to run have been fixed using the
+     'Not run' approach.
 
-  o  A minor bug was fixed in the Examples section of the 'mantelhaenszel' 
-     function: the definition of the data and group variable were incorrect.
+  o  A minor bug was fixed in the Examples section of the 
+     'mantelhaenszel' function: the definition of the data and group 
+     variable were incorrect.
 
-  o  The significance code for standardization method was corrected in the
-     'difStd' function.
+  o  The significance code for standardization method was corrected 
+     in the 'difStd' function.
 
-  o  The description of the package (in file DESCRIPTION) has been slightly
-     modified.
+  o  The description of the package (in file DESCRIPTION) has been 
+     slightly modified.
 
-  o  The help files of the commands 'breslowDay' and 'difBD' have been updated
-     to mention that the currently implemented Breslow-Day statistic is the 
-     one given by Aguerri et al. (in press) and NOT the statistic for the test
-     of trend in odds ratio heterogeneity (from penfield, 2003).
+  o  The help files of the commands 'breslowDay' and 'difBD' have been
+     updated to mention that the currently implemented Breslow-Day 
+     statistic is the one given by Aguerri et al. (in press) and NOT 
+     the statistic for the test of trend in odds ratio heterogeneity 
+    (Penfield, 2003).
 
 
 
@@ -111,21 +131,23 @@ MINOR UPDATES
 
 MINOR UPDATES
 
-  o  The output of 'itemPar2PL' function was corrected to fix a bug. The 
-     parameter estimates of the item difficulties were actually not returned
-     as item difficulties (in the IRT sense) but as additive intercept 
-     parameters as described in the help file of the 'ltm' function of the 
-     eponym package. Version 1.1 of difR was corrected to return the correct
-     item difficulty estimates. Note that functions 'itemPar1PL', 'itemPar3PL'
-     and 'itemPar3PLconst' were not affected by this bug.
+  o  The output of 'itemPar2PL' function was corrected to fix a bug. 
+     The parameter estimates of the item difficulties were actually 
+     not returned as item difficulties (in the IRT sense) but as 
+     additive intercept parameters as described in the help file of 
+     the 'ltm' function of the eponymous package. Version 1.1 of 
+     difR was corrected to return the correct item difficulty 
+     estimates. Note that functions 'itemPar1PL', 'itemPar3PL' and 
+     'itemPar3PLconst' were not affected by this bug.
 
-  o  The listing of the authors was corrected in the reference manual to fix a 
-     printing mistake.
+  o  The listing of the authors was corrected in the reference manual
+     to fix a printing mistake.
 
-  o  Several R codes in the Example sections have been preceded by the '#' 
-     symbol, so that they are not executed when copy-pasting the full R code
-     from these sections. However, the R code itself remains functioning but
-     it was not executed during the building of the difR package version 1.1.
-     Anyone interested in seeing how the command works has just to copy-paste
-     the R code without the '#' symbol. This is mentioned in the help files by
-     the '(remove #)' message.
+  o  Several R codes in the Example sections have been preceded by the
+     '#' symbol, so that they are not executed when copy-pasting the 
+     full R code from these sections. However, the R code itself 
+     remains functioning but it was not executed during the building 
+     of the difR package version 1.1. Anyone interested in seeing how
+     the command works has just to copy-paste the R code without the 
+     '#' symbol. This is mentioned in the help files by the 
+     '(remove #)' message.
