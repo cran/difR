@@ -15,8 +15,9 @@
  purify=FALSE, nrIter=10)
  \method{print}{GenLord}(x, ...)
  \method{plot}{GenLord}(x, plot = "lordStat", item = 1, pch = 8,
-    number = TRUE, col = "red", colIC = rep("black", length(x$focal.names)
-    + 1), ltyIC = 1:(length(x$focal.names) + 1), ...)
+    number = TRUE, col = "red", colIC = rep("black",
+    length(x$focal.names)+1), ltyIC = 1:(length(x$focal.names)
+     + 1), ...)
  }
 
 \arguments{
@@ -130,6 +131,9 @@ A list of class "GenLord" with the following arguments:
  
  Kim, S.-H., Cohen, A.S. and Park, T.-H. (1995). Detection of differential item functioning in multiple groups. \emph{Journal of Educational Measurement, 32}, 261-276. 
 
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
  Rizopoulos, D. (2006). ltm: An R package for latent variable modelling and item response theory analyses. \emph{Journal of Statistical Software, 17}, 1-25. URL: http://www.jstatsoft.org/v17/i05/
 }
 
@@ -153,7 +157,8 @@ A list of class "GenLord" with the following arguments:
 }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)
@@ -220,5 +225,5 @@ A list of class "GenLord" with the following arguments:
  plot(r)
  plot(r, plot="itemCurve", item=1)
  plot(r, plot="itemCurve", item=6)
- }
+}
  }

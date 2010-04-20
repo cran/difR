@@ -10,8 +10,9 @@
 
 \usage{
  selectGenDif(Data, group, focal.names, method, type="both", 
- alpha=0.05, model="2PL", c=NULL, engine = "ltm", irtParam=NULL,
- nrFocal=2, same.scale=TRUE, purify=FALSE, nrIter=10)
+  criterion="LRT", alpha=0.05, model="2PL", c=NULL,
+  engine = "ltm", irtParam=NULL, nrFocal=2, same.scale=TRUE,
+  purify=FALSE, nrIter=10)
  }
  
 
@@ -20,7 +21,8 @@
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within data) of group membership. See \bold{Details}.}
  \item{focal.names}{numeric or character vector indicating the levels of \code{group} which correspond to the focal groups.}
  \item{method}{character: the name of the selected method. See \bold{Details}.}
- \item{type}{a character string specifying which DIF effects must be tested (default is \code{"both"}). See \bold{Details}.}
+ \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
+ \item{criterion}{character: the type of test statistic used to detect DIF items with generalized logistic regression. Possible values are \code{"LRT"} (default) and \code{"Wald"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}). Default is \code{"2PL"}.}
  \item{c}{optional numeric value or vector giving the values of the constrained pseudo-guessing parameters. See \bold{Details}.}
@@ -41,7 +43,7 @@
  and displays its output. It is mainly used as a routine for \code{\link{genDichoDif}} command.
 
  There are three possible methods currently implemented: \code{"GMH"} for Generalized Mantel-Haenszel (Penfield, 2001), \code{"genLogistic"} 
- for generalized logistic regression (Magis, Raiche and Beland, 2009) and \code{"genLord"} for generalized Lord's chi-square
+ for generalized logistic regression (Magis, Raiche, Beland and Gerard, 2010) and \code{"genLord"} for generalized Lord's chi-square
  test (Kim, Cohen and Park, 1995).
 
  The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
@@ -53,7 +55,9 @@
  the values of the argument \code{focal.names}. 
 
  For the generalized logistic regression method, the argument \code{type} permits to test either both uniform and nonuniform effects
- simultaneously (\code{type="both"}), only uniform DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}).
+ simultaneously (with \code{type="both"}), only uniform DIF effect (with \code{type="udif"}) or only nonuniform DIF effect (with \code{type="nudif"}).
+ Furthermore, the argument \code{criterion} defines which test must be used, either the Wald test (\code{"Wald"}) or the likelihood ratio test
+ (\code{"LRT"}).
 
  For generalized Lord method, one can specify either the IRT model to be fitted (by means of \code{model}, \code{c} and \code{engine} arguments), 
  or the item parameter estimates with arguments \code{irtParam}, \code{nrFocal} and \code{same.scale}. See \code{\link{difGenLord}}
@@ -68,7 +72,10 @@
 \references{
  Kim, S.-H., Cohen, A.S. and Park, T.-H. (1995). Detection of differential item functioning in multiple groups. \emph{Journal of Educational Measurement, 32}, 261-276. 
  
- Magis, D., Raiche, G. and Beland, S. (2009). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
+ Magis, D., Raiche, G., Beland, S. and Gerard, P. (2010). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
  manuscript.
 
  Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures. \emph{Applied Measurement in Education, 14}, 235-259. 
@@ -94,7 +101,8 @@
  }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)

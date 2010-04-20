@@ -48,6 +48,9 @@ De Boeck, P. (2008). Random item IRT models. \emph{Psychometrika, 73}, 533-559.
 
 De Boeck, P. and Wilson, M. (2004). \emph{Explanatory item response models: a generalized linear and nonlinear approach}. New-York: Springer.
 
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
 Smits, D., De Boeck, P. and Vansteelandt, K. (2004). The inhibition of verbal aggressive behavior. \emph{European Journal of Personality, 18}, 537-555.
 
 Spielberger, C.D. (1988). \emph{State-trait anger expression inventory research edition. Professional manual}. Odessa, FL: Psychological Assessment Resources.
@@ -56,4 +59,3 @@ Vansteelandt, K. (2000). \emph{Formal models for contextualized personality psyc
 }
 
 
-\keyword{datasets}

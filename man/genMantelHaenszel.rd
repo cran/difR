@@ -36,6 +36,9 @@ A vector with the values of the generalized Mantel-Haenszel DIF statistics.
 }
 
 \references{
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
  Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures.
  \emph{Applied Measurement in Education, 14}, 235-259.
 
@@ -62,7 +65,8 @@ A vector with the values of the generalized Mantel-Haenszel DIF statistics.
 }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)

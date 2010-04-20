@@ -1,6 +1,6 @@
 # DIF: COMPARING DIF STATISTICS
 
-genDichoDif <- function (Data, group, focal.names, method, type=  "both",
+genDichoDif <- function (Data, group, focal.names, method, type=  "both", criterion="LRT",
     alpha = 0.05, model = "2PL", c = NULL, engine="ltm", irtParam = NULL, 
     nrFocal = 2, same.scale = TRUE, purify = FALSE, nrIter = 10) 
 {
@@ -18,14 +18,14 @@ genDichoDif <- function (Data, group, focal.names, method, type=  "both",
     }
     else {
         if (length(method) == 1) 
-            return(selectGenDif(Data = Data, group = group, focal.names = focal.names, 
+            return(selectGenDif(Data = Data, group = group, focal.names = focal.names, type=type, criterion=criterion,
                 method = method, alpha = alpha, model = model, c = c, irtParam = irtParam, 
                 same.scale = same.scale, purify = purify, nrIter = nrIter))
         else {
             mat <- iters <- conv <- NULL
             for (met in 1:length(method)) {
                 prov <- selectGenDif(Data = Data, group = group, 
-                  focal.names = focal.names, method = method[met], 
+                  focal.names = focal.names, type=type,criterion=criterion, method = method[met], 
                   alpha = alpha, model = model, c = c, irtParam = irtParam, 
                   same.scale = same.scale, purify = purify, nrIter = nrIter)
                 mat <- cbind(mat, rep("NoDIF", length(prov[[1]])))
@@ -51,7 +51,7 @@ genDichoDif <- function (Data, group, focal.names, method, type=  "both",
                 rownames(mat) <- rname
             }
             RES <- list(DIF = mat, alpha = alpha, method = method,
-                type = type, model = model, c = c, irtParam = irtParam, 
+                type = type, criterion=criterion, model = model, c = c, irtParam = irtParam, 
 		    same.scale = same.scale, purification = purify, nrPur = iters, 
                 convergence = conv)
             class(RES) <- "genDichoDif"
@@ -87,11 +87,12 @@ cat(met2,"\n")
 cat("\n")
 cat("Parameters:","\n")
 cat("Significance level: ",res$alpha,"\n",sep="")
-if (sum(methods=="genLogistic")==1){
-if (res$type=="both") cat("DIF effects tested by logistic regression: ",
+if (sum(methods=="Logistic")==1){
+if (res$type=="both") cat("DIF effects tested by generalized logistic regression: ",
 				   res$type," effects","\n",sep="")
-else cat("DIF effects tested by logistic regression: ",res$type,
+else cat("DIF effects tested by generalized logistic regression: ",res$type,
          " DIF effect","\n",sep="")
+cat("DIF flagging criterion:",ifelse(res$criterion=="Wald","Wald test","Likelihood ratio test"),"\n")
 }
 if (sum(methods=="genLord")==1) cat("Item response model:",res$model,"\n")
 if (res$purification==TRUE) {

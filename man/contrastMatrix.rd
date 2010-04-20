@@ -35,6 +35,9 @@
 
 \references{
  Kim, S.-H., Cohen, A.S. and Park, T.-H. (1995). Detection of differential item functioning in multiple groups. \emph{Journal of Educational Measurement, 32}, 261-276. 
+
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
 }
 
 \author{
@@ -57,6 +60,8 @@
 }
 
 \examples{
+\dontrun{
+
  # Contrast matrices with 1PL model and several focal groups
  contrastMatrix(2, "1PL")
  contrastMatrix(3, "1PL")
@@ -67,4 +72,5 @@
  contrastMatrix(3, "2PL")
  contrastMatrix(3, "3PLc")
  contrastMatrix(3, "3PL")
- }
+}
+}

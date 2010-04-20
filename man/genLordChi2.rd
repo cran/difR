@@ -41,6 +41,9 @@
  Cook, L. L. and Eignor, D. R. (1991). An NCME instructional module on IRT equating methods. \emph{Educational Measurement: Issues and Practice, 10}, 37-45.
 
  Kim, S.-H., Cohen, A.S. and Park, T.-H. (1995). Detection of differential item functioning in multiple groups. \emph{Journal of Educational Measurement, 32}, 261-276. 
+
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
 }
 
 \author{
@@ -63,7 +66,8 @@
 }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)

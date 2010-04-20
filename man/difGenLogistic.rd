@@ -11,19 +11,20 @@
  }
 
 \usage{
- difGenLogistic(Data, group, focal.names, type="both", alpha=0.05, 
- purify=FALSE, nrIter=10)
- \method{print}{genLogistic}(x, ...)
- \method{plot}{genLogistic}(x, plot="lrStat", item=1, pch=8, number=TRUE, 
- col="red", colIC=rep("black",length(x$focal.names)+1),
- ltyIC=1:(length(x$focal.names)+1), ...)
+difGenLogistic(Data, group, focal.names, type="both",
+ 	criterion="LRT", alpha=0.05, purify=FALSE, nrIter=10)
+\method{print}{genLogistic}(x, ...)
+\method{plot}{genLogistic}(x, plot="lrStat", item=1, pch=8, number=TRUE, 
+  col="red", colIC=rep("black",length(x$focal.names)+1),
+  ltyIC=1:(length(x$focal.names)+1), title=NULL, ...)
  }
  
 \arguments{
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{data}) of group membership. See \bold{Details}.}
  \item{focal.names}{numeric or character vector indicating the levels of \code{group} which correspond to the focal groups.}
- \item{type}{a character string specifying which DIF effects must be tested (default is \code{"both"}). See \bold{Details}.}
+ \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
+ \item{criterion}{character: the type of test statistic used to detect DIF items. Possible values are \code{"LRT"} (default) and \code{"Wald"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
@@ -33,6 +34,7 @@
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
  \item{colIC, ltyIC}{vectors of elements of the usual \code{col} and \code{lty} arguments for logistic curves. Used only when \code{plot="itemCurve"}.}
+ \item{title}{either a character string with the title of the plot, or \code{NULL} (default), for which a specific title is automatically displayed.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
 }
 
@@ -41,6 +43,8 @@
 A list of class "genLogistic" with the following arguments:
   \item{genLogistik}{the values of the generalized logistic regression statistics.}
   \item{logitPar}{a matrix with one row per item and \eqn{2+J*2} columns, holding the fitted parameters of the best model (among the two tested models) for each item.}
+ \item{covMat}{a 3-dimensional matrix of size \emph{p} x \emph{p} x \emph{K}, where \emph{p} is the number of estimated parameters and \emph{K} is the number of items,
+               holding the \emph{p} x \emph{p} covariance matrices of the estimated parameters (one matrix for each tested item).}
   \item{deltaR2}{the differences in Nagelkerke's \eqn{R^2} coefficients. See \bold{Details}.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
@@ -55,16 +59,19 @@ A list of class "genLogistic" with the following arguments:
   Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
   \item{focal.names}{the value of \code{focal.names} argument.}
+ \item{criterion}{the value of the \code{criterion} argument.}
  }
 
 
 \details{
- The generalized logistic regression method (Magis, Raiche and Beland, 2009) allows for detecting both uniform and non-uniform differential item functioning 
+ The generalized logistic regression method (Magis, Raiche, Beland and Gerard, 2010) allows for detecting both uniform and non-uniform differential item functioning 
  among multiple groups without requiring an item response model approach. It consists in fitting a logistic model with the test score,
  the group membership and an interaction between both as covariates. The statistical significance of the parameters
  related to group membership and the group-score interaction is then evaluated by means of the usual likelihood-ratio
  test. The argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform
- DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). See \code{\link{genLogistik}} for further details.
+ DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). The identification of DIF items can be performed with
+ either the Wald test or the likelihood  ratio test, by setting the \code{criterion} argument to \code{"Wald"} or \code{"LRT"} respectively.
+ See \code{\link{genLogistik}} for further details.
  
  The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
  In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
@@ -85,7 +92,7 @@ A list of class "genLogistic" with the following arguments:
  a warning message is printed. 
 
  The measures of effect size are provided by the difference \eqn{\Delta R^2} between the \eqn{R^2} coefficients of the two nested models (Nagelkerke, 1991; 
- Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effetc sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from
+ Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effect sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from
  Zumbo and Thomas (1997) and one from Jodoign and Gierl (2001). The output displays the \eqn{\Delta R^2} measures, together with the two classifications.
 
  Two types of plots are available. The first one is obtained by setting \code{plot="lrStat"} and it is the default option. The likelihood ratio statistics are displayed 
@@ -106,15 +113,15 @@ A list of class "genLogistic" with the following arguments:
 
  Hidalgo, M. D. and Lopez-Pina, J.A. (2004). Differential item functioning detection and effect size: a comparison between logistic regression and Mantel-Haenszel procedures. \emph{Educational and Psychological Measurement, 64}, 903-915. 
  
- Jodoin, M. G. & Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
+ Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
  \emph{Applied Measurement in Education, 14}, 329-349.
+
+ Magis, D., Raiche, G., Beland, S. and Gerard, P. (2010). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
+ manuscript.
 
  Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692.
 
- Magis, D., Raiche, G. and Beland, S. (2009). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
- manuscript.
-
- Zumbo, B. D. & Thomas, D. R. (1997). A measure of effect size for a model-based approach for studying DIF. Prince George, Canada: University of Northern British
+ Zumbo, B. D. and Thomas, D. R. (1997). A measure of effect size for a model-based approach for studying DIF. Prince George, Canada: University of Northern British
  Columbia, Edgeworth Laboratory for Quantitative Behavioral Science.
 }
 
@@ -135,11 +142,12 @@ A list of class "genLogistic" with the following arguments:
     }
 
 \seealso{
- \code{\link{genLogistik}}, \code{\link{genDichoDif}}
+ \code{\link{genLogistik}}, \code{\link{genDichoDif}}, \code{\link{subtestLogistic}}
 }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)
@@ -163,6 +171,9 @@ A list of class "genLogistic" with the following arguments:
  difGenLogistic(Verbal, group="group", focal.name=names)
  difGenLogistic(Verbal[,1:24], group=Verbal[,25], focal.names=names)
 
+ # Using the Wald test
+ difGenLogistic(Verbal, group=25, focal.names=names, criterion="Wald")
+
  # With item purification
  difGenLogistic(Verbal, group=25, focal.names=names, purify=TRUE)
  difGenLogistic(Verbal, group=25, focal.names=names, purify=TRUE, nrIter=5)
@@ -177,5 +188,5 @@ A list of class "genLogistic" with the following arguments:
  plot(r)
  plot(r, plot="itemCurve", item=1)
  plot(r, plot="itemCurve", item=6)
- }
+}
  }

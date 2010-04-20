@@ -1,0 +1,27 @@
+        **********************************************
+        *                                            *
+        *  Future Developments for the difR Package  *
+        *                                            *
+        **********************************************
+
+
+--------------------------------------
+- Changes in difR > 3.0 (2010-04-19) -
+--------------------------------------
+
+MAJOR UPDATES
+
+  o  To implement the SIBTEST method. Currently some R code
+     is available but must be checked for validity.
+
+  o  To implement the Breslow-Day test of trend described by
+     Penfield (2003) as an alternative to the currently
+     implemented method of Aguerri et al. (in press).
+
+
+
+MINOR UPDATES
+
+  o  To update the reference of Magis and al. (in press).
+
+ 

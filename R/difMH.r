@@ -152,12 +152,12 @@ print.MH <- function(x, ...){
  }
   cat("Effect size (ETS Delta scale):", "\n", "\n")
   cat("Effect size code:", "\n")
-  cat(" '*': negligible effect", "\n")
-  cat(" '**': moderate effect", "\n")
-  cat(" '***': large effect", "\n", "\n")
+  cat(" 'A': negligible effect", "\n")
+  cat(" 'B': moderate effect", "\n")
+  cat(" 'C': large effect", "\n", "\n")
   r2 <- round(-2.35*log(res$alphaMH),4)
-  symb1 <- symnum(abs(r2), c(0, 1, 1.5, Inf), symbols = c("*", 
-      "**", "***"))
+  symb1 <- symnum(abs(r2), c(0, 1, 1.5, Inf), symbols = c("A", 
+      "B", "C"))
   matR2<-cbind(round(res$alphaMH,4),r2)
   matR2<- noquote(cbind(format(matR2, justify="right"), symb1))
   if (is.null(res$names) == FALSE) 
@@ -170,7 +170,7 @@ print.MH <- function(x, ...){
   colnames(matR2) <- c("alphaMH", "deltaMH", "")
   print(matR2)
   cat("\n")
-  cat("Effect size codes: 0 '*' 1.0 '**' 1.5 '***'","\n")
+  cat("Effect size codes: 0 'A' 1.0 'B' 1.5 'C'","\n")
   cat(" (for absolute values of 'deltaMH')","\n")
 }
 

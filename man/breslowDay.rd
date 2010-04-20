@@ -43,7 +43,12 @@ breslowDay(data, member, anchor=1:ncol(data))
 }
 
 \references{
+Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (in press). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity}. 
+
 Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research, vol. I: The analysis of case-control studies}. Scientific Publication No 32. International Agency for Research on Cancer, Lyon, France.
+
+Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+of dichotomous differential item functioning. \emph{Behavior Research Methods}.
 
 Penfield, R.D. (2003). Application of the Breslow-Day test of trend in odds ratio heterogeneity to the detection of nonuniform DIF. \emph{Alberta Journal of Educational Research, 49}, 231-243.
 }
@@ -68,7 +73,8 @@ Penfield, R.D. (2003). Application of the Breslow-Day test of trend in odds rati
  }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
 
@@ -77,6 +83,6 @@ Penfield, R.D. (2003). Application of the Breslow-Day test of trend in odds rati
 
  # Removing item 3 from the set of anchor items
  breslowDay(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
- }
- }
+}
+}
 

@@ -10,10 +10,10 @@
 
 \usage{
  dichoDif(Data, group, focal.name, method, alpha=0.05, 
- correct=TRUE, thr=0.1, type="both", model="2PL", c=NULL,
- engine="ltm", irtParam=NULL, same.scale=TRUE,
- purify=FALSE, nrIter=10)
- \method{print}{dichoDif}(x, ...)
+  correct=TRUE, stdWeight="focal", thr=0.1, type="both",
+  criterion="LRT", model="2PL", c=NULL, engine="ltm",
+  irtParam=NULL, same.scale=TRUE, purify=FALSE, nrIter=10)
+\method{print}{dichoDif}(x, ...)
  }
  
 \arguments{
@@ -23,8 +23,11 @@
  \item{method}{character vector specifying the different methods to be compared. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{correct}{logical: should the Mantel-Haenszel continuity correction be used? (default is TRUE).}
+ \item{stdWeight}{character: the type of weights used for the standardized P-DIF statistic. Possible values are \code{"focal"} (default),
+                  \code{"reference"} and \code{"total"}. See \bold{Details}.}
  \item{thr}{numeric: the threshold (cut-score) for standardized P-DIF statistic (default is 0.10).}
- \item{type}{a character string specifying which DIF effects must be tested (default is \code{"both"}). See \bold{Details}.}
+ \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
+ \item{criterion}{a character string specifying which DIF statistic is computed. Possible values are \code{"LRT"} (default) or \code{"Wald"}. See \bold{Details}.}
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}). Default is \code{"2PL"}.}
  \item{c}{optional numeric value or vector giving the values of the constrained pseudo-guessing parameters. See \bold{Details}.}
  \item{engine}{character: the engine for estimating the 1PL model, either \code{"ltm"} (default) or \code{"lme4"}.}
@@ -41,7 +44,10 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
   \item{DIF}{a character matrix with one row per item and whose columns refer to the different specified detection methods. See \bold{Details}.}
   \item{correct}{the value of \code{correct} option.}
   \item{alpha}{the significance level \code{alpha}.}
+  \item{stdWeight}{the value of the \code{stdWeight} argument.}
   \item{thr}{the value of \code{thr} option.}
+  \item{type}{the value of the \code{type} argument.}
+  \item{criterion}{the value of the \code{criterion} argument.}
   \item{model}{the value of \code{model} option.}
   \item{c}{the value of \code{c} option.}
   \item{irtParam}{the value of \code{irtParam} option.}
@@ -80,8 +86,13 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
 
  Option \code{correct} specifies whether the continuity correction has to be applied to Mantel-Haenszel statistic (see \code{\link{difMH}}).
 
+ The weights for computing the standardized P-DIF statistics are defined through the argument \code{stdWeight}, with possible values
+ \code{"focal"} (default value), \code{"reference"} and \code{"total"}. See \code{\link{stdPDIF}} for further details. 
+
  For logistic regression, the argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform
- DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). See \code{\link{Logistik}} for further details.
+ DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). The \code{criterion} argument specifies the DIF statistic
+ to be computed, either the likelihood ratio test statistic (by setting \code{criterion="LRT"}) or the Wald test (by setting \code{criterion="Wald"}).
+ See \code{\link{Logistik}} for further details.
 
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification process is slightly different 
  for IRT and for non-IRT based methods. See the corresponding methods for further information.
@@ -93,6 +104,9 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
  Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Dirs.), \emph{Test validity}. Hillsdale, New Jersey: Lawrence Erlbaum Associates.
 
  Lord, F. (1980). \emph{Applications of item response theory to practical testing problems}. Hillsdale, NJ: Lawrence Erlbaum Associates.
+
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
 
  Penfield, R.D. (2003). Application of the Breslow-Day test of trend in odds ratio heterogeneity to the detection of nonuniform DIF. \emph{Alberta Journal of Educational Research, 49}, 231-243.
 
@@ -124,8 +138,8 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
  }
 
 \examples{
+\dontrun{
 
- \dontrun{
  # Loading of the verbal data
  data(verbal)
  attach(verbal)
@@ -134,7 +148,7 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
  verbal<-verbal[colnames(verbal)!="Anger"]
 
  # Comparing Mantel-Haenszel, standardization and logistic regression
- # Standardization threshold of 0.08, no continutiy correction,
+ # Standardization threshold of 0.08, no continuity correction,
  # with item purification 
  dichoDif(verbal, group=25, focal.name=1, method=c("MH","Std","Logistic"),
  correct=FALSE, thr=0.08, purify=TRUE)
@@ -143,5 +157,5 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
  # with item purification 
  dichoDif(verbal, group=25, focal.name=1, method=c("Lord","Raju"),
  model="2PL", purify=TRUE)
- }
+}
  }

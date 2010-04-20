@@ -1,6 +1,6 @@
 # DIF: COMPARING DIF STATISTICS
 
-dichoDif<-function(Data,group,focal.name,method,alpha=0.05,correct=TRUE,thr=0.1,type="both",model="2PL",c=NULL,engine="ltm",irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10){
+dichoDif<-function(Data,group,focal.name,method,alpha=0.05,correct=TRUE,stdWeight="focal",thr=0.1,type="both",criterion="LRT",model="2PL",c=NULL,engine="ltm",irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10){
 mets<-c("MH","Std","Logistic","BD","Lord","Raju","LRT")
 prov.met<-rep(0,length(method))
 for (i in 1:length(method)){
@@ -13,11 +13,11 @@ class(RES)<-"dichoDif"
 return(RES)
 }
 else{
-if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,alpha=alpha,correct=correct,thr=thr,type=type,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter))
+if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,alpha=alpha,correct=correct,stdWeight=stdWeight,thr=thr,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter))
 else{
 mat<-iters<-conv<-NULL
 for (met in 1:length(method)){
-prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],alpha=alpha,correct=correct,thr=thr,type=type,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter)
+prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],alpha=alpha,correct=correct,stdWeight=stdWeight,thr=thr,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter)
 if (method[met]=="BD") mat<-cbind(mat,rep("NoDIF",nrow(prov[[1]])))
 else mat<-cbind(mat,rep("NoDIF",length(prov[[1]])))
 if (is.character(prov$DIFitems)==FALSE) mat[prov$DIFitems,met]<-"DIF"
@@ -37,7 +37,7 @@ rname<-NULL
 for (i in 1:nrow(mat)) rname<-c(rname,paste("Item",i,sep=""))
 rownames(mat)<-rname
 }
-RES<-list(DIF=mat,correct=correct,alpha=alpha,thr=thr,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv)
+RES<-list(DIF=mat,correct=correct,alpha=alpha,stdWeight=stdWeight,thr=thr,type=type,criterion=criterion,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv)
 class(RES)<-"dichoDif"
 return(RES)}
 }
@@ -57,7 +57,7 @@ methods2[methods=="Logistic"]<-"Logistic regression"
 methods2[methods=="BD"]<-"Breslow-Day"
 methods2[methods=="Raju"]<-"Raju's area"
 methods2[methods=="Lord"]<-"Lord's chi-square test"
-methods2[methods=="LRT"]<-"Likelihood-Ratio Test"
+methods2[methods=="LRT"]<-"Likelihood ratio test"
 met<-methods2[1]
 for (i in 2:min(c(3,length(methods)))) met<-paste(met,methods2[i],sep=", ")
 if (length(methods)<=3) cat("Methods used:",met,"\n")
@@ -77,6 +77,16 @@ if (sum(methods=="M-H")==1){
 if (res$correct==TRUE) corr<-"Yes"
 else corr<-"No"
 cat("Mantel-Haenszel continuity correction:",corr,"\n")
+}
+if (sum(methods=="Stand.")==1){
+stdw<-ifelse(res$stdWeight=="total","both groups",ifelse(res$stdWeight=="focal","the focal group","the reference group"))
+cat("Weights for standardized P-DIF statistic: based on",stdw,"\n")
+}
+if (sum(methods=="Logistic")==1){
+cat("Logistic regression DIF statistic:",res$criterion,"statistic","\n")
+resLog<-ifelse(res$type=="both","both",ifelse(res$type=="udif","uniform","non uniform"))
+resLog2<-ifelse(res$type=="both","effects","effect")
+cat("DIF effect(s) tested by logistic regression:",resLog,"DIF",resLog2,"\n")
 }
 if (sum(methods=="Lord" | methods=="Raju")>=1) cat("Item response model:",res$model,"\n")
 if (res$purification==TRUE) {

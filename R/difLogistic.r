@@ -1,5 +1,5 @@
 # LOGISTIC REGRESSION
-difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05, 
+difLogistic<-function (Data, group, focal.name, type="both", criterion="LRT",alpha = 0.05, 
     purify = FALSE, nrIter = 10) 
 {
     if (length(group) == 1) {
@@ -26,8 +26,8 @@ difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05,
         udif=qchisq(1-alpha,1),
         nudif=qchisq(1-alpha,1))
     if (purify == FALSE) {
-        PROV <- Logistik(DATA, Group, type=type)
-        STATS <- PROV$deviance
+        PROV <- Logistik(DATA, Group, type=type, criterion=criterion)
+        STATS <- PROV$stat
 	  deltaR2 <- PROV$deltaR2
         if (max(STATS) <= Q) {
   		DIFitems <- "No DIF item detected"
@@ -41,14 +41,14 @@ difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05,
 		}
         RES <- list(Logistik = STATS, logitPar = logitPar, deltaR2 = deltaR2,
 		alpha = alpha, thr = Q, DIFitems = DIFitems, type = type,
-		purification = purify, names = colnames(DATA))
+		purification = purify, names = colnames(DATA), criterion=criterion)
     }
     else {
         nrPur <- 0
         difPur <- NULL
         noLoop <- FALSE
-	  prov1 <- Logistik(DATA, Group, type = type)
-        stats1 <- prov1$deviance
+	  prov1 <- Logistik(DATA, Group, type = type, criterion=criterion)
+        stats1 <- prov1$stat
 	  deltaR2 <- prov1$deltaR2
         if (max(stats1) <= Q) {
             DIFitems <- "No DIF item detected"
@@ -73,8 +73,8 @@ difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05,
                         nodif <- c(nodif, i)
                     }
                   }
-			prov2 <- Logistik(DATA, Group, anchor = nodif, type = type)
-                  stats2 <- prov2$deviance
+			prov2 <- Logistik(DATA, Group, anchor = nodif, type = type, criterion=criterion)
+                  stats2 <- prov2$stat
 			deltaR2 <- prov2$deltaR2
                   if (max(stats2) <= Q) dif2 <- NULL
                   else dif2 <- (1:ncol(DATA))[stats2 > Q]
@@ -113,7 +113,7 @@ difLogistic<-function (Data, group, focal.name, type="both", alpha = 0.05,
         RES <- list(Logistik = stats1, logitPar = logitPar, deltaR2 = deltaR2,
 		alpha = alpha, thr = Q, DIFitems = DIFitems, type = type,
 		purification = purify, nrPur = nrPur, difPur = difPur, 
-		convergence = noLoop, names = colnames(DATA))
+		convergence = noLoop, names = colnames(DATA),criterion=criterion)
     }
     class(RES) <- "Logistic"
     return(RES)
@@ -130,17 +130,17 @@ colIC = rep("black",2), ltyIC = c(1,2), ...)
     else {
 	if (plotType==1){
     	 if (number == FALSE) {
-        plot(res$Logistik, xlab = "Item", ylab = "Logistic regression statistic", 
+        plot(res$Logistik, xlab = "Item", ylab = paste(x$criterion," statistic",sep=""), 
             ylim = c(0, max(c(res$Logistik, res$thr) + 1)), pch = pch, 
-            main = "Logistic regression")
+            main = paste("Logistic regression (",x$criterion, "statistic)",sep=""))
         if (is.character(res$DIFitems) == FALSE) 
             points(res$DIFitems, res$Logistik[res$DIFitems], 
                 pch = pch, col = col)
        }
        else {
-        plot(res$Logistik, xlab = "Item", ylab = "Logistic regression statistic", 
+        plot(res$Logistik, xlab = "Item", ylab = paste(x$criterion," statistic",sep=""), 
             ylim = c(0, max(c(res$Logistik, res$thr) + 1)), col = "white", 
-            main = "Logistic regression")
+            main = paste("Logistic regression (",x$criterion, " statistic)",sep=""))
         text(1:length(res$Logistik), res$Logistik, 1:length(res$Logistik))
         if (is.character(res$DIFitems) == FALSE) 
             text(res$DIFitems, res$Logistik[res$DIFitems], res$DIFitems, 
@@ -181,7 +181,8 @@ print.Logistic <- function (x, ...)
     if (res$purification == TRUE) 
         pur <- "with "
     else pur <- "without "
-    cat(pur, "item purification", "\n", "\n", sep = "")
+    cat(pur, "item purification", "\n", sep = "")
+    cat("and with ",res$criterion," DIF statistic","\n", "\n", sep = "")
     if (res$purification == TRUE) {
         if (res$nrPur <= 1) 
             word <- " iteration"
@@ -204,7 +205,7 @@ print.Logistic <- function (x, ...)
         else cat("Convergence reached after ", res$nrPur, word, 
             "\n", "\n", sep = "")
     }
-    cat("Logistic regression statistic:", "\n", "\n")
+    cat("Logistic regression DIF statistic:", "\n", "\n")
     df <- switch(res$type, both = 2, udif = 1, nudif = 1)
     pval <- round(1 - pchisq(res$Logistik, df), 4)
     symb <- symnum(pval, c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", 
@@ -242,14 +243,14 @@ print.Logistic <- function (x, ...)
     }
     cat("Effect size (Nagelkerke's R^2):", "\n", "\n")
     cat("Effect size code:", "\n")
-    cat(" '*': negligible effect", "\n")
-    cat(" '**': moderate effect", "\n")
-    cat(" '***': large effect", "\n", "\n")
+    cat(" 'A': negligible effect", "\n")
+    cat(" 'B': moderate effect", "\n")
+    cat(" 'C': large effect", "\n", "\n")
     r2 <- round(res$deltaR2,4)
-    symb1 <- symnum(r2, c(0, 0.13, 0.26, 1), symbols = c("*", 
-        "**", "***"))
-    symb2 <- symnum(r2, c(0, 0.035, 0.07, 1), symbols = c("*", 
-        "**", "***"))
+    symb1 <- symnum(r2, c(0, 0.13, 0.26, 1), symbols = c("A", 
+        "B", "C"))
+    symb2 <- symnum(r2, c(0, 0.035, 0.07, 1), symbols = c("A", 
+        "B", "C"))
     matR2<-cbind(r2)
     matR2<- noquote(cbind(format(r2, justify="right"), symb1, symb2))
     if (is.null(res$names) == FALSE) 
@@ -263,7 +264,7 @@ print.Logistic <- function (x, ...)
     print(matR2)
     cat("\n")
     cat("Effect size codes:", "\n")
-    cat(" Zumbo & Thomas (ZT): 0 '*' 0.13 '**' 0.26 '***' 1","\n")
-    cat(" Jodoign & Gierl (JG): 0 '*' 0.035 '**' 0.07 '***' 1","\n")
+    cat(" Zumbo & Thomas (ZT): 0 'A' 0.13 'B' 0.26 'C' 1","\n")
+    cat(" Jodoign & Gierl (JG): 0 'A' 0.035 'B' 0.07 'C' 1","\n")
 }
 

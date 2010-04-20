@@ -11,8 +11,9 @@
 
 \usage{
  genDichoDif(Data, group, focal.names, method, type="both",
- alpha=0.05, model="2PL", c=NULL, engine = "ltm", irtParam=NULL,
- nrFocal=2, same.scale=TRUE, purify=FALSE, nrIter=10)
+  criterion="LRT", alpha=0.05, model="2PL", c=NULL,
+  engine = "ltm", irtParam=NULL, nrFocal=2, same.scale=TRUE,
+  purify=FALSE, nrIter=10)
  \method{print}{genDichoDif}(x, ...)
  }
  
@@ -22,6 +23,7 @@
  \item{focal.names}{numeric or character vector indicating the levels of \code{group} which correspond to the focal groups.}
  \item{method}{character: the name of the selected methods. See \bold{Details}.}
  \item{type}{a character string specifying which DIF effects must be tested (default is \code{"both"}). See \bold{Details}.}
+ \item{criterion}{character: the type of test statistic used to detect DIF items with generalized logistic regression. Possible values are \code{"LRT"} (default) and \code{"Wald"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}). Default is \code{"2PL"}.}
  \item{c}{optional numeric value or vector giving the values of the constrained pseudo-guessing parameters. See \bold{Details}.}
@@ -41,6 +43,7 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
   \item{alpha}{the significance level \code{alpha}.}
   \item{method}{the value of \code{method}argument.}
   \item{type}{the value of \code{type} argument.}  
+  \item{criterion}{the value of the \code{criterion} argument.}
   \item{model}{the value of \code{model} option.}
   \item{c}{the value of \code{c} option.}
   \item{irtParam}{the value of \code{irtParam} option.}
@@ -54,7 +57,7 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
 
 \details{
  \code{genDichoDif} is a generic function which calls one or several DIF detection methods among multiple groups, and summarize their output. The possible methods are:
- \code{"GMH"} for Generalized Mantel-Haenszel (Penfield, 2001), \code{"genLogistic"} for generalized logistic regression (Magis, Raiche and Beland, 2009) and 
+ \code{"GMH"} for Generalized Mantel-Haenszel (Penfield, 2001), \code{"genLogistic"} for generalized logistic regression (Magis, Raiche Beland and Gerard, 2010) and 
  \code{"genLord"} for generalized Lord's chi-square test (Kim, Cohen and Park, 1995).
 
  If \code{method} has a single component, the output of \code{genDichoDif} is exactly the one provided by the method itself. Otherwise, the main  output is a matrix with one row 
@@ -70,7 +73,9 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
  the values of the argument \code{focal.names}. 
 
  For the generalized logistic regression method, the argument \code{type} permits to test either both uniform and nonuniform effects
- simultaneously (\code{type="both"}), only uniform DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}).
+ simultaneously (with \code{type="both"}), only uniform DIF effect (with \code{type="udif"}) or only nonuniform DIF effect (with \code{type="nudif"}).
+ Furthermore, the argument \code{criterion} defines which test must be used, either the Wald test (\code{"Wald"}) or the likelihood ratio test
+ (\code{"LRT"}).
 
  For generalized Lord method, one can specify either the IRT model to be fitted (by means of \code{model}, \code{c} and \code{engine} arguments), 
  or the item parameter estimates with arguments \code{irtParam} and \code{same.scale}. See \code{\link{difGenLord}} for further details. 
@@ -84,7 +89,10 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
 \references{
  Kim, S.-H., Cohen, A.S. and Park, T.-H. (1995). Detection of differential item functioning in multiple groups. \emph{Journal of Educational Measurement, 32}, 261-276. 
  
- Magis, D., Raiche, G. and Beland, S. (2009). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
+ Magis, D., Raiche, G., Beland, S. and Gerard, P. (2010). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
  manuscript.
 
  Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures. \emph{Applied Measurement in Education, 14}, 235-259. 
@@ -111,26 +119,27 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
 
 \examples{
 \dontrun{
-# Loading of the verbal data
-data(verbal)
-attach(verbal)
 
-# Creating four groups according to gender ("Man" or "Woman") and trait 
-# anger score ("Low" or "High")
-group<-rep("WomanLow",nrow(verbal))
-group[Anger>20 & Gender==0]<-"WomanHigh"
-group[Anger<=20 & Gender==1]<-"ManLow"
-group[Anger>20 & Gender==1]<-"ManHigh"
+ # Loading of the verbal data
+ data(verbal)
+ attach(verbal)
 
-# New data set
-Verbal<-cbind(verbal[,1:24],group)
+ # Creating four groups according to gender ("Man" or "Woman") and trait 
+ # anger score ("Low" or "High")
+ group<-rep("WomanLow",nrow(verbal))
+ group[Anger>20 & Gender==0]<-"WomanHigh"
+ group[Anger<=20 & Gender==1]<-"ManLow"
+ group[Anger>20 & Gender==1]<-"ManHigh"
 
-# Reference group: "WomanLow"
-names<-c("WomanHigh","ManLow","ManHigh")
+ # New data set
+ Verbal<-cbind(verbal[,1:24],group)
 
-# Comparing the three available methods
-# with item purification 
-genDichoDif(Verbal, group=25, focal.names=names, method=c("GMH",
-"genLogistic","genLord"), purify=TRUE)
+ # Reference group: "WomanLow"
+ names<-c("WomanHigh","ManLow","ManHigh")
+
+ # Comparing the three available methods
+ # with item purification 
+ genDichoDif(Verbal, group=25, focal.names=names, method=c("GMH",
+ "genLogistic","genLord"), purify=TRUE)
 }
 }

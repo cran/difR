@@ -27,7 +27,7 @@
  Rescaling is performed by equal means anchoring (Cook and Eignor, 1991). The items involved in the anchoring process are specified by means of their row
  number in either \code{mR} or \code{mF}, and are passed through the \code{items} argument.
 
- \code{itemrescale} primarily serves as a routine for item purification in Lord (\code{\link{difLord}}) and Raju (\code{\link{difRaju}}) 
+ \code{itemRescale} primarily serves as a routine for item purification in Lord (\code{\link{difLord}}) and Raju (\code{\link{difRaju}}) 
  Generalized Lord's (\code{\link{difGenLord}})methods of DIF identification (Candell and Drasgow, 1988).
 }
 
@@ -36,6 +36,9 @@
  \emph{Applied Psychological Measurement, 12}, 253-260. 
 
  Cook, L. L. and Eignor, D. R. (1991). An NCME instructional module on IRT equating methods. \emph{Educational Measurement: Issues and Practice, 10}, 37-45.
+
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
 }
 
 \author{
@@ -58,7 +61,8 @@
 }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)

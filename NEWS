@@ -5,9 +5,73 @@
         **************************************************
 
 
------------------------------------
-- Changes in diR 2.2 (2010-01-23) -
------------------------------------
+------------------------------------
+- Changes in difR 3.0 (2010-04-20) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  The Wald statistic can now be used to flag items as DIF with
+     both the logistic and the generalized logistic regression
+     method. The new argument 'criterion' permits to select between
+     'LRT', the usual likelihood-ratio test, and 'Wald' for the
+     Wald test. For the latter, an appropriate contrast matrix is
+     built up internally.
+
+  o  The command 'subtestLogistic' has been added to identify DIF
+     items among a subset of groups of examinees, using the output 
+     of the 'difGenLogistic' command and the Wald test. Subtests are
+     performed with appropriate contrast matrices built up 
+     internally.
+
+  o  The standardized P-DIF statistics can now be computed with
+     different weights. The default weights are based on the focal
+     group, but other options are weights based on the reference
+     group or on both groups together. The newly added argument
+     'stdWeight' in the functions 'stdPDIF' and 'difStd'.
+
+  o  A second measure of effect size has been added for the 
+     standardization method. It is a Delta measure, similar to 
+     that of the Mantel-Haenszel method, and is described in Dorans 
+     (1989, p.228, Eqn. 15).
+
+
+MINOR UPDATES
+
+  o  The DESCRIPTION and CITATION files have been updated. 
+
+  o  The help file references have been updated.
+
+  o  Several typos have been fixed in the help files. 
+
+  o  As a consequence of the first aforementioned major update,
+     the first output argument of the 'Logistik' and 'genLogistik'
+     functions, previously called 'deviance', have been renamed to
+     'stat'.
+
+  o  The functions 'selectDif', 'dichoDif', 'selectGenDif' and
+     'genDichoDif' have been updated to incorporate the different
+     changes of this version of difR.
+
+  o  The coding of the effect size, which was previously done by
+     means of star symbols (*, ** and ***), has been replaced by
+     capital letters A, B and C for respectively negligible,
+     moderate and large DIF sizes. This is to match the usual
+     ETS conventions, and the change was made within the functions
+     'difMH', 'difStd', 'difLogistic' and 'difGenLogistic'.
+
+  o  The TODO file has been added as a list of updates or adds-on
+     for further versions of difR.
+
+  o  The general 'difR-package' Rd file has been created. It contains
+     a summary of the difR package, with a list of the methods
+     currently implemented and a list of related references.
+
+
+
+------------------------------------
+- Changes in difR 2.2 (2010-01-23) -
+------------------------------------
 
 MINOR UPDATES
 
@@ -17,9 +81,9 @@ MINOR UPDATES
 
 
 
------------------------------------
-- Changes in diR 2.1 (2010-01-13) -
------------------------------------
+------------------------------------
+- Changes in difR 2.1 (2010-01-13) -
+------------------------------------
 
 MINOR UPDATES
 
@@ -29,17 +93,16 @@ MINOR UPDATES
      logistic regression and generalized logistic regression have been
      slightly modified: the codes for the effect sizes are now 
      returned as "Effect size codes" and not "Signif. codes" as in the
-     previous
-     version of difR.
+     previous version of difR.
 
   o  Several issues regarding non-ASCII characters in the help files 
      have been fixed.
 
  
 
------------------------------------
-- Changes in diR 2.0 (2009-12-18) -
------------------------------------
+------------------------------------
+- Changes in difR 2.0 (2009-12-18) -
+------------------------------------
 
 MAJOR UPDATES
 
@@ -49,7 +112,7 @@ MAJOR UPDATES
      means of the likelihood-ratio test. Moreover, the argument 'type'
      has been added to test either nonuniform ('type="nudif"'), 
      uniform ('type="udif"') or both DIF effects simultaneously 
-    ('type="both"'). The 'difLogistic' function has been updated 
+     ('type="both"'). The 'difLogistic' function has been updated 
      acordingly, and returns the matrix with the fitted parameters of
      the best model for each item.
 
@@ -125,9 +188,9 @@ MINOR UPDATES
 
 
 
------------------------------------
-- Changes in diR 1.1 (2009-10-27) -
------------------------------------
+------------------------------------
+- Changes in difR 1.1 (2009-10-27) -
+------------------------------------
 
 MINOR UPDATES
 

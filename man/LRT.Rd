@@ -29,7 +29,7 @@ A vector with the values of the LRT DIF statistics.
  The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
  
-  The LRT DIF statistic is computed for each item separately, using all other items as anchor items.
+ The LRT DIF statistic is computed for each item separately, using all other items as anchor items.
 }
 
 \note{
@@ -39,6 +39,9 @@ A vector with the values of the LRT DIF statistics.
 \references{
  Bates, D. and Maechler, M. (2009). lme4: Linear mixed-effects models using S4 classes. R package version 0.999375-31. http://CRAN.R-project.org/package=lme4
  
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
  Thissen, D., Steinberg, L. and Wainer, H. (1988). Use of item response theory in the study of group difference in trace lines. 
  In H. Wainer and H. Braun (Eds.), \emph{Test validity}. Hillsdale, NJ: Lawrence Erlbaum Associates.
  }
@@ -63,7 +66,8 @@ A vector with the values of the LRT DIF statistics.
  }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)

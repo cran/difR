@@ -126,6 +126,9 @@ A list of class "Lord" with the following arguments:
  
  Lord, F. (1980). \emph{Applications of item response theory to practical testing problems}. Hillsdale, NJ: Lawrence Erlbaum Associates. 
  
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
  Rizopoulos, D. (2006). ltm: An R package for latent variable modelling and item response theory analyses. \emph{Journal of Statistical Software, 17}, 1-25. URL: http://www.jstatsoft.org/v17/i05/
 }
 
@@ -149,7 +152,8 @@ A list of class "Lord" with the following arguments:
  }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)
@@ -208,5 +212,5 @@ A list of class "Lord" with the following arguments:
  plot(r)
  plot(r, plot="itemCurve", item=1)
  plot(r, plot="itemCurve", item=6)
- }
+}
  }

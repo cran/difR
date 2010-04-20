@@ -1,4 +1,4 @@
-difStd <-function(Data,group,focal.name,thr=0.1,purify=FALSE,nrIter=10)
+difStd <-function(Data,group,focal.name,stdWeight="focal",thr=0.1,purify=FALSE,nrIter=10)
 {
      if (length(group) == 1) {
            if (is.numeric(group)==TRUE) {
@@ -19,16 +19,20 @@ difStd <-function(Data,group,focal.name,thr=0.1,purify=FALSE,nrIter=10)
     Group <- rep(0, nrow(DATA))
     Group[gr == focal.name] <- 1
  if (purify==FALSE) {
-STATS <-stdPDIF(DATA,Group)
+resProv<-stdPDIF(DATA,Group,stdWeight=stdWeight)
+STATS <- resProv$resStd
+ALPHA <- resProv$resAlpha
  if (max(abs(STATS))<=thr) DIFitems<-"No DIF item detected"
  else DIFitems <-(1:ncol(DATA))[abs(STATS)>thr]
-RES <-list(PDIF=STATS,thr=thr,DIFitems=DIFitems,purification=purify,names=colnames(DATA))
+RES <-list(PDIF=STATS,stdAlpha=ALPHA,thr=thr,DIFitems=DIFitems,purification=purify,names=colnames(DATA),stdWeight=stdWeight)
 }
 else{
 nrPur<-0
 difPur<-NULL
 noLoop<-FALSE
-stats1 <-stdPDIF(DATA,Group)
+resProv<-stdPDIF(DATA,Group,stdWeight=stdWeight)
+stats1 <-resProv$resStd
+alpha1<-resProv$resAlpha
 if (max(abs(stats1))<=thr) {
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
@@ -48,7 +52,9 @@ for (i in 1:ncol(DATA)){
 if (sum(i==dif)==0) nodif<-c(nodif,i)
 }
 }
-stats2 <-stdPDIF(DATA,Group,anchor=nodif)
+resProv<-stdPDIF(DATA,Group,anchor=nodif,stdWeight=stdWeight)
+stats2 <-resProv$resStd
+alpha2<-resProv$resAlpha
 if (max(abs(stats2))<=thr) dif2<-NULL
 else dif2<-(1:ncol(DATA))[abs(stats2)>thr]
 difPur<-rbind(difPur,rep(0,ncol(DATA)))
@@ -66,6 +72,7 @@ else dif<-dif2
 }
 }
 stats1<-stats2
+alpha1<-alpha2
 DIFitems <-(1:ncol(DATA))[abs(stats1)>thr]
 }
 if (is.null(difPur)==FALSE){
@@ -75,7 +82,7 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(PDIF=stats1,thr=thr,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA))
+RES<-list(PDIF=stats1,stdAlpha=alpha1,thr=thr,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA),stdWeight=stdWeight)
 }
 class(RES)<-"PDIF"
 return(RES)
@@ -89,7 +96,7 @@ plot(res$PDIF,xlab="Item",ylab="Standardization statistic",ylim=c(max(-1,min(c(r
 if (is.character(res$DIFitems)==FALSE) points(res$DIFitems,res$PDIF[res$DIFitems],pch=pch,col=col)
 }
 else {
-plot(res$PDIF,xlab="Item",ylab="Standardization statistic",ylim=c(max(-1,min(c(res$PDIF,-res$thr)-0.2)),min(1,max(c(res$PDIF,res$thr)+0.2))),col="white",main="Standardization")
+plot(res$PDIF,xlab="Item",ylab="St-PDIF statistic",ylim=c(max(-1,min(c(res$PDIF,-res$thr)-0.2)),min(1,max(c(res$PDIF,res$thr)+0.2))),col="white",main="Standardization")
 text(1:length(res$PDIF),res$PDIF,1:length(res$PDIF))
 if (is.character(res$DIFitems)==FALSE) text(res$DIFitems,res$PDIF[res$DIFitems],res$DIFitems,col=col)
 }
@@ -105,7 +112,10 @@ cat("\n")
 cat("Detection of Differential Item Functioning using standardization method","\n")
 if (res$purification==TRUE) pur<-"with "
 else pur<-"without "
-cat(pur, "item purification","\n","\n",sep="")
+cat(pur, "item purification","\n",sep="")
+if (res$stdWeight=="total") wt<-"both groups (the total group)"
+else wt<-paste("the ",res$stdWeight," group",sep="")
+cat("and with weights based on",wt,"\n" ,"\n")
  if (res$purification==TRUE){
 if (res$nrPur<=1) word<-" iteration"
 else word<-" iterations"
@@ -119,7 +129,7 @@ else word<-" iterations"
 }
  else cat("Convergence reached after ",res$nrPur,word,"\n","\n",sep="")
  }
-cat("Standardization statistic:","\n","\n")
+cat("Standardized P-DIF statistic:","\n","\n")
 symb<-symnum(abs(res$PDIF),c(0,0.04,0.05,0.1,0.2,1),symbols=c("",".","*","**","***"))
 m1<-cbind(round(res$PDIF,4))
 m1<-noquote(cbind(format(m1,justify="right"),symb))
@@ -143,15 +153,18 @@ colnames(m2)<-""
 print(m2,quote=FALSE)
 cat("\n","\n")
 }
-  cat("Effect size (Dorans, Schmitt and Bleistein scale):", "\n", "\n")
+  cat("Effect sizes:", "\n", "\n")
   cat("Effect size code:", "\n")
-  cat(" '*': negligible effect", "\n")
-  cat(" '**': moderate effect", "\n")
-  cat(" '***': large effect", "\n", "\n")
-  r2 <- round(res$PDIF,4)
-  symb1 <- symnum(abs(r2), c(0, 0.05, 0.1, Inf), symbols = c("*", 
-      "**", "***"))
-  matR2<- noquote(cbind(format(r2, justify="right"), symb1))
+  cat(" 'A': negligible effect", "\n")
+  cat(" 'B': moderate effect", "\n")
+  cat(" 'C': large effect", "\n", "\n")
+  r2 <- round(-2.35*log(res$stdAlpha),4)
+  symb1 <- symnum(abs(res$PDIF), c(0, 0.05, 0.1, Inf), symbols = c("A", 
+      "B", "C"))
+  symb2 <- symnum(abs(r2), c(0, 1, 1.5, Inf), symbols = c("A", 
+      "B", "C"))
+  matR2<-cbind(round(res$PDIF,4),round(res$stdAlpha,4),r2)
+  matR2<- noquote(cbind(format(matR2, justify="right"), symb1, symb2))
   if (is.null(res$names) == FALSE) 
       rownames(matR2) <- res$names
   else {
@@ -159,9 +172,14 @@ cat("\n","\n")
       for (i in 1:nrow(matR2)) rn[i] <- paste("Item", i, sep = "")
       rownames(matR2) <- rn
   }
-  colnames(matR2) <- c("St-P-DIF", "")
+  colnames(matR2) <- c("St-P-DIF","alphaStd","deltaStd","DSB","ETS")
   print(matR2)
   cat("\n")
-  cat("Effect size codes: 0 '*' 0.05 '**' 0.10 '***'","\n")
-  cat(" (for absolute values of 'St-P-DIF')","\n")
+  cat("Effect size codes:", "\n")
+  cat(" Dorans, Schmitt & Bleistein (DSB): 0 'A' 0.05 'B' 0.10 'C'","\n")
+  cat("  (for absolute values of 'St-P-DIF')","\n")
+  cat(" ETS Delta Scale (ETS): 0 'A' 1 'B' 1.5 'C'","\n")
+  cat("  (for absolute values of 'deltaStd')","\n")
 }
+
+

@@ -83,6 +83,9 @@ A list of class "MH" with the following arguments:
 
  Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Ed.), \emph{Test validity}. Hillsdale, New Jersey: Lawrence Erlbaum Associates.
  
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
  Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer Institute, 22}, 719-748.
  
  Raju, N. S., Bode, R. K. and Larsen, V. S. (1989). An empirical assessment of the Mantel-Haenszel statistic to detect differential item functioning. \emph{Applied Measurement in Education, 2}, 1-13.
@@ -110,7 +113,8 @@ A list of class "MH" with the following arguments:
  }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
 
@@ -128,7 +132,7 @@ A list of class "MH" with the following arguments:
 
  # Without continuity correction and with 0.01 significance level
  difMH(verbal, group="Gender", focal.name=1, alpha=0.01, correct=FALSE)
- }
+}
  }
 
 

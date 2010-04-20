@@ -8,22 +8,36 @@
  }
 
 \usage{
- stdPDIF(data, member, anchor=1:ncol(data))
+ stdPDIF(data, member, anchor=1:ncol(data), stdWeight="focal")
  }
  
 \arguments{
  \item{data}{numeric: the data matrix (one row per subject, one column per item).}
  \item{member}{numeric: the vector of group membership with zero and one entries only. See \bold{Details}.}
  \item{anchor}{a vector of integer values specifying which items (all by default) are currently considered as anchor (DIF free) items. See \bold{Details}.}
+ \item{stdWeight}{character: the type of weights used for the standardized P-DIF statistic. Possible values are \code{"focal"} (default),
+                  \code{"reference"} and \code{"total"}. See \bold{Details}.}
 }
 
 \value{
-A vector with the values of the standardization DIF statistics.
+A list with two arguments:
+ \item{resStd}{the vector of the standardized P-DIF statistics.}
+ \item{resAlpha}{the vector of standardized alpha values.}
  }
  
 \details{
- This command computes the standardization statistic in the specific framework of differential item functioning (Dorans and Kullick, 1986). It forms the basic command 
- of \code{\link{difStd}} and is specifically designed for this call.
+ This command computes the standardized P-DIF statistic in the specific framework of differential item functioning (Dorans and Kullick, 1986). It forms the basic command 
+ of \code{\link{difStd}} and is specifically designed for this call. In addition, the standardized alpha values (Dorans, 1989) are also computed
+ as a basis for effect size calculation.
+
+ The standardized P-DIF statistic is a weighted average of the difference in proportions of successes in the reference group and in the focal group.
+ The average is computed accross the test score strata. The weights can be of three kinds (Dorans, 1989; Dorans and Kullick, 1986) and are specified through the \code{stdWeight} argument: 
+ the proportion of focal groups examinees within each stratum (\code{stdWeight="focal"}), the proportion of reference group examinees within each stratum (\code{stdWeight="reference"}), 
+ and the proportion of examinees (from both groups) within each stratum (\code{stdWeight="total"}). By default, the weights are built from the focal group. 
+ 
+ Similarly to the 'alpha' estimates of the common odds ratio for the Mantel-Haenszel method (see \code{\link{mantelHaenszel}}), the \emph{standardized alpha values} can be
+ computed as rough measures of effect sizes, after a transformation to the Delta Scale (Holland, 1985). See Dorans (1989, p.228, Eqn.15) for
+ further details. 
  
  The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
   
@@ -35,8 +49,16 @@ A vector with the values of the standardization DIF statistics.
 }
 
 \references{
+ Dorans, N. J. (1989). Two new approaches to assessing differential item functioning: standardization and the Mantel-Haenszel method. \emph{Applied Measurement in Education, 2}, 217-233. 
+ 
  Dorans, N. J. and Kullick, E. (1986). Demonstrating the utility of the standardization approach to assessing unexpected differential item performance on the Scholastic Aptitude Test. \emph{Journal of Educational Measurement, 23}, 355-368.
- }
+
+ Holland, P. W. (1985, October). \emph{On the study of differential item performance without IRT}. Paper presented at the meeting of 
+ Military Testing Association, San Diego (CA).  
+
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+}
  
 \author{
     Sebastien Beland \cr
@@ -54,7 +76,7 @@ A vector with the values of the standardization DIF statistics.
     }
 
 \seealso{
- \code{\link{difStd}}, \code{\link{dichoDif}}
+ \code{\link{difStd}}, \code{\link{dichoDif}}, \code{\link{mantelHaenszel}}
  }
 
 \examples{
@@ -64,6 +86,12 @@ A vector with the values of the standardization DIF statistics.
 
  # All items as anchor items
  stdPDIF(verbal[,1:24], verbal[,26])
+
+ # All items as anchor items, reference group weights
+ stdPDIF(verbal[,1:24], verbal[,26], stdWeight="reference")
+
+ # All items as anchor items, both groups' weights
+ stdPDIF(verbal[,1:24], verbal[,26], stdWeight="total")
 
  # Removing item 6 from the set of anchor items
  stdPDIF(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))

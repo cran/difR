@@ -10,8 +10,8 @@
  }
 
 \usage{
- difLogistic(Data, group, focal.name, type="both", alpha=0.05, 
- purify=FALSE, nrIter=10)
+ difLogistic(Data, group, focal.name, type="both", criterion="LRT",
+ 	alpha=0.05, purify=FALSE, nrIter=10)
  \method{print}{Logistic}(x, ...)
  \method{plot}{Logistic}(x, plot="lrStat", item=1, pch=8, number=TRUE, col="red", 
  colIC=rep("black",2), ltyIC=c(1,2), ...)
@@ -21,7 +21,8 @@
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{data}) of group membership. See \bold{Details}.}
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
- \item{type}{a character string specifying which DIF effects must be tested (default is \code{"both"}). See \bold{Details}.}
+ \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
+ \item{criterion}{a character string specifying which DIF statistic is computed. Possible values are \code{"LRT"} (default) or \code{"Wald"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
@@ -52,6 +53,7 @@ A list of class "Logistic" with the following arguments:
   \item{convergence}{logical indicating whether the iterative item purification process stopped before the maximal number of \code{nrItem} allowed iterations. 
   Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
+  \item{criterion}{the value of the \code{criterion} argument.}
  }
 
 
@@ -59,9 +61,10 @@ A list of class "Logistic" with the following arguments:
  The logistic regression method (Swaminathan and Rogers, 1990) allows for detecting both uniform and non-uniform differential item functioning 
  without requiring an item response model approach. It consists in fitting a logistic model with the test score,
  the group membership and an interaction between both as covariates. The statistical significance of the parameters
- related to group membership and the group-score interaction is then evaluated by means of the usual likelihood-ratio
- test. The argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform
- DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). See \code{\link{Logistik}} for further details.
+ related to group membership and the group-score interaction is then evaluated by means of either the likelihood-ratio
+ test or the Wald test. The argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform
+ DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). The argument \code{criterion} permits to select either
+ the likelihood ratio test (\code{criterion=="LRT"}) or the Wald test (\code{criterion=="Wald"}). See \code{\link{Logistik}} for further details.
  
  The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
  In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
@@ -81,7 +84,7 @@ A list of class "Logistic" with the following arguments:
  a warning message is printed. 
 
  The measures of effect size are provided by the difference \eqn{\Delta R^2} between the \eqn{R^2} coefficients of the two nested models (Nagelkerke, 1991; 
- Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effetc sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from
+ Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effect sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from
  Zumbo and Thomas (1997) and one from Jodoign and Gierl (2001). The output displays the \eqn{\Delta R^2} measures, together with the two classifications.
 
  Two types of plots are available. The first one is obtained by setting \code{plot="lrStat"} and it is the default option. The likelihood ratio statistics are displayed 
@@ -106,8 +109,11 @@ A list of class "Logistic" with the following arguments:
 
  Hidalgo, M. D. and Lopez-Pina, J.A. (2004). Differential item functioning detection and effect size: a comparison between logistic regression and Mantel-Haenszel procedures. \emph{Educational and Psychological Measurement, 64}, 903-915. 
  
- Jodoin, M. G. & Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
+ Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
  \emph{Applied Measurement in Education, 14}, 329-349.
+
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
 
  Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692.
 
@@ -115,7 +121,7 @@ A list of class "Logistic" with the following arguments:
  
  Zumbo, B.D. (1999). \emph{A handbook on the theory and methods of differential item functioning (DIF): logistic regression modelling as a unitary framework for binary and Likert-type (ordinal) item scores}. Ottawa, ON: Directorate of Human Resources Research and Evaluation, Department of National Defense. 
  
- Zumbo, B. D. & Thomas, D. R. (1997). A measure of effect size for a model-based approach for studying DIF. Prince George, Canada: University of Northern British
+ Zumbo, B. D. and Thomas, D. R. (1997). A measure of effect size for a model-based approach for studying DIF. Prince George, Canada: University of Northern British
  Columbia, Edgeworth Laboratory for Quantitative Behavioral Science.
 }
 
@@ -140,7 +146,8 @@ A list of class "Logistic" with the following arguments:
 }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
 
@@ -153,6 +160,10 @@ A list of class "Logistic" with the following arguments:
  difLogistic(verbal, group="Gender", focal.name=1)
  difLogistic(verbal[,1:24], group=verbal[,25], focal.name=1)
 
+ # Testing both DIF effects with the Wald test
+ r2 <- difLogistic(verbal, group=25, focal.name=1, 
+	             criterion="Wald")
+
  # Testing nonuniform DIF effect
  difLogistic(verbal, group=25, focal.name=1, type="nudif")
 
@@ -161,11 +172,13 @@ A list of class "Logistic" with the following arguments:
 
  # With item purification
  difLogistic(verbal, group="Gender", focal.name=1, purify=TRUE)
- difLogistic(verbal, group="Gender", focal.name=1, purify=TRUE, nrIter=5)
+ difLogistic(verbal, group="Gender", focal.name=1, purify=TRUE,
+             nrIter=5)
 
  # Graphical devices
  plot(r)
+ plot(r2)
  plot(r, plot="itemCurve", item=1)
  plot(r, plot="itemCurve", item=6)
- }
+}
  }

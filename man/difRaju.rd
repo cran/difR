@@ -108,6 +108,9 @@ A list of class "Raj" with the following arguments:
 
  Cook, L. L. and Eignor, D. R. (1991). An NCME instructional module on IRT equating methods. \emph{Educational Measurement: Issues and Practice, 10}, 37-45.
  
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
  Raju, N.S. (1988). The area between two item characteristic curves. \emph{Psychometrika, 53}, 495-502. 
 
  Raju, N. S. (1990). Determining the significance of estimated signed and unsigned areas between two item response functions. \emph{Applied Psychological Measurement, 14}, 197-207.
@@ -135,7 +138,8 @@ A list of class "Raj" with the following arguments:
  }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)
@@ -190,5 +194,5 @@ A list of class "Raj" with the following arguments:
  item.3PL<-rbind(itemParEst(data.ref, model="3PL", c=0.05),
  itemParEst(data.focal, model="3PL", c=0.05))
  difRaju(irtParam=item.3PL, same.scale=FALSE)
- }
+}
  }

@@ -71,6 +71,9 @@
 \references{
  Clauser, B. E. and Mazor, K. M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues and Practice, 17}, 31-44.
 
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+
  Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures.
  \emph{Applied Measurement in Education, 14}, 235-259. 
 
@@ -97,7 +100,8 @@
  }
 
 \examples{
- \dontrun{
+\dontrun{
+
  # Loading of the verbal data
  data(verbal)
  attach(verbal)
@@ -123,6 +127,6 @@
  # With item purification 
  difGMH(Verbal, group=25, focal.names=names, purify=TRUE)
  difGMH(Verbal, group=25, focal.names=names, purify=TRUE, nrIter=5)
- }
- }
+}
+}
 
