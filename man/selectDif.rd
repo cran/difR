@@ -10,9 +10,10 @@
 
 \usage{
  selectDif(Data, group, focal.name, method, alpha=0.05, 
-  correct=TRUE, stdWeight="focal", thr=0.1, type="both",
-  criterion="LRT", model="2PL", c=NULL, engine="ltm",
-  irtParam=NULL, same.scale=TRUE, purify=FALSE, nrIter=10)
+  MHstat="MHChisq", correct=TRUE, stdWeight="focal", 
+  thr=0.1, BDstat="BD",type="both", criterion="LRT",
+  model="2PL", c=NULL, engine="ltm", irtParam=NULL,
+  same.scale=TRUE, purify=FALSE, nrIter=10)
  }
  
 \arguments{
@@ -21,10 +22,12 @@
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
  \item{method}{character: the name of the selected method. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
+ \item{MHstat}{character: specifies the DIF statistic to be used for DIF identification. Possible values are \code{"MHChisq"} (default) and \code{"logOR"}. See \bold{Details }.}
  \item{correct}{logical: should the continuity correction be used? (default is TRUE).}
  \item{stdWeight}{character: the type of weights used for the standardized P-DIF statistic. Possible values are \code{"focal"} (default),
                   \code{"reference"} and \code{"total"}. See \bold{Details}.}
  \item{thr}{numeric: the threshold (cut-score) for standardized P-DIF statistic (default is 0.10).}
+ \item{BDstat}{character specifying the DIF statistic to be used. Possible values are \code{"BD"} (default) and \code{"trend"}. See \bold{Details}.}
  \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
  \item{criterion}{a character string specifying which DIF statistic is computed. Possible values are \code{"LRT"} (default) or \code{"Wald"}. See \bold{Details}.}
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}). Default is \code{"2PL"}.}
@@ -62,11 +65,17 @@
  The threshold for detecting DIF items depends on the method. For standardization it has to be fully specified (with the \code{thr} argument),
  while for the other methods it is depending on the significance level set by \code{alpha}.
 
- Option \code{correct} specifies whether the continuity correction has to be applied to Mantel-Haenszel statistic (see \code{\link{difMH}}).
+ For Mantel-Haenszel method, the DIF statistic can be either the Mantel-Haenszel chi-square statistic or the log odds-ratio statistic. The method is
+ specified by the argument \code{MHstat}, and the default value is \code{"MHChisq"} for the chi-square statistic. Moreover, the option \code{correct}
+ specifies whether the continuity correction has to be applied to Mantel-Haenszel statistic. See \code{\link{difMH}} for further details.
 
  The weights for computing the standardized P-DIF statistics are defined through the argument \code{stdWeight}, with possible values
  \code{"focal"} (default value), \code{"reference"} and \code{"total"}. See \code{\link{stdPDIF}} for further details. 
 
+ For Breslow-Day method, two test statistics are available: the usual Breslow-Day statistic for testing homogeneous association (Aguerri, Galibert, Attorresi and Maranon, 2009)
+ and the trend test statistic for assessing some monotonic trend in the odss ratios (Penfield, 2003). The DIF statistic is supplied by the \code{BDstat} argument, 
+ with values \code{"BD"} (default) for the usual statistic and \code{"trend"} for the trend test statistic.
+ 
  For logistic regression, the argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform
  DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). The \code{criterion} argument specifies the DIF statistic
  to be computed, either the likelihood ratio test statistic (with \code{criterion="LRT"}) or the Wald test (with \code{criterion="Wald"}).
@@ -77,6 +86,8 @@
 }
  
 \references{
+ Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (2009). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity, 43}, 35-44. 
+
  Dorans, N. J. and Kullick, E. (1986). Demonstrating the utility of the standardization approach to assessing unexpected differential item performance on the Scholastic Aptitude Test. \emph{Journal of Educational Measurement, 23}, 355-368.
 
  Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Dirs.), \emph{Test validity}. Hillsdale, New Jersey: Lawrence Erlbaum Associates.
@@ -126,7 +137,7 @@
  # Excluding the "Anger" variable
  verbal<-verbal[colnames(verbal)!="Anger"]
 
- # Calling Mantel-Haenszel
+ # Calling Mantel-Haenszel 
  selectDif(verbal, group=25, focal.name=1, method="MH")
 
  # Calling Lord method

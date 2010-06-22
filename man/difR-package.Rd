@@ -14,7 +14,7 @@
   \enumerate{
   \item{Mantel-Haenszel (Holland and Thayer, 1988)}
   \item{Standardization (Dorans and Kullick, 1986)}
-  \item{Breslow-Day (Aguerri et al., in press)}
+  \item{Breslow-Day (Aguerri et al., 2009; Penfield, 2003)}
   \item{Logistic regression (Swaminathan and Rogers, 1990)}
   \item{Lord's chi-square test (Lord, 1980)}
   \item{Raju's area (Raju, 1990)}
@@ -31,8 +31,8 @@
  \tabular{ll}{
   Package: \tab difR \cr
   Type:    \tab Package \cr
-  Version: \tab 3.0 \cr
-  Date:    \tab 2010-04-16 \cr
+  Version: \tab 3.1 \cr
+  Date:    \tab 2010-06-22 \cr
   Depends: \tab R (>= 2.8.0), lme4, ltm \cr
   License: \tab see file LICENSE \cr
   }
@@ -40,7 +40,7 @@
 
 
 \references{
- Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (in press). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity}. 
+ Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (2009). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity, 43}, 35-44. 
 
  Dorans, N. J. and Kullick, E. (1986). Demonstrating the utility of the standardization approach to assessing unexpected differential item performance on the Scholastic Aptitude Test. \emph{Journal of Educational Measurement, 23}, 355-368.
 
@@ -57,6 +57,8 @@
  manuscript.
 
  Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures. \emph{Applied Measurement in Education, 14}, 235-259. 
+
+ Penfield, R.D. (2003). Application of the Breslow-Day test of trend in odds ratio heterogeneity to the detection of nonuniform DIF. \emph{Alberta Journal of Educational Research, 49}, 231-243.
 
  Raju, N. S. (1990). Determining the significance of estimated signed and unsigned areas between two item response functions. \emph{Applied Psychological Measurement, 14}, 197-207.
  

@@ -10,8 +10,8 @@
  }
 
 \usage{
- difBD(Data, group, focal.name, alpha=0.05, purify=FALSE, 
- nrIter=10)
+ difBD(Data, group, focal.name, BDstat="BD", alpha=0.05,
+ purify=FALSE, nrIter=10)
  \method{print}{BD}(x, ...)
  \method{plot}{BD}(x, pch=8, number=TRUE, col="red", ...)
  }
@@ -20,6 +20,7 @@
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{Data}) of group membership. See \bold{Details}.}
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
+ \item{BDstat}{character specifying the DIF statistic to be used. Possible values are \code{"BD"} (default) and \code{"trend"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is \code{FALSE}).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
@@ -35,6 +36,7 @@ A list of class "BD" with the following arguments:
    the degrees of freedom, and the last column displays the asymptotic \emph{p}-values.}
   \item{alpha}{the significance level for DIF detection.}
   \item{DIFitems}{either the column indicators of the items which were detected as DIF items, or "No DIF item detected".}
+  \item{BDstat}{the value of the \code{BDstat} argument.}
   \item{purification}{the value of \code{purify} option.} 
   \item{nrPur}{the number of iterations in the item purification process. Returned only if \code{purify} is \code{TRUE}.}
   \item{difPur}{a binary matrix with one row per iteration in the item purification process and one column per item. Zeros and ones in the \emph{i}-th 
@@ -57,9 +59,14 @@ A list of class "BD" with the following arguments:
  The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  the value of the argument \code{focal.name}. 
  
+ Two test statistics are available: the usual Breslow-Day statistic for testing homogeneous association (Aguerri, Galibert, Attorresi and Maranon, 2009)
+ and the trend test statistic for assessing some monotonic trend in the odss ratios (Penfield, 2003). The DIF statistic is supplied by the \code{BDstat} argument, 
+ with values \code{"BD"} (default) for the usual statistic and \code{"trend"} for the trend test statistic.
+
  The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-square distribution with lower-tail
- probability of one minus \code{alpha}, and the degrees of freedom depend on the number of partial tables taken into account 
- (Aguerri \emph{et al.}, in press; Penfield, 2003).
+ probability of one minus \code{alpha}, and the degrees of freedom depend on the DIF statistic. With the usual Breslow-Day statistic
+ (\code{BDstat=="BD"}), it is the number of partial tables taken into account (Aguerri \emph{et al.}, 2009). With the trend test statistic, the degrees
+ of freedom are always equal to one (Penfield, 2003).
  
  Item purification can be performed by setting \code{purify} to \code{TRUE}. Purification works as follows: if at least one item was detected as functioning 
  differently at the first step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
@@ -67,13 +74,9 @@ A list of class "BD" with the following arguments:
  or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
 }
 
-\note{
- The current test of Breslow-Day makes use of the statistic for testing odds ratio heterogeneity as given by Aguerri et al. (in press). This is not the Breslow-Day test
- of trend in odds ratio heterogeneity displayed by Penfield (2003).
-}
 
 \references{
- Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (in press). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity}. 
+ Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (2009). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity, 43}, 35-44. 
 
  Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research, vol. I: The analysis of case-control studies}. Scientific Publication No 32. International Agency for Research on Cancer, Lyon.
 
@@ -117,6 +120,9 @@ A list of class "BD" with the following arguments:
  difBD(verbal, group=25, focal.name=1)
  difBD(verbal, group="Gender", focal.name=1)
  difBD(verbal[,1:24], group=verbal[,25], focal.name=1)
+
+ # With the BD trend test statistic
+ difBD(verbal, group=25, focal.name=1, BDstat="trend")
 
  # With item purification  
  difBD(verbal, group="Gender", focal.name=1, purify=TRUE)

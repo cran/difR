@@ -4,7 +4,7 @@
 \title{Mantel-Haenszel DIF statistic}
 
 \description{
- Calculates the Mantel-Haenszel statistics for DIF detection. 
+ Calculates Mantel-Haenszel statistics for DIF detection. 
  }
 
 \usage{
@@ -19,13 +19,14 @@
  }
 
 \value{
- A list with wto arguments:
+ A list with three arguments:
  \item{resMH}{the vector of the Mantel-Haenszel DIF statistics.}
  \item{resAlpha}{the vector of the Mantel-Haenszel estimates of the common odds ratios.}
+ \item{varLambda}{the variance of the \eqn{\lambda_{MH}} statistic. See \bold{Details}.}
  }
  
 \details{
- This command computes the Mantel-Haenszel (1959) statistic in the specific framework of differential item functioning. It forms the basic command
+ This command basically computes the Mantel-Haenszel (1959) statistic in the specific framework of differential item functioning. It forms the basic command
  of \code{\link{difMH}} and is specifically designed for this call.
  
  The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
@@ -39,7 +40,9 @@
  are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is primarily designed to perform item purification.
  
  In addition to the Mantel-Haenszel statistics to identify DIF items, \code{mantelHaenszel} computes the estimates of the common odds ratio \eqn{\alpha_{MH}} which are used
- for measuring the effect size of the items (Holland and Thayer, 1985, 1988).
+ for measuring the effect size of the items (Holland and Thayer, 1985, 1988). They are returned in the \code{resAlpha} arguiment of the output list. Moreover, the logarithm 
+ of \eqn{\alpha_{MH}}, say \eqn{\lambda_{MH}}, is asymptotically distributed and its variance is computed and returned into the \code{varLambda} argument. Note that this
+ variance is the one proposed by Philips and Holland (1987), since it seems the most accurate expression for the variance of \eqn{\lambda_{MH}} (Penfield and Camilli, 2007).
 }
 
 \references{
@@ -52,8 +55,14 @@
  of dichotomous differential item functioning. \emph{Behavior Research Methods}.
 
  Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer Institute, 22}, 719-748.
- }
  
+ Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray (Eds.), \emph{Handbook of Statistics 26: Psychometrics}
+ (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
+
+ Philips, A., and Holland, P. W. (1987). Estimators of the Mantel-Haenszel log odds-ratio estimate. \emph{Biometrics, 43}, 425-431.
+ }
+
+
 \author{
     Sebastien Beland \cr
     Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr

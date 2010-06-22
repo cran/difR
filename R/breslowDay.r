@@ -1,5 +1,5 @@
 # BRESLOW-DAY
-breslowDay<-function(data,member,anchor=1:ncol(data))
+breslowDay<-function(data,member,anchor=1:ncol(data),BDstat="BD")
 {
       res<-NULL
       for (item in 1:ncol(data))
@@ -10,6 +10,7 @@ breslowDay<-function(data,member,anchor=1:ncol(data))
       scores<-sort(unique(xj))
       ind<-1:nrow(data)
       prov<-NULL
+prov2<-NULL
         for (j in 1:length(scores))
         {
         if (scores[j]!=0 & scores[j]!=ncol(data2)){
@@ -22,7 +23,7 @@ breslowDay<-function(data,member,anchor=1:ncol(data))
         m1j<-length(ind[xj==scores[j] & data[,item]==1])
         m0j<-length(ind[xj==scores[j] & data[,item]==0])
         Tj<-length(ind[xj==scores[j]])
-        if (nrj>0 & nfj>0 & m1j>0 & m0j>0) prov<-rbind(prov,c(Aj,Bj,Cj,Dj,nrj,nfj,m1j,Tj))
+if (nrj>0 & nfj>0 & m1j>0 & m0j>0) prov<-rbind(prov,c(Aj,Bj,Cj,Dj,nrj,nfj,m1j,Tj,scores[j]))
         }}
       if (sum(prov[,2]*prov[,3]/prov[,8])==0) res<-"Error: common M-H alpha cannot be computed!"
       else{
@@ -39,14 +40,16 @@ breslowDay<-function(data,member,anchor=1:ncol(data))
         RES<-NULL
         for (ii in 1:length(V))
            {
-        if (V[ii]>0) RES<-rbind(RES,c(prov[ii,1],E[ii],V[ii]))
+        if (V[ii]>0) RES<-rbind(RES,c(prov[ii,1],E[ii],V[ii],prov[ii,9]))
            }
-        df<-nrow(RES)-1
-        STAT<-sum((RES[,1]-RES[,2])^2/RES[,3])
+df<-switch(BDstat,BD=nrow(RES)-1,trend=1)
+if (is.null(df)==TRUE) stop("wrong value for 'BDstat' argument",call.=FALSE)
+ if (BDstat=="BD") STAT<-sum((RES[,1]-RES[,2])^2/RES[,3])
+ else STAT<-(sum(RES[,4]*(RES[,1]-RES[,2])))^2/(sum(RES[,4]^2*RES[,3])-(sum(RES[,4]*RES[,3]))^2/sum(RES[,3]))
         res<-rbind(res,c(round(STAT,4),df,round(1-pchisq(STAT,df),4)))
            } 
         }
-return(res)
+return(list(res=res,BDstat=BDstat))
 }
 
 

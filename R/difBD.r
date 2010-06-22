@@ -1,4 +1,4 @@
-difBD<-function(Data,group,focal.name,alpha=0.05,purify=FALSE, nrIter=10)
+difBD<-function(Data,group,focal.name,BDstat="BD",alpha=0.05,purify=FALSE, nrIter=10)
 {
      if (length(group) == 1) {
            if (is.numeric(group)==TRUE) {
@@ -19,16 +19,16 @@ difBD<-function(Data,group,focal.name,alpha=0.05,purify=FALSE, nrIter=10)
     Group <- rep(0, nrow(DATA))
     Group[gr == focal.name] <- 1
 if (purify==FALSE) {
-STATS<-breslowDay(DATA,Group)
+STATS<-breslowDay(DATA,Group,BDstat=BDstat)$res
 if (min(STATS[,3])>=alpha) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrow(STATS))[STATS[,3]<alpha]
-RES<-list(BD=STATS,alpha=alpha,DIFitems=DIFitems,purification=purify,names=colnames(DATA))
+RES<-list(BD=STATS,alpha=alpha,DIFitems=DIFitems,BDstat=BDstat,purification=purify,names=colnames(DATA))
 }
 else{
 nrPur<-0
 difPur<-NULL
 noLoop<-FALSE
-stats1<-breslowDay(DATA,Group)
+stats1<-breslowDay(DATA,Group,BDstat=BDstat)$res
 if (min(stats1[,3])>=alpha) {
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
@@ -48,7 +48,7 @@ for (i in 1:ncol(DATA)){
 if (sum(i==dif)==0) nodif<-c(nodif,i)
 }
 }
-stats2<-breslowDay(DATA,Group,anchor=nodif)
+stats2<-breslowDay(DATA,Group,anchor=nodif,BDstat=BDstat)$res
 if (min(stats2[,3])>=alpha) dif2<-NULL
 else dif2<-(1:ncol(DATA))[stats2[,3]<alpha]
 difPur<-rbind(difPur,rep(0,ncol(DATA)))
@@ -75,7 +75,7 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(BD=stats1,alpha=alpha,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA))
+RES<-list(BD=stats1,alpha=alpha,DIFitems=DIFitems,BDstat=BDstat,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA))
 }
 class(RES)<-"BD"
 return(RES)
@@ -121,10 +121,12 @@ cat("WARNING: following results based on the last iteration of the purification"
 }
 else cat("Convergence reached after ",res$nrPur,word,"\n","\n",sep="")
 }
-cat("Breslow-Day statistic:","\n","\n")
+if (res$BDstat=="BD") cat("Breslow-Day statistic:","\n","\n")
+else cat("Breslow-Day trend test statistic:","\n","\n")
 pval<-res$BD[,3]
 symb<-symnum(pval,c(0,0.001,0.01,0.05,0.1,1),symbols=c("***","**","*",".",""))
-m1<-cbind(round(res$BD[,1],4),res$BD[,2],pval)
+if (res$BDstat=="BD") m1<-cbind(round(res$BD[,1],4),res$BD[,2],pval)
+else m1<-cbind(round(res$BD[,1],4),pval)
 m1<-noquote(cbind(format(m1,justify="right"),symb))
 if (is.null(res$names)==FALSE) rownames(m1)<-res$names
 else{
@@ -132,11 +134,13 @@ rn<-NULL
 for (i in 1:nrow(m1)) rn[i]<-paste("Item",i,sep="")
 rownames(m1)<-rn
 }
-colnames(m1)<-c("Stat.","df","P-value","")
+if (res$BDstat=="BD") colnames(m1)<-c("Stat.","df","P-value","")
+else colnames(m1)<-c("Stat.","P-value","")
 print(m1)
 cat("\n")
 cat("Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 ","\n")
-cat("\n","Alpha level: ",res$alpha,"\n","\n",sep="")
+if (res$BDstat=="BD") cat("\n","Significance level: ",res$alpha,"\n","\n",sep="")
+else cat("\n","Detection threshold: ",round(qchisq(1-res$alpha,1),4)," (significance level: ",res$alpha,")","\n","\n",sep="")
 if (is.character(res$DIFitems)==TRUE) cat("Items detected as DIF items:",res$DIFitems,"\n","\n")
 else {
 cat("Items detected as DIF items:","\n")
@@ -147,3 +151,6 @@ print(m2,quote=FALSE)
 cat("\n","\n")
 }
 }
+
+
+

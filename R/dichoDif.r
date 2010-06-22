@@ -1,6 +1,6 @@
 # DIF: COMPARING DIF STATISTICS
 
-dichoDif<-function(Data,group,focal.name,method,alpha=0.05,correct=TRUE,stdWeight="focal",thr=0.1,type="both",criterion="LRT",model="2PL",c=NULL,engine="ltm",irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10){
+dichoDif<-function(Data,group,focal.name,method,alpha=0.05,MHstat="MHChisq",correct=TRUE,stdWeight="focal",thr=0.1,BDstat="BD",type="both",criterion="LRT",model="2PL",c=NULL,engine="ltm",irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10){
 mets<-c("MH","Std","Logistic","BD","Lord","Raju","LRT")
 prov.met<-rep(0,length(method))
 for (i in 1:length(method)){
@@ -13,11 +13,11 @@ class(RES)<-"dichoDif"
 return(RES)
 }
 else{
-if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,alpha=alpha,correct=correct,stdWeight=stdWeight,thr=thr,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter))
+if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,alpha=alpha,MHstat=MHstat,correct=correct,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter))
 else{
 mat<-iters<-conv<-NULL
 for (met in 1:length(method)){
-prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],alpha=alpha,correct=correct,stdWeight=stdWeight,thr=thr,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter)
+prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],alpha=alpha,MHstat=MHstat,correct=correct,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter)
 if (method[met]=="BD") mat<-cbind(mat,rep("NoDIF",nrow(prov[[1]])))
 else mat<-cbind(mat,rep("NoDIF",length(prov[[1]])))
 if (is.character(prov$DIFitems)==FALSE) mat[prov$DIFitems,met]<-"DIF"
@@ -37,7 +37,7 @@ rname<-NULL
 for (i in 1:nrow(mat)) rname<-c(rname,paste("Item",i,sep=""))
 rownames(mat)<-rname
 }
-RES<-list(DIF=mat,correct=correct,alpha=alpha,stdWeight=stdWeight,thr=thr,type=type,criterion=criterion,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv)
+RES<-list(DIF=mat,correct=correct,alpha=alpha,MHstat=MHstat,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv)
 class(RES)<-"dichoDif"
 return(RES)}
 }
@@ -74,6 +74,9 @@ cat("Parameters:","\n")
 cat("Significance level: ",res$alpha,"\n",sep="")
 if (sum(methods=="Stand.")==1) cat("Standardization threshold:",res$thr,"\n")
 if (sum(methods=="M-H")==1){
+if (res$MHstat=="MHChisq") MHmet<-"Chi-square statistic"
+else MHmet<-"Log odds-ratio statistic"
+cat("Mantel-Haenszel DIF statistic:",MHmet,"\n")
 if (res$correct==TRUE) corr<-"Yes"
 else corr<-"No"
 cat("Mantel-Haenszel continuity correction:",corr,"\n")
@@ -82,6 +85,9 @@ if (sum(methods=="Stand.")==1){
 stdw<-ifelse(res$stdWeight=="total","both groups",ifelse(res$stdWeight=="focal","the focal group","the reference group"))
 cat("Weights for standardized P-DIF statistic: based on",stdw,"\n")
 }
+if (res$BDstat=="BD") BDmet<-"Breslow-Day statistic"
+else BDmet<-"trend test statistic"
+cat("Breslow-Day DIF statistic:",BDmet,"\n")
 if (sum(methods=="Logistic")==1){
 cat("Logistic regression DIF statistic:",res$criterion,"statistic","\n")
 resLog<-ifelse(res$type=="both","both",ifelse(res$type=="udif","uniform","non uniform"))

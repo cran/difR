@@ -1,7 +1,7 @@
 # MANTEL-HAENSZEL
 mantelHaenszel<-function(data,member,correct=TRUE,anchor=1:ncol(data))
 {
-res<-resAlpha<-NULL
+res<-resAlpha<-varLambda<-NULL
 for (item in 1:ncol(data)){
 data2<-data[,anchor]
 if (sum(anchor==item)==0) data2<-cbind(data2,data[,item])
@@ -25,7 +25,8 @@ if (Tj>1) prov<-rbind(prov,c(Aj,nrj*m1j/Tj,nrj*nfj*m1j*m0j/(Tj^2*(Tj-1)),scores[
 if (correct==TRUE) res[item] <-(abs(sum(prov[,1]-prov[,2]))-0.5)^2/sum(prov[,3])
 else res[item] <-(abs(sum(prov[,1]-prov[,2])))^2/sum(prov[,3])
 resAlpha[item]<-sum(prov[,1]*prov[,7]/prov[,8])/sum(prov[,5]*prov[,6]/prov[,8])
+varLambda[item]<- sum((prov[,1]*prov[,7]+resAlpha[item]*prov[,5]*prov[,6])*(prov[,1]+prov[,7]+resAlpha[item]*(prov[,5]+prov[,6]))/prov[,8]^2)/(2*(sum(prov[,1]*prov[,7]/prov[,8]))^2)
 }
-return(list(resMH=res,resAlpha=resAlpha))
+return(list(resMH=res,resAlpha=resAlpha,varLambda=varLambda))
 }
 

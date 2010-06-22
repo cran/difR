@@ -1,5 +1,5 @@
 # DIF MANTEL-HAENZEL
-difMH<-function(Data,group,focal.name,correct=TRUE,alpha=0.05,purify=FALSE,nrIter=10)
+difMH<-function(Data,group,focal.name,MHstat="MHChisq",correct=TRUE,alpha=0.05,purify=FALSE,nrIter=10)
 {
 if (length(group) == 1) {
 if (is.numeric(group)==TRUE) {
@@ -19,25 +19,29 @@ DATA <- Data
 }
 Group <- rep(0, nrow(DATA))
 Group[gr == focal.name] <- 1  
+Q<-switch(MHstat,MHChisq=qchisq(1-alpha,1),logOR=qnorm(1-alpha/2))
+if (is.null(Q)==TRUE) stop("'MHstat' argument not valid",call.=FALSE)
 if (purify==FALSE) {
 PROV <- mantelHaenszel(DATA,Group,correct=correct)
-STATS<-PROV$resMH
-if (max(STATS)<=qchisq(1-alpha,1)) DIFitems<-"No DIF item detected"
-else DIFitems <-(1:ncol(DATA))[STATS>qchisq(1-alpha,1)]
-RES <-list(MH=STATS,alphaMH=PROV$resAlpha,alpha=alpha,thr=qchisq(1-alpha,1),DIFitems=DIFitems,correct=correct,purification=purify,names=colnames(DATA))
+if (MHstat=="MHChisq") STATS<-PROV$resMH
+else STATS<-log(PROV$resAlpha)/sqrt(PROV$varLambda)
+if (max(abs(STATS))<=Q) DIFitems<-"No DIF item detected"
+else DIFitems <-(1:ncol(DATA))[abs(STATS)>Q]
+RES <-list(MH=STATS,alphaMH=PROV$resAlpha,varLambda=PROV$varLambda,MHstat=MHstat,alpha=alpha,thr=Q,DIFitems=DIFitems,correct=correct,purification=purify,names=colnames(DATA))
 }
 else{
 nrPur<-0
 difPur<-NULL
 noLoop<-FALSE
 prov1 <- mantelHaenszel(DATA,Group,correct=correct)
-stats1 <- prov1$resMH
-if (max(stats1)<=qchisq(1-alpha,1)) {
+if (MHstat=="MHChisq") stats1<-prov1$resMH
+else stats1<-log(prov1$resAlpha)/sqrt(prov1$varLambda)
+if (max(abs(stats1))<=Q) {
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 }
 else{ 
-dif  <-(1:ncol(DATA))[stats1>qchisq(1-alpha,1)]
+dif  <-(1:ncol(DATA))[abs(stats1)>Q]
 difPur<-rep(0,length(stats1))
 difPur[dif]<-1
 repeat{
@@ -52,9 +56,10 @@ if (sum(i==dif)==0) nodif<-c(nodif,i)
 }
 }
 prov2 <- mantelHaenszel(DATA,Group,correct=correct,anchor=nodif)
-stats2 <- prov2$resMH
-if (max(stats2)<=qchisq(1-alpha,1)) dif2<-NULL
-else dif2<-(1:ncol(DATA))[stats2>qchisq(1-alpha,1)]
+if (MHstat=="MHChisq") stats2<-prov2$resMH
+else stats2<-log(prov2$resAlpha)/sqrt(prov2$varLambda)
+if (max(abs(stats2))<=Q) dif2<-NULL
+else dif2<-(1:ncol(DATA))[abs(stats2)>Q]
 difPur<-rbind(difPur,rep(0,ncol(DATA)))
 difPur[nrPur+1,dif2]<-1
 if (length(dif)!=length(dif2)) dif<-dif2
@@ -71,7 +76,7 @@ else dif<-dif2
 }
 stats1<-stats2
 prov1 <- prov2
-DIFitems <-(1:ncol(DATA))[stats1>qchisq(1-alpha,1)]
+DIFitems <-(1:ncol(DATA))[abs(stats1)>Q]
 }
 if (is.null(difPur)==FALSE){
 ro<-co<-NULL
@@ -80,7 +85,7 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES <-list(MH=stats1,alphaMH=prov1$resAlpha,alpha=alpha,thr=qchisq(1-alpha,1),DIFitems=DIFitems,correct=correct,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA))
+RES <-list(MH=stats1,alphaMH=prov1$resAlpha,varLambda=prov1$varLambda,MHstat=MHstat,alpha=alpha,thr=qchisq(1-alpha,1),DIFitems=DIFitems,correct=correct,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA))
 }
 class(RES) <-"MH"
 return(RES)
@@ -90,16 +95,20 @@ return(RES)
 # METHODS
 plot.MH <- function(x, pch=8, number=TRUE, col="red", ...){
  res <- x
+ if (res$MHstat=="MHChisq") yl<-c(0,max(c(res$MH,res$thr)+1))
+ else yl<-c(min(c(res$MH,-res$thr)-0.5),max(c(res$MH,res$thr)+0.5))
+ ytitle=switch(res$MHstat,MHChisq="MH Chi-square statistic",logOR="log OR statistic")
  if (number==FALSE) {
-  plot(res$MH, xlab="Item", ylab="Mantel-Haenszel statistic", ylim=c(0,max(c(res$MH,res$thr)+1)), pch=pch, main="Mantel-Haenszel")
+  plot(res$MH, xlab="Item", ylab=ytitle, ylim=yl, pch=pch, main="Mantel-Haenszel")
   if (is.character(res$DIFitems)==FALSE) points(res$DIFitems,res$MH[res$DIFitems],pch=pch,col=col)
  }
  else {
-  plot(res$MH, xlab="Item", ylab="Mantel-Haenszel statistic", ylim=c(0,max(c(res$MH,res$thr)+1)), col="white", main="Mantel-Haenszel")
+  plot(res$MH, xlab="Item", ylab=ytitle, ylim=yl, col="white", main="Mantel-Haenszel")
   text(1:length(res$MH), res$MH, 1:length(res$MH))
   if (is.character(res$DIFitems)==FALSE) text(res$DIFitems, res$MH[res$DIFitems], res$DIFitems,col=col)
  }
  abline(h=res$thr)
+ if (res$MHstat=="logOR") abline(h=-res$thr)
 }
 
 
@@ -122,11 +131,13 @@ print.MH <- function(x, ...){
  if (max(loop)!=length(res$MH)) cat("(Note: no loop detected in less than ",res$nrPur,word,")","\n",sep="")
  else cat("(Note: loop of length ",min((1:res$nrPur)[loop==length(res$MH)])," in the item purification process)","\n",sep="")
  cat("WARNING: following results based on the last iteration of the purification","\n","\n")
-}
+ }
  else cat("Convergence reached after ",res$nrPur,word,"\n","\n",sep="")
  }
- cat("Mantel-Haenszel chi-square statistic:","\n","\n")
- pval <- round(1-pchisq(res$MH,1),4)
+ met<-switch(res$MHstat,MHChisq="Mantel-Haenszel Chi-square statistic:",logOR="Log odds-ratio statistic:")
+ cat(met,"\n","\n")
+ if (res$MHstat=="MHChisq") pval <- round(1-pchisq(res$MH,1),4)
+ else pval<-round(2*(1-pnorm(abs(res$MH))),4)
  symb <- symnum(pval,c(0,0.001,0.01,0.05,0.1,1),symbols=c("***","**","*",".",""))
  m1   <- cbind(round(res$MH,4),pval)
  m1   <- noquote(cbind(format(m1,justify="right"),symb))

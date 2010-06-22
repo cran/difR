@@ -10,8 +10,8 @@
  }
 
 \usage{
- difMH(Data, group, focal.name , correct=TRUE, alpha=0.05, 
- purify=FALSE, nrIter=10)
+ difMH(Data, group, focal.name , MHstat="MHChisq",
+ 	correct=TRUE, alpha=0.05, purify=FALSE, nrIter=10)
  \method{print}{MH}(x, ...)
  \method{plot}{MH}(x, pch=8, number=TRUE, col="red", ...)
  }
@@ -20,6 +20,7 @@
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{data}) of group membership. See \bold{Details}.}
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
+ \item{MHstat}{character: specifies the DIF statistic to be used for DIF identification. Possible values are \code{"MHChisq"} (default) and \code{"logOR"}. See \bold{Details }.}
  \item{correct}{logical: should the continuity correction be used? (default is \code{TRUE})}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
@@ -34,6 +35,8 @@
 A list of class "MH" with the following arguments:
   \item{MH}{the values of the Mantel-Haenszel DIF statistics.}
   \item{alphaMH}{the values of the mantel-Haenszel estimates of common odds ratios.}
+  \item{varLambda}{the values of the variances of the log odds-ratio statistics.}
+  \item{MHstat}{the value of the \code{MHstat} argument.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{DIFitems}{either the column indicators of the items which were detected as DIF items, or "No DIF item detected".}
@@ -60,8 +63,14 @@ A list of class "MH" with the following arguments:
  The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  the value of the argument \code{focal.name}. 
  
- The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-square distribution with lower-tail
- probability of one minus \code{alpha} and with one degree of freedom.
+ The DIF statistic is specified by the \code{MHstat} argument. By default, \code{MHstat} takes the value \code{"MHChisq"} and the Mantel-Haenszel chi-square
+ statistic is used. The other optional value is \code{"logOR"}, and the log odds-ratio statistic (that is, the log of \code{alphaMH} divided by the square root
+ of \code{varLambda}) is used. See Penfield and Camilli (2007), Philips and Holland (1987) and \code{\link{mantelHaenszel}} help file.
+ 
+ The threshold (or cut-score) for classifying items as DIF depends on the DIF statistic. With the Mantel-Haenszel chi-square statistic (\code{MHstat=="MHChisq"}),
+ it is computed as the quantile of the chi-square distribution with lower-tail probability of one minus \code{alpha} and with one degree of freedom. With 
+ the log odds-ratio statistic (\code{MHstat=="logOR"}), it is computed as the quantile of the standard normal distribution with lower-tail probability of
+ one minus \code{alpha} over two. 
  
  By default, the continuity correction factor -0.5 is used (Holland and Thayer, 1988). One can nevertheless remove it by specifying \code{correct=FALSE}.
  
@@ -88,6 +97,11 @@ A list of class "MH" with the following arguments:
 
  Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer Institute, 22}, 719-748.
  
+ Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray (Eds.), \emph{Handbook of Statistics 26: Psychometrics}
+ (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
+
+ Philips, A., and Holland, P. W. (1987). Estimators of the Mantel-Haenszel log odds-ratio estimate. \emph{Biometrics, 43}, 425-431.
+
  Raju, N. S., Bode, R. K. and Larsen, V. S. (1989). An empirical assessment of the Mantel-Haenszel statistic to detect differential item functioning. \emph{Applied Measurement in Education, 2}, 1-13.
  
  Uttaro, T. and Millsap, R. E. (1994). Factors influencing the Mantel-Haenszel procedure in the detection of differential item functioning. \emph{Applied Psychological Measurement, 18}, 15-25.
@@ -122,9 +136,12 @@ A list of class "MH" with the following arguments:
  verbal <- verbal[colnames(verbal)!="Anger"]
 
  # Three equivalent settings of the data matrix and the group membership
- difMH(verbal, group=25, focal.name=1)
+ r <- difMH(verbal, group=25, focal.name=1)
  difMH(verbal, group="Gender", focal.name=1)
  difMH(verbal[,1:24], group=verbal[,25], focal.name=1)
+
+ # With log odds-ratio statistic
+ r2 <- difMH(verbal, group=25, focal.name=1, MHstat = "logOR")
 
  # With item purification
  difMH(verbal, group="Gender", focal.name=1, purify=TRUE)
@@ -132,6 +149,10 @@ A list of class "MH" with the following arguments:
 
  # Without continuity correction and with 0.01 significance level
  difMH(verbal, group="Gender", focal.name=1, alpha=0.01, correct=FALSE)
+
+ # Plotting results
+ plot(r)
+ plot(r2)
 }
  }
 

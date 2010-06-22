@@ -6,6 +6,43 @@
 
 
 ------------------------------------
+- Changes in difR 3.1 (2010-06-22) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  The variance of the log odds-ratio statistic (Philips and
+     Holland, 1987) has been added as output of the 'mantelHaenszel'
+     function. 
+
+  o  The 'difMH' method has a new input argument called 'MHstat'. It
+     specifies which DIF statistic must be considered. Default value
+     'MHChisq' sets the chi-square statistic, while 'logOR' imposes
+     the log odds-ratio statistic.
+
+  o  The commands 'print.MH', 'plot.MH', 'selectDif' and 'dichoDif'
+     have been updated according to the changes in the 'difMH'
+     command.
+
+  o  The 'breslowDay' method has a new input argument called 'BDstat'.
+     It specifies which DIF statistic must be considered. Default
+     value 'BD' sets the Breslow-Day statistic as recommended by 
+     Aguerri et al. (2009), while 'trend' imposes the trend test
+     statistic as recommended by Penfield (2003).
+
+  o  The commands 'print.BD', 'selectDif' and 'dichoDif' have been
+     updated according to the changes in the 'difBD' command.
+
+
+MINOR UPDATES
+
+  o  Some typos have been fixed. 
+
+  o  The reference 'Aguerri et al.' in the 'breslowDay' and 'difBD'
+     commands has been updated.
+
+
+------------------------------------
 - Changes in difR 3.0 (2010-04-20) -
 ------------------------------------
 
