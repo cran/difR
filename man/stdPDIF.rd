@@ -56,8 +56,8 @@ A list with two arguments:
  Holland, P. W. (1985, October). \emph{On the study of differential item performance without IRT}. Paper presented at the meeting of 
  Military Testing Association, San Diego (CA).  
 
- Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
 }
  
 \author{

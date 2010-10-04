@@ -24,7 +24,7 @@
   \item{Generalized Lord's chi-square test (Kim, Cohen and Park, 1995).}
     }
 
- The difR package is further described in Magis, Beland, Tuerlinckx and De Boeck (in press).
+ The difR package is further described in Magis, Beland, Tuerlinckx and De Boeck (2010).
  }
 
 \details{
@@ -50,8 +50,8 @@
  
  Lord, F. (1980). \emph{Applications of item response theory to practical testing problems}. Hillsdale, NJ: Lawrence Erlbaum Associates.
 
- Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection of 
- dichotomous differential item functioning. \emph{Behavior Research Methods}.
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
 
  Magis, D., Raiche, G., Beland, S. and Gerard, P. (2010). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
  manuscript.

@@ -91,8 +91,8 @@ Logistik(data, member, anchor=1:ncol(data), type="both",
 
  Johnson, R. A. and Wichern, D. W. (1998). \emph{Applied multivariate statistical analysis (fourth edition)}. Upper saddle river, NJ: prentice-Hall.
 
- Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (in press). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods}.
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
 
  Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692.
 
