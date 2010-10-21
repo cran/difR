@@ -6,6 +6,22 @@
 
 
 --------------------------------------
+- Changes in difR > 3.3 (2010-10-21) -
+--------------------------------------
+
+MAJOR UPDATES
+
+  o  To implement the SIBTEST method. Currently some R code
+     is available but must be checked for validity.
+
+  o  To implement Angoff's Delta Plot (or Transformed Item
+     Difficulties) method.
+
+  o  To add procedures for DIF identification with
+     polytomous items.
+
+
+--------------------------------------
 - Changes in difR > 3.2 (2010-10-04) -
 --------------------------------------
 

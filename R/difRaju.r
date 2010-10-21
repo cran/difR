@@ -1,5 +1,6 @@
-difRaju<-function(Data, group, focal.name, model, c=NULL, engine="ltm", irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10){
-
+difRaju<-function(Data, group, focal.name, model, c=NULL, engine="ltm", irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default"))
+{
+internalRaju<-function(){
 if (is.null(irtParam)==FALSE){
 nrItems<-nrow(irtParam)/2
 m0<-irtParam[1:nrItems,]
@@ -75,7 +76,7 @@ if (purify==FALSE) {
 STATS<-RajuZ(m0,m1p)[,3]
 if (max(abs(STATS))<=qnorm(1-alpha/2)) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrItems)[abs(STATS)>qnorm(1-alpha/2)]
-RES<-list(RajuZ=STATS,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,itemParInit=itemParInit,estPar=estPar,names=dataName)
+RES<-list(RajuZ=STATS,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,itemParInit=itemParInit,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -86,7 +87,7 @@ if (max(abs(stats1))<=qnorm(1-alpha/2)){
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 itemParFinal=rbind(m0,m1p)
-RES<-list(RajuZ=stats1,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName)
+RES<-list(RajuZ=stats1,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 else{ 
 dif<-(1:nrItems)[abs(stats1)>qnorm(1-alpha/2)]
@@ -131,16 +132,27 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(RajuZ=stats2,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName)
+RES<-list(RajuZ=stats2,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 }
 class(RES)<-"Raj"
 return(RES)
 }
+resToReturn<-internalRaju()
+if (save.output==TRUE){
+if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-output[2]
+fileName<-paste(wd,output[1],".txt",sep="")
+capture.output(resToReturn,file=fileName)
+}
+return(resToReturn)
+}
 
 
 # METHODS
-plot.Raj<-function(x,pch=8,number=TRUE,col="red",...){
+plot.Raj<-function(x,pch=8,number=TRUE,col="red", save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
+{
+internalRaju<-function(){
 res <- x
 title<-paste("Raju's method (",res$model,")",sep="")
 if (number==FALSE) {
@@ -156,6 +168,36 @@ abline(h=res$thr)
 abline(h=-res$thr)
 abline(h=0,lty=2)
 }
+internalRaju()
+if (save.plot==TRUE){
+plotype<-NULL
+if (save.options[3]=="pdf") plotype<-1
+if (save.options[3]=="jpeg") plotype<-2
+if (is.null(plotype)==TRUE) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
+else {
+if (save.options[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-save.options[2]
+fileName<-paste(wd,save.options[1],switch(plotype,'1'=".pdf",'2'=".jpg"),sep="")
+if (plotype==1){
+{
+pdf(file=fileName)
+internalRaju()
+}
+dev.off()
+}
+if (plotype==2){
+{
+jpeg(file=fileName)
+internalRaju()
+}
+dev.off()
+}
+cat("The plot was captured and saved into","\n"," '",fileName,"'","\n","\n",sep="")
+}
+}
+else cat("The plot was not captured!","\n",sep="")
+}
+
 
 
 print.Raj<-function(x,...){
@@ -224,8 +266,15 @@ m2<-cbind(rownames(m1)[res$DIFitems])
 rownames(m2)<-rep("",nrow(m2))
 colnames(m2)<-""
 print(m2,quote=FALSE)
-cat("\n","\n")
+cat("\n")
 }
+}
+    if (x$save.output==FALSE) cat("Output was not captured!","\n")
+    else {
+if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-x$output[2]
+fileName<-paste(wd,x$output[1],".txt",sep="")
+cat("Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
 }
 }
 

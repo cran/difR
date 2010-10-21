@@ -13,7 +13,8 @@
   MHstat="MHChisq", correct=TRUE, stdWeight="focal", 
   thr=0.1, BDstat="BD",type="both", criterion="LRT",
   model="2PL", c=NULL, engine="ltm", irtParam=NULL,
-  same.scale=TRUE, purify=FALSE, nrIter=10)
+  same.scale=TRUE, purify=FALSE, nrIter=10,
+  save.output=FALSE, output=c("out","default"))
  }
  
 \arguments{
@@ -36,7 +37,9 @@
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
- \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
+ \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.} 
 }
 
 \value{
@@ -83,6 +86,9 @@
 
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification is slightly different 
  for IRT and for non-IRT based methods. See the corresponding methods for further information.
+
+ The output of the selected method can be stored in a text file by fixing \code{save.output} and \code{output} appropriately. See the help file of the corresponding
+ method for further information.
 }
  
 \references{
@@ -139,6 +145,10 @@
 
  # Calling Mantel-Haenszel 
  selectDif(verbal, group=25, focal.name=1, method="MH")
+
+ # Calling Mantel-Haenszel and saving output in 'MH.txt' file
+ selectDif(verbal, group=25, focal.name=1, method="MH", 
+    save.output=TRUE,output=c("MH","default"))
 
  # Calling Lord method
  # 2PL model, with item purification

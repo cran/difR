@@ -10,13 +10,13 @@
  }
 
 \usage{
- difLord(Data, group, focal.name, model, c=NULL, engine="ltm", 
- irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, 
- nrIter=10)
+difLord(Data, group, focal.name, model, c=NULL, engine="ltm", 
+	 irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, 
+	 nrIter=10, save.output=FALSE, output=c("out","default"))
  \method{print}{Lord}(x, ...)
  \method{plot}{Lord}(x, plot = "lordStat", item = 1, pch = 8, number = TRUE, 
-    col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), ...) 
-
+ 	col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), 
+ 	save.plot=FALSE, save.options=c("plot","default","pdf"), ...)
  }
 
 \arguments{
@@ -31,12 +31,17 @@
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
+ \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
  \item{x}{the result from a \code{Lord} class object.}
  \item{plot}{character: the type of plot, either \code{"lordStat"} or \code{"itemCurve"}. See \bold{Details}.}
  \item{item}{numeric or character: either the number or the name of the item for which ICC curves are plotted. Used only when \code{plot="itemCurve"}.}
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
  \item{colIC, ltyIC}{vectors of two elements of the usual \code{col} and \code{lty} arguments for ICC curves. Used only when \code{plot="itemCurve"}.}
+ \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
+ \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
+                     and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
  }
 
@@ -62,6 +67,8 @@ A list of class "Lord" with the following arguments:
    only if \code{purify} is \code{TRUE}.}
   \item{estPar}{a logical value indicating whether the item parameters were estimated (\code{TRUE}) or provided by the user (\code{FALSE}).}
   \item{names}{the names of the items.}
+  \item{save.output}{the value of the \code{save.output} argument.}
+  \item{output}{the value of the \code{output} argument.}
  }
  
 \details{
@@ -105,6 +112,12 @@ A list of class "Lord" with the following arguments:
  are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
  See Candell and Drasgow (1988) for further details.
 
+ The output of the \code{difLord}, as displayed by the \code{print.Lord} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
+ (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
+ of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of \code{output}. The
+ default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
+ \bold{Examples} section for an illustration.
+
  Two types of plots are available. The first one is obtained by setting \code{plot="lordStat"} and it is the default option. The chi-square statistics are displayed 
  on the Y axis, for each item. The detection threshold is displayed by a horizontal line, and items flagged as DIF are printed with the color defined by argument \code{col}.
  By default, items are spotted with their number identification (\code{number=TRUE}); otherwise they are simply drawn as dots whose form is given by the option \code{pch}.
@@ -114,7 +127,12 @@ A list of class "Lord" with the following arguments:
  if the output argument \code{purification} is \code{TRUE}, otherwise from the \code{itemParInit} matrix and after a rescaling of the item parameters using the 
  \code{\link{itemRescale}} command. A legend is displayed in the upper left corner of the plot. The colors and types of traits for these curves are defined by means of 
  the arguments \code{colIC} and \code{ltyIC} respectively. These are set as vectors of length 2, the first element for the reference group and the second for the focal group.
+
+ Both types of plots can be stored in a figure file, either in PDF or JPEG format. Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through 
+ the components of \code{save.options}. The first two components perform similarly as those of the \code{output} argument. The third component is the figure format, with allowed
+ values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
 }
+
 
 \references{
  Bates, D. and Maechler, M. (2009). lme4: Linear mixed-effects models using S4 classes. R package version 0.999375-31. http://CRAN.R-project.org/package=lme4
@@ -182,6 +200,10 @@ A list of class "Lord" with the following arguments:
  difLord(verbal, group="Gender", focal.name=1, model="3PL", c=0.05,
  purify=TRUE)
 
+ # Saving the output into the "LordResults.txt" file (and default path)
+ r <- difLord(verbal, group=25, focal.name=1, model="1PL",
+ 	    save.output = TRUE, output = c("LordResults","default"))
+
  # Splitting the data into reference and focal groups
  nF<-sum(Gender)
  nR<-nrow(verbal)-nF
@@ -212,5 +234,12 @@ A list of class "Lord" with the following arguments:
  plot(r)
  plot(r, plot="itemCurve", item=1)
  plot(r, plot="itemCurve", item=6)
+
+ # Plotting results and saving it in a PDF figure
+ plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))
+
+ # Changing the path, JPEG figure
+ path <- "c:/Program Files/"
+ plot(r, save.plot = TRUE, save.options = c("plot", path, "jpeg"))
 }
  }

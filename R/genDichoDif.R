@@ -2,8 +2,9 @@
 
 genDichoDif <- function (Data, group, focal.names, method, type=  "both", criterion="LRT",
     alpha = 0.05, model = "2PL", c = NULL, engine="ltm", irtParam = NULL, 
-    nrFocal = 2, same.scale = TRUE, purify = FALSE, nrIter = 10) 
+    nrFocal = 2, same.scale = TRUE, purify = FALSE, nrIter = 10, save.output=FALSE, output=c("out","default"))  
 {
+internalGenDicho<-function(){
     mets <- c("GMH", "genLogistic", "genLord")
     prov.met <- rep(0, length(method))
     for (i in 1:length(method)) {
@@ -20,7 +21,7 @@ genDichoDif <- function (Data, group, focal.names, method, type=  "both", criter
         if (length(method) == 1) 
             return(selectGenDif(Data = Data, group = group, focal.names = focal.names, type=type, criterion=criterion,
                 method = method, alpha = alpha, model = model, c = c, irtParam = irtParam, 
-                same.scale = same.scale, purify = purify, nrIter = nrIter))
+                same.scale = same.scale, purify = purify, nrIter = nrIter,save.output=save.output,output=output))
         else {
             mat <- iters <- conv <- NULL
             for (met in 1:length(method)) {
@@ -53,11 +54,21 @@ genDichoDif <- function (Data, group, focal.names, method, type=  "both", criter
             RES <- list(DIF = mat, alpha = alpha, method = method,
                 type = type, criterion=criterion, model = model, c = c, irtParam = irtParam, 
 		    same.scale = same.scale, purification = purify, nrPur = iters, 
-                convergence = conv)
+                convergence = conv,save.output=save.output,output=output)
             class(RES) <- "genDichoDif"
             return(RES)
         }
     }
+}
+resToReturn<-internalGenDicho()
+if (save.output==TRUE){
+if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-output[2]
+fileName<-paste(wd,output[1],".txt",sep="")
+capture.output(resToReturn,file=fileName)
+}
+return(resToReturn)
+
 }
 
 
@@ -113,6 +124,13 @@ for (i in 1:nrow(res$DIF)) nr[i]<-paste(length(res$DIF[i,][res$DIF[i,]=="DIF"]),
 MAT<-cbind(res$DIF,nr)
 colnames(MAT)[ncol(MAT)]<-"#DIF"
 print(format(MAT,justify="centre"),quote=FALSE)
+}
+if (x$save.output==FALSE) cat("\n","Output was not captured!","\n")
+else {
+if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-x$output[2]
+fileName<-paste(wd,x$output[1],".txt",sep="")
+cat("\n","Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
 }
 }
 

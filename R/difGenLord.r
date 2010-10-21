@@ -1,5 +1,6 @@
-difGenLord<-function(Data, group, focal.names, model, c=NULL, engine="ltm", irtParam=NULL, nrFocal=2, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10)
+difGenLord<-function(Data, group, focal.names, model, c=NULL, engine="ltm", irtParam=NULL, nrFocal=2, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
+internalGLord<-function(){
 if (is.null(irtParam)==FALSE){
 nrItems<-nrow(irtParam)/(nrFocal+1)
 if (same.scale==FALSE){
@@ -71,7 +72,7 @@ if (purify==FALSE) {
 STATS<-genLordChi2(irtParam,nrFocal)
 if ((max(STATS))<=Q) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrItems)[STATS>Q]
-RES<-list(genLordChi=STATS,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,itemParInit=itemParInit,estPar=estPar,names=dataName,focal.names=focal.names)
+RES<-list(genLordChi=STATS,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,itemParInit=itemParInit,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -82,7 +83,7 @@ if (max(stats1)<=Q){
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 itemParFinal=irtParam
-RES<-list(genLordChi=stats1,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names)
+RES<-list(genLordChi=stats1,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
 }
 else{
 dif<-(1:nrItems)[stats1>Q]
@@ -131,11 +132,20 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(genLordChi=stats2,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names)
+RES<-list(genLordChi=stats2,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
 }
 }
 class(RES)<-"GenLord"
 return(RES)
+}
+resToReturn<-internalGLord()
+if (save.output==TRUE){
+if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-output[2]
+fileName<-paste(wd,output[1],".txt",sep="")
+capture.output(resToReturn,file=fileName)
+}
+return(resToReturn)
 }
 
 
@@ -143,8 +153,9 @@ return(RES)
 # METHODS
 plot.GenLord<-function (x, plot = "lordStat", item = 1, pch = 8, number = TRUE, 
     col = "red", colIC = rep("black", length(x$focal.names) + 
-        1), ltyIC = 1:(length(x$focal.names) + 1), ...) 
+        1), ltyIC = 1:(length(x$focal.names) + 1), save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
 {
+internalGLord<-function(){
     res <- x
     title <- expression(paste("Generalized Lord's ", chi^2))
     plotType <- switch(plot, lordStat = 1, itemCurve = 2)
@@ -207,7 +218,37 @@ plot.GenLord<-function (x, plot = "lordStat", item = 1, pch = 8, number = TRUE,
                   bty = "n")
           }
      }
- }
+}
+internalGLord()
+if (save.plot==TRUE){
+plotype<-NULL
+if (save.options[3]=="pdf") plotype<-1
+if (save.options[3]=="jpeg") plotype<-2
+if (is.null(plotype)==TRUE) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
+else {
+if (save.options[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-save.options[2]
+fileName<-paste(wd,save.options[1],switch(plotype,'1'=".pdf",'2'=".jpg"),sep="")
+if (plotype==1){
+{
+pdf(file=fileName)
+internalGLord()
+}
+dev.off()
+}
+if (plotype==2){
+{
+jpeg(file=fileName)
+internalGLord()
+}
+dev.off()
+}
+cat("The plot was captured and saved into","\n"," '",fileName,"'","\n","\n",sep="")
+}
+}
+else cat("The plot was not captured!","\n",sep="")
+}
+
 
 print.GenLord<-function(x,...){
 res<-x
@@ -276,7 +317,14 @@ m2<-cbind(rownames(m1)[res$DIFitems])
 rownames(m2)<-rep("",nrow(m2))
 colnames(m2)<-""
 print(m2,quote=FALSE)
-cat("\n","\n")
+cat("\n")
+if (x$save.output==FALSE) cat("Output was not captured!","\n")
+else {
+if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-x$output[2]
+fileName<-paste(wd,x$output[1],".txt",sep="")
+cat("Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
+}
 }
 }
 

@@ -1,5 +1,6 @@
-difBD<-function(Data,group,focal.name,BDstat="BD",alpha=0.05,purify=FALSE, nrIter=10)
+difBD<-function(Data,group,focal.name,BDstat="BD",alpha=0.05,purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
+internalBD<-function(){
      if (length(group) == 1) {
            if (is.numeric(group)==TRUE) {
               gr <- Data[, group]
@@ -22,7 +23,7 @@ if (purify==FALSE) {
 STATS<-breslowDay(DATA,Group,BDstat=BDstat)$res
 if (min(STATS[,3])>=alpha) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrow(STATS))[STATS[,3]<alpha]
-RES<-list(BD=STATS,alpha=alpha,DIFitems=DIFitems,BDstat=BDstat,purification=purify,names=colnames(DATA))
+RES<-list(BD=STATS,alpha=alpha,DIFitems=DIFitems,BDstat=BDstat,purification=purify,names=colnames(DATA),save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -75,15 +76,25 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(BD=stats1,alpha=alpha,DIFitems=DIFitems,BDstat=BDstat,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA))
+RES<-list(BD=stats1,alpha=alpha,DIFitems=DIFitems,BDstat=BDstat,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA),save.output=save.output,output=output)
 }
 class(RES)<-"BD"
 return(RES)
 }
+resToReturn<-internalBD()
+if (save.output==TRUE){
+if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-output[2]
+fileName<-paste(wd,output[1],".txt",sep="")
+capture.output(resToReturn,file=fileName)
+}
+return(resToReturn)
+}
 
 
 # METHODS
-plot.BD<-function(x,pch=8,number=TRUE,col="red", ...){
+plot.BD<-function(x,pch=8,number=TRUE,col="red", save.plot=FALSE,save.options=c("plot","default","pdf"),...){
+internalBD<-function(){
 res <- x
 upper<-qchisq(1-res$alpha,res$BD[,2])
 if (number==FALSE) {
@@ -99,6 +110,36 @@ s<-seq(0.5,nrow(res$BD)+0.5,1)
 for (i in 1:nrow(res$BD)) lines(s[i:(i+1)],rep(upper[i],2))
 for (i in 1:(nrow(res$BD)-1)) lines(rep(s[i+1],2),upper[i:(i+1)],lty=2)
 }
+internalBD()
+if (save.plot==TRUE){
+plotype<-NULL
+if (save.options[3]=="pdf") plotype<-1
+if (save.options[3]=="jpeg") plotype<-2
+if (is.null(plotype)==TRUE) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
+else {
+if (save.options[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-save.options[2]
+fileName<-paste(wd,save.options[1],switch(plotype,'1'=".pdf",'2'=".jpg"),sep="")
+if (plotype==1){
+{
+pdf(file=fileName)
+internalBD()
+}
+dev.off()
+}
+if (plotype==2){
+{
+jpeg(file=fileName)
+internalBD()
+}
+dev.off()
+}
+cat("The plot was captured and saved into","\n"," '",fileName,"'","\n","\n",sep="")
+}
+}
+else cat("The plot was not captured!","\n",sep="")
+}
+
 
 
 print.BD <- function(x, ...){
@@ -148,7 +189,14 @@ m2<-cbind(rownames(m1)[res$DIFitems])
 rownames(m2)<-rep("",nrow(m2))
 colnames(m2)<-""
 print(m2,quote=FALSE)
-cat("\n","\n")
+cat("\n")
+}
+if (x$save.output==FALSE) cat("Output was not captured!","\n")
+    else {
+if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-x$output[2]
+fileName<-paste(wd,x$output[1],".txt",sep="")
+cat("Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
 }
 }
 

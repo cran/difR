@@ -9,11 +9,12 @@
  }
 
 \usage{
- dichoDif(Data, group, focal.name, method, alpha=0.05, 
-  MHstat="MHChisq", correct=TRUE, stdWeight="focal", 
-  thr=0.1, BDstat="BD", type="both", criterion="LRT",
-  model="2PL", c=NULL, engine="ltm", irtParam=NULL,
-  same.scale=TRUE, purify=FALSE, nrIter=10)
+dichoDif(Data, group, focal.name, method, alpha=0.05, 
+  	MHstat="MHChisq", correct=TRUE, stdWeight="focal", 
+  	thr=0.1, BDstat="BD", type="both", criterion="LRT",
+  	model="2PL", c=NULL, engine="ltm", irtParam=NULL,
+  	same.scale=TRUE, purify=FALSE, nrIter=10,
+  	save.output=FALSE, output=c("out","default")) 
 \method{print}{dichoDif}(x, ...)
  }
  
@@ -38,6 +39,8 @@
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
  \item{x}{result from a \code{dichoDif} class object.}
  \item{...}{other generic parameters for the \code{print} function.}
 }
@@ -62,6 +65,8 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
    Returned only if \code{purify} is TRUE.}
   \item{convergence}{a logical vector (of length equal to the number of methods) indicating whether the iterative purification process converged. 
    Returned only if \code{purify} is TRUE.}
+  \item{save.output}{the value of the \code{save.output} argument.}
+  \item{output}{the value of the \code{output} argument.}
  }
 
 \details{
@@ -107,6 +112,9 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
 
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification process is slightly different 
  for IRT and for non-IRT based methods. See the corresponding methods for further information.
+
+ The output of the \code{dichoDif} function can be stored in a text file by fixing \code{save.output} and \code{output} appropriately. See the help file of \code{\link{selectDif}}
+ function (or any other DIF method) for further information.
 }
  
 \references{
@@ -164,11 +172,16 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
  # Standardization threshold of 0.08, no continuity correction,
  # with item purification 
  dichoDif(verbal, group=25, focal.name=1, method=c("MH","Std","Logistic"),
- correct=FALSE, thr=0.08, purify=TRUE)
+   correct=FALSE, thr=0.08, purify=TRUE)
+
+ # Same analysis, but saving the output into the 'dicho' file
+ dichoDif(verbal, group=25, focal.name=1, method=c("MH","Std","Logistic"),
+   correct=FALSE, thr=0.08, purify=TRUE, save.output = TRUE, 
+   output = c("dicho","default"))
 
  # Comparing Lord and Raju results with 2PL model and
  # with item purification 
  dichoDif(verbal, group=25, focal.name=1, method=c("Lord","Raju"),
- model="2PL", purify=TRUE)
+   model="2PL", purify=TRUE)
 }
  }

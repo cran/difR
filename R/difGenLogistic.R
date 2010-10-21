@@ -1,9 +1,10 @@
 difGenLogistic<-function (Data, group, focal.names, type = "both", criterion="LRT",alpha = 0.05, 
-    purify = FALSE, nrIter = 10) 
+    purify = FALSE, nrIter = 10,save.output=FALSE, output=c("out","default"))  
 {
+internalGenLog<-function(){
     if (length(focal.names) == 1) 
         RES <- difLogistic(Data, group, focal.name = focal.names, 
-            type = type, alpha = alpha, purify = purify, nrIter = nrIter)
+            type = type, alpha = alpha, purify = purify, nrIter = nrIter,save.output=save.output,output=output)
     else {
         if (length(group) == 1) {
             if (is.numeric(group) == TRUE) {
@@ -46,7 +47,7 @@ covMat<-PROV$covMat
             RES <- list(genLogistik = STATS, logitPar = logitPar, covMat=covMat, 
                 deltaR2 = deltaR2, alpha = alpha, thr = Q, DIFitems = DIFitems, 
                 type = type, purification = purify, names = colnames(DATA), 
-                focal.names = focal.names,criterion=criterion)
+                focal.names = focal.names,criterion=criterion,save.output=save.output,output=output)
         }
         else {
             nrPur <- 0
@@ -124,18 +125,28 @@ covMat<-covMat
                 deltaR2 = deltaR2, alpha = alpha, thr = Q, DIFitems = DIFitems, 
                 type = type, purification = purify, nrPur = nrPur, 
                 difPur = difPur, convergence = noLoop, names = colnames(DATA), 
-                focal.names = focal.names,criterion=criterion)
+                focal.names = focal.names,criterion=criterion,save.output=save.output,output=output)
         }
         class(RES) <- "genLogistic"
     }
     return(RES)
 }
+resToReturn<-internalGenLog()
+if (save.output==TRUE){
+if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-output[2]
+fileName<-paste(wd,output[1],".txt",sep="")
+capture.output(resToReturn,file=fileName)
+}
+return(resToReturn)
+}
 
 # METHODS
 plot.genLogistic <- function (x, plot = "lrStat", item = 1, pch = 8, number = TRUE, col = "red", 
 colIC = rep("black",length(x$focal.names)+1), 
-ltyIC = 1:(length(x$focal.names)+1), title=NULL, ...) 
+ltyIC = 1:(length(x$focal.names)+1), title=NULL, save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
 {
+internalGenLog<-function(){
     res <- x
     plotType <- switch(plot, lrStat=1, itemCurve=2)
     if (is.null(plotType)==TRUE) return("Error: misspecified 'type' argument")
@@ -186,6 +197,36 @@ ltyIC = 1:(length(x$focal.names)+1), title=NULL, ...)
       }
     }
 }
+internalGenLog()
+if (save.plot==TRUE){
+plotype<-NULL
+if (save.options[3]=="pdf") plotype<-1
+if (save.options[3]=="jpeg") plotype<-2
+if (is.null(plotype)==TRUE) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
+else {
+if (save.options[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-save.options[2]
+fileName<-paste(wd,save.options[1],switch(plotype,'1'=".pdf",'2'=".jpg"),sep="")
+if (plotype==1){
+{
+pdf(file=fileName)
+internalGenLog()
+}
+dev.off()
+}
+if (plotype==2){
+{
+jpeg(file=fileName)
+internalGenLog()
+}
+dev.off()
+}
+cat("The plot was captured and saved into","\n"," '",fileName,"'","\n","\n",sep="")
+}
+}
+else cat("The plot was not captured!","\n",sep="")
+}
+
 
 
 print.genLogistic<-function (x, ...) 
@@ -298,5 +339,12 @@ cat("DIF flagging criterion:",ifelse(res$criterion=="Wald","Wald test","Likeliho
     cat(" Zumbo & Thomas (ZT): 0 'A' 0.13 'B' 0.26 'C' 1", "\n")
     cat(" Jodoign & Gierl (JG): 0 'A' 0.035 'B' 0.07 'C' 1", 
         "\n")
+if (x$save.output==FALSE) cat("\n","Output was not captured!","\n")
+    else {
+if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-x$output[2]
+fileName<-paste(wd,x$output[1],".txt",sep="")
+cat("\n","Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
+}
 }
 

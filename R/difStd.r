@@ -1,5 +1,6 @@
-difStd <-function(Data,group,focal.name,stdWeight="focal",thr=0.1,purify=FALSE,nrIter=10)
+difStd <-function(Data,group,focal.name,stdWeight="focal",thr=0.1,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
+internalSTD<-function(){
      if (length(group) == 1) {
            if (is.numeric(group)==TRUE) {
               gr <- Data[, group]
@@ -24,7 +25,7 @@ STATS <- resProv$resStd
 ALPHA <- resProv$resAlpha
  if (max(abs(STATS))<=thr) DIFitems<-"No DIF item detected"
  else DIFitems <-(1:ncol(DATA))[abs(STATS)>thr]
-RES <-list(PDIF=STATS,stdAlpha=ALPHA,thr=thr,DIFitems=DIFitems,purification=purify,names=colnames(DATA),stdWeight=stdWeight)
+RES <-list(PDIF=STATS,stdAlpha=ALPHA,thr=thr,DIFitems=DIFitems,purification=purify,names=colnames(DATA),stdWeight=stdWeight,save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -82,14 +83,26 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(PDIF=stats1,stdAlpha=alpha1,thr=thr,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA),stdWeight=stdWeight)
+RES<-list(PDIF=stats1,stdAlpha=alpha1,thr=thr,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA),stdWeight=stdWeight,save.output=save.output,output=output)
 }
 class(RES)<-"PDIF"
 return(RES)
 }
+resToReturn<-internalSTD()
+if (save.output==TRUE){
+if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-output[2]
+fileName<-paste(wd,output[1],".txt",sep="")
+capture.output(resToReturn,file=fileName)
+}
+return(resToReturn)
+}
+
 
 #METHODS
-plot.PDIF <-function(x,pch=8,number=TRUE,col="red", ...){
+plot.PDIF <-function(x,pch=8,number=TRUE,col="red",save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
+{
+internalSTD<-function(){
 res <- x
 if (number==FALSE) {
 plot(res$PDIF,xlab="Item",ylab="Standardization statistic",ylim=c(max(-1,min(c(res$PDIF,-res$thr)-0.2)),min(1,max(c(res$PDIF,res$thr)+0.2))),pch=pch,main="Standardization")
@@ -103,6 +116,35 @@ if (is.character(res$DIFitems)==FALSE) text(res$DIFitems,res$PDIF[res$DIFitems],
 abline(h=res$thr)
 abline(h=-res$thr)
 abline(h=0,lty=2)
+}
+internalSTD()
+if (save.plot==TRUE){
+plotype<-NULL
+if (save.options[3]=="pdf") plotype<-1
+if (save.options[3]=="jpeg") plotype<-2
+if (is.null(plotype)==TRUE) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
+else {
+if (save.options[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-save.options[2]
+fileName<-paste(wd,save.options[1],switch(plotype,'1'=".pdf",'2'=".jpg"),sep="")
+if (plotype==1){
+{
+pdf(file=fileName)
+internalSTD()
+}
+dev.off()
+}
+if (plotype==2){
+{
+jpeg(file=fileName)
+internalSTD()
+}
+dev.off()
+}
+cat("The plot was captured and saved into","\n"," '",fileName,"'","\n","\n",sep="")
+}
+}
+else cat("The plot was not captured!","\n",sep="")
 }
 
 
@@ -180,6 +222,13 @@ cat("\n","\n")
   cat("  (for absolute values of 'St-P-DIF')","\n")
   cat(" ETS Delta Scale (ETS): 0 'A' 1 'B' 1.5 'C'","\n")
   cat("  (for absolute values of 'deltaStd')","\n")
+    if (x$save.output==FALSE) cat("\n","Output was not captured!","\n")
+    else {
+if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-x$output[2]
+fileName<-paste(wd,x$output[1],".txt",sep="")
+cat("\n","Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
+}
 }
 
 

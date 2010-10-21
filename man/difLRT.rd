@@ -10,10 +10,12 @@
 }
 
 \usage{
- difLRT(Data, group, focal.name, alpha=0.05, purify=FALSE, 
- nrIter=10)
+difLRT(Data, group, focal.name, alpha=0.05, purify=FALSE, 
+ 	nrIter=10, save.output=FALSE, output=c("out","default")) 
  \method{print}{LRT}(x, ...)
- \method{plot}{LRT}(x, pch=8, number=TRUE, col="red", ...)
+ \method{plot}{LRT}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
+      save.options=c("plot","default","pdf"), ...)
+
 }
 
 \arguments{
@@ -23,9 +25,14 @@
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
  \item{x}{the result from a \code{LRT} class object.}
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
+ \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
+ \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
+                     and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
 }
 
@@ -40,6 +47,8 @@ A list of class "LRT" with the following arguments:
   \item{convergence}{logical indicating whether the iterative item purification process stopped before the maximal number of allowed iterations
    (10 by default). Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
+  \item{save.output}{the value of the \code{save.output} argument.}
+  \item{output}{the value of the \code{output} argument.}
  }
 
 \details{
@@ -73,6 +82,18 @@ A list of class "LRT" with the following arguments:
  removed from the set of tested items, and the procedure is repeated (using the remaining items) until no additionnal item is
  identified as functioning differently. The process stops when either there is no new item detected as DIF, or when \code{nrIter} iterations 
  are run and new DIF items are nevertheless detected. In the latter case a warning message is printed. 
+
+ The output of the \code{difLRT}, as displayed by the \code{print.LRT} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
+ (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
+ of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of \code{output}. The
+ default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
+ \bold{Examples} section for an illustration.
+
+ The \code{plot.LRT} function displays the DIF statistics in a plot, with each item on the X axis. The type of point and the colour are fixed by the usual \code{pch} and 
+ \code{col} arguments. Option \code{number} permits to display the item numbers instead. Also, the plot can be stored in a figure file, either in PDF or JPEG format.
+ Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through the components of \code{save.options}. The first two components perform similarly 
+ as those of the \code{output} argument. The third component is the figure format, with allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
+
 }
 
 \note{
@@ -123,12 +144,26 @@ A list of class "LRT" with the following arguments:
  verbal<-verbal[1:50,c(1:5,25)]
 
  # Three equivalent settings of the data matrix and the group membership
- difLRT(verbal, group=6, focal.name=1)
+ r <- difLRT(verbal, group=6, focal.name=1)
  difLRT(verbal, group="Gender", focal.name=1)
  difLRT(verbal[,1:5], group=verbal[,6], focal.name=1)
 
  # With item purification
  difLRT(verbal, group=6, focal.name=1, purify=TRUE)
+
+ # Saving the output into the "LRTresults.txt" file (and default path)
+ r <- difLRT(verbal, group=6, focal.name=1, save.output = TRUE, 
+            output = c("LRTresults","default"))
+
+ # Graphical devices
+ plot(r)
+
+ # Plotting results and saving it in a PDF figure
+ plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))
+
+ # Changing the path, JPEG figure
+ path <- "c:/Program Files/"
+ plot(r, save.plot = TRUE, save.options = c("plot", path, "jpeg"))
 
  # WARNING: do not trust the results above since they are based on
  # a selected subset of the verbal data set!

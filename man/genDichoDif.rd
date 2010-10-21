@@ -10,10 +10,11 @@
  }
 
 \usage{
- genDichoDif(Data, group, focal.names, method, type="both",
-  criterion="LRT", alpha=0.05, model="2PL", c=NULL,
-  engine = "ltm", irtParam=NULL, nrFocal=2, same.scale=TRUE,
-  purify=FALSE, nrIter=10)
+genDichoDif(Data, group, focal.names, method, type="both",
+   criterion="LRT", alpha=0.05, model="2PL", c=NULL,
+   engine = "ltm", irtParam=NULL, nrFocal=2, same.scale=TRUE,
+   purify=FALSE, nrIter=10, save.output=FALSE, 
+   output=c("out","default")) 
  \method{print}{genDichoDif}(x, ...)
  }
  
@@ -33,6 +34,8 @@
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
+ \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
  \item{x}{result from a \code{genDichoDif} class object.}
  \item{...}{other generic parameters for the \code{print} function.}
 }
@@ -53,6 +56,8 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
    Returned only if \code{purify} is TRUE.}
   \item{convergence}{a logical vector (of length equal to the number of methods) indicating whether the iterative purification process converged. 
    Returned only if \code{purify} is TRUE.}
+  \item{save.output}{the value of the \code{save.output} argument.}
+  \item{output}{the value of the \code{output} argument.}
  }
 
 \details{
@@ -84,6 +89,9 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
 
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification process is slightly different 
  for IRT and for non-IRT based methods. See the corresponding methods for further information.
+
+ The output of the \code{genDichoDif} function can be stored in a text file by fixing \code{save.output} and \code{output} appropriately. See the help file of \code{\link{selectGenDif}}
+ function (or any other DIF method) for further information.
 }
  
 \references{
@@ -140,6 +148,11 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
  # Comparing the three available methods
  # with item purification 
  genDichoDif(Verbal, group=25, focal.names=names, method=c("GMH",
- "genLogistic","genLord"), purify=TRUE)
+  "genLogistic","genLord"), purify=TRUE, save.output = TRUE, 
+   output = c("dicho","default"))
+
+ # Same analysis, but saving the output into the 'genDicho' file
+ genDichoDif(Verbal, group=25, focal.names=names, method=c("GMH",
+  "genLogistic","genLord"), purify=TRUE)
 }
 }

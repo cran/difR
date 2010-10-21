@@ -10,14 +10,16 @@
  }
 
 \usage{
- difGenLord(Data, group, focal.names, model, c=NULL, engine="ltm", 
- irtParam=NULL, nrFocal=2, same.scale=TRUE, alpha=0.05, 
- purify=FALSE, nrIter=10)
+difGenLord(Data, group, focal.names, model, c=NULL, engine="ltm", 
+  	irtParam=NULL, nrFocal=2, same.scale=TRUE, alpha=0.05, 
+  	purify=FALSE, nrIter=10, save.output=FALSE, 
+  	output=c("out","default")) 
  \method{print}{GenLord}(x, ...)
  \method{plot}{GenLord}(x, plot = "lordStat", item = 1, pch = 8,
     number = TRUE, col = "red", colIC = rep("black",
     length(x$focal.names)+1), ltyIC = 1:(length(x$focal.names)
-     + 1), ...)
+    + 1), save.plot=FALSE, save.options=c("plot","default","pdf"),
+    ...)
  }
 
 \arguments{
@@ -32,13 +34,18 @@
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is \code{TRUE}). See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
- \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
+ \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.} 
  \item{x}{the result from a \code{GenLord} class object.}
  \item{plot}{character: the type of plot, either \code{"lordStat"} or \code{"itemCurve"}. See \bold{Details}.}
  \item{item}{numeric or character: either the number or the name of the item for which ICC curves are plotted. Used only when \code{plot="itemCurve"}.}
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
  \item{colIC, ltyIC}{vectors of elements of the usual \code{col} and \code{lty} arguments for ICC curves. Used only when \code{plot="itemCurve"}.}
+ \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
+ \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
+                     and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
  }
 
@@ -66,6 +73,8 @@ A list of class "GenLord" with the following arguments:
   \item{estPar}{a logical value indicating whether the item parameters were estimated (\code{TRUE}) or provided by the user (\code{FALSE}).}
   \item{names}{the names of the items.}
   \item{focal.names}{the value of the \code{focal.names} argument.}
+  \item{save.output}{the value of the \code{save.output} argument.}
+  \item{output}{the value of the \code{output} argument.}
  }
  
 \details{
@@ -109,6 +118,12 @@ A list of class "GenLord" with the following arguments:
  are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
  See Candell and Drasgow (1988) for further details.
 
+ The output of the \code{difGenLord}, as displayed by the \code{print.GenLord} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
+ (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
+ of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of \code{output}. The
+ default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
+ \bold{Examples} section for an illustration.
+
  Two types of plots are available. The first one is obtained by setting \code{plot="lordStat"} and it is the default option. The chi-square statistics are displayed 
  on the Y axis, for each item. The detection threshold is displayed by a horizontal line, and items flagged as DIF are printed with the color defined by argument \code{col}.
  By default, items are spotted with their number identification (\code{number=TRUE}); otherwise they are simply drawn as dots whose form is given by the option \code{pch}.
@@ -118,7 +133,12 @@ A list of class "GenLord" with the following arguments:
  if the output argument \code{purification} is \code{TRUE}, otherwise from the \code{itemParInit} matrix and after a rescaling of the item parameters using the 
  \code{\link{itemRescale}} command. A legend is displayed in the upper left corner of the plot. The colors and types of traits for these curves are defined by means of 
  the arguments \code{colIC} and \code{ltyIC} respectively. These are set as vectors of length 2, the first element for the reference group and the second for the focal group.
+
+ Both types of plots can be stored in a figure file, either in PDF or JPEG format. Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through
+ the components of \code{save.options}. The first two components perform similarly as those of the \code{output} argument. The third component is the figure format, with 
+ allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
 }
+
 
 
 \references{
@@ -188,7 +208,12 @@ A list of class "GenLord" with the following arguments:
  engine="lme4")
 
  # With item purification
- difGenLord(Verbal, group=25, focal.names=names, model="1PL", purify=TRUE)
+ difGenLord(Verbal, group=25, focal.names=names, model="1PL", 
+    purify=TRUE)
+
+ # Saving the output into the "GLresults.txt" file (and default path)
+ r <- difGenLord(Verbal, group=25, focal.names=names, model="1PL", 
+         save.output = TRUE, output = c("GLresults","default"))
 
  # Splitting the data into the four subsets according to "group"
  data0<-data1<-data2<-data3<-NULL
@@ -209,7 +234,7 @@ A list of class "GenLord" with the following arguments:
  irt.noscale<-rbind(m0.1PL,m1.1PL,m2.1PL,m3.1PL)
  rownames(irt.noscale)<-rep(colnames(verbal[,1:24]),4)
 
- # merging the item parameters WITH rescaling
+ # Merging the item parameters WITH rescaling
  irt.scale<-rbind(m0.1PL, itemRescale(m0.1PL,m1.1PL),
  itemRescale(m0.1PL,m2.1PL) ,itemRescale(m0.1PL,m3.1PL))
  rownames(irt.scale)<-rep(colnames(verbal[,1:24]),4)
@@ -225,5 +250,12 @@ A list of class "GenLord" with the following arguments:
  plot(r)
  plot(r, plot="itemCurve", item=1)
  plot(r, plot="itemCurve", item=6)
+
+ # Plotting results and saving it in a PDF figure
+ plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))
+
+ # Changing the path, JPEG figure
+ path <- "c:/Program Files/"
+ plot(r, save.plot = TRUE, save.options = c("plot", path, "jpeg"))
 }
  }

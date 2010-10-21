@@ -12,7 +12,8 @@
  selectGenDif(Data, group, focal.names, method, type="both", 
   criterion="LRT", alpha=0.05, model="2PL", c=NULL,
   engine = "ltm", irtParam=NULL, nrFocal=2, same.scale=TRUE,
-  purify=FALSE, nrIter=10)
+  purify=FALSE, nrIter=10, save.output=FALSE, 
+  output=c("out","default"))
  }
  
 
@@ -32,6 +33,8 @@
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
+ \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.} 
 }
 
 \value{
@@ -67,6 +70,9 @@
 
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification is slightly different 
  for IRT and for non-IRT based methods. See the corresponding methods for further information.
+
+ The output of the selected method can be stored in a text file by fixing \code{save.output} and \code{output} appropriately. See the help file of the corresponding
+ method for further information.
 }
  
 \references{
@@ -122,6 +128,10 @@
 
  # Calling generalized Mantel-Haenszel
  selectGenDif(Verbal, group=25, focal.names=names, method="GMH")
+
+ # Calling generalized Mantel-Haenszel and saving output in 'GMH.txt' file
+ selectGenDif(Verbal, group=25, focal.name=names, method="GMH", 
+    save.output=TRUE,output=c("GMH","default"))
 
  # Calling generalized logistic regression
  selectGenDif(Verbal, group=25, focal.names=names, method="genLogistic")

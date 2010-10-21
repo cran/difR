@@ -1,5 +1,6 @@
-difGMH<-function(Data,group,focal.names,alpha=0.05,purify=FALSE,nrIter=10)
+difGMH<-function(Data,group,focal.names,alpha=0.05,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
+internalGMH<-function(){
 if (length(focal.names)==1) return(difMH(Data=Data,group=group,focal.name=focal.names,alpha=alpha,purify=purify,nrIter=nrIter,correct=FALSE))
 else{
      if (length(group) == 1) {
@@ -25,7 +26,7 @@ if (purify==FALSE) {
 STATS<-genMantelHaenszel(DATA,Group)
 if (max(STATS)<=qchisq(1-alpha,DF)) DIFitems<-"No DIF item detected"
 else DIFitems <-(1:ncol(DATA))[STATS>qchisq(1-alpha,DF)]
-RES <-list(GMH=STATS,alpha=alpha,thr=qchisq(1-alpha,DF),DIFitems=DIFitems,purification=purify,names=colnames(DATA),focal.names=focal.names)
+RES <-list(GMH=STATS,alpha=alpha,thr=qchisq(1-alpha,DF),DIFitems=DIFitems,purification=purify,names=colnames(DATA),focal.names=focal.names,save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -78,15 +79,26 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES <-list(GMH=stats1,alpha=alpha,thr=qchisq(1-alpha,DF),DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA),focal.names=focal.names)
+RES <-list(GMH=stats1,alpha=alpha,thr=qchisq(1-alpha,DF),DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA),focal.names=focal.names,save.output=save.output,output=output)
 }
 class(RES) <-"GMH"
 return(RES)
 }
 }
+resToReturn<-internalGMH()
+if (save.output==TRUE){
+if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-output[2]
+fileName<-paste(wd,output[1],".txt",sep="")
+capture.output(resToReturn,file=fileName)
+}
+return(resToReturn)
+}
 
 # METHODS
-plot.GMH <-function(x,pch=8,number=TRUE,col="red",...){
+plot.GMH <-function(x,pch=8,number=TRUE,col="red", save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
+{
+internalGMH<-function(){
 res <- x
 if (number==FALSE) {
 plot(res$GMH,xlab="Item",ylab="Generalized Mantel-Haenszel statistic",ylim=c(0,max(c(res$GMH,res$thr)+1)),pch=pch,main="Generalized Mantel-Haenszel")
@@ -99,6 +111,36 @@ if (is.character(res$DIFitems)==FALSE) text(res$DIFitems,res$GMH[res$DIFitems],r
 }
 abline(h=res$thr)
 }
+internalGMH()
+if (save.plot==TRUE){
+plotype<-NULL
+if (save.options[3]=="pdf") plotype<-1
+if (save.options[3]=="jpeg") plotype<-2
+if (is.null(plotype)==TRUE) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
+else {
+if (save.options[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-save.options[2]
+fileName<-paste(wd,save.options[1],switch(plotype,'1'=".pdf",'2'=".jpg"),sep="")
+if (plotype==1){
+{
+pdf(file=fileName)
+internalGMH()
+}
+dev.off()
+}
+if (plotype==2){
+{
+jpeg(file=fileName)
+internalGMH()
+}
+dev.off()
+}
+cat("The plot was captured and saved into","\n"," '",fileName,"'","\n","\n",sep="")
+}
+}
+else cat("The plot was not captured!","\n",sep="")
+}
+
 
 
 print.GMH<- function(x,...){
@@ -153,5 +195,12 @@ rownames(m2)<-rep("",nrow(m2))
 colnames(m2)<-""
 print(m2,quote=FALSE)
 cat("\n","\n")
+}
+    if (x$save.output==FALSE) cat("Output was not captured!","\n")
+    else {
+if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-x$output[2]
+fileName<-paste(wd,x$output[1],".txt",sep="")
+cat("Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
 }
 }

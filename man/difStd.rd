@@ -10,10 +10,12 @@
  }
 
 \usage{
- difStd(Data, group, focal.name, stdWeight="focal", thr=0.1, 
-  purify=FALSE, nrIter=10)
+difStd(Data, group, focal.name, stdWeight="focal", thr=0.1, 
+ 	purify=FALSE, nrIter=10, save.output=FALSE, 
+ 	output=c("out","default"))
  \method{print}{PDIF}(x, ...)
- \method{plot}{PDIF}(x, pch=8, number=TRUE, col="red", ...)
+ \method{plot}{PDIF}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
+      save.options=c("plot","default","pdf"), ...)
  }
  
 \arguments{
@@ -25,9 +27,14 @@
  \item{thr}{numeric: the threshold (cut-score) for standardized P-DIF statistic (default is 0.10).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is \code{FALSE}).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
  \item{x}{the result from a \code{PDIF} class object.}
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
+ \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
+ \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
+                     and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
 }
 
@@ -48,6 +55,8 @@ A list of class "PDIF" with the following arguments:
   Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
   \item{stdWeight}{the value of the \code{stdWeight} argument.}
+  \item{save.output}{the value of the \code{save.output} argument.}
+  \item{output}{the value of the \code{output} argument.}
  }
  
 \details{
@@ -78,6 +87,17 @@ A list of class "PDIF" with the following arguments:
  differently at some step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor, 1998),
  or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
+
+ The output of the \code{difStd}, as displayed by the \code{print.PDIF} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
+ (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
+ of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of \code{output}. The
+ default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
+ \bold{Examples} section for an illustration.
+
+ The \code{plot.PDIF} function displays the DIF statistics in a plot, with each item on the X axis. The type of point and the colour are fixed by the usual \code{pch} and 
+ \code{col} arguments. Option \code{number} permits to display the item numbers instead. Also, the plot can be stored in a figure file, either in PDF or JPEG format.
+ Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through the components of \code{save.options}. The first two components perform similarly 
+ as those of the \code{output} argument. The third component is the figure format, with allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
 }
 
  
@@ -144,6 +164,20 @@ A list of class "PDIF" with the following arguments:
 
  # With detection threshold of 0.05
  difStd(verbal, group="Gender", focal.name=1, thr=0.05)
+
+ # Saving the output into the "STDresults.txt" file (and default path)
+ r <- difStd(verbal, group=25, focal.name=1, save.output = TRUE, 
+            output = c("STDresults","default"))
+
+ # Graphical devices
+ plot(r)
+
+ # Plotting results and saving it in a PDF figure
+ plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))
+
+ # Changing the path, JPEG figure
+ path <- "c:/Program Files/"
+ plot(r, save.plot = TRUE, save.options = c("plot", path, "jpeg"))
 }
  }
 

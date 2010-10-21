@@ -7,6 +7,45 @@
 
 
 ------------------------------------
+- Changes in difR 3.3 (2010-10-21) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  It is now possible to cature and save the output of each
+     DIF method directly from the 'dif...' functions. The 
+     arguments 'save.output' and 'output' control for saving
+     the output (as displayed by the corresponding 'print.'
+     function) into a text file, whose name and path are
+     specified within the 'output' argument.
+
+  o  The functions 'selectDif', 'selectGenDif', 'dichoDif'
+     and 'genDichoDif' have been adapted in order to allow
+     for saving their output too
+
+  o  Similarly, the plots drawn from the 'plot.' functions can
+     be captured into either PDF or JPEG format, by using the
+     newly added 'save.plot' and 'save.options' arguments.
+     They define the name of the figure, the path where it is
+     saved, and the format of the figure.
+
+  o  In addition, the 'print.' functions display a message to
+     specify whether the output was saved (and where the saved
+     file is located) or not, and the 'plot.' functions display
+     a message into the R console to specify whether the plot 
+     was not captured, the format is incorrect, or the plot was 
+     captured and where it was stored.
+
+
+MINOR UPDATES
+
+  o  Several help files have been updated to describe the 
+     corresponding 'plot.' functions.
+
+  o  Several typos have been fixed.
+
+
+------------------------------------
 - Changes in difR 3.2 (2010-10-04) -
 ------------------------------------
 

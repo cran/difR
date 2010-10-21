@@ -10,11 +10,13 @@
  }
 
 \usage{
- difLogistic(Data, group, focal.name, type="both", criterion="LRT",
- 	alpha=0.05, purify=FALSE, nrIter=10)
+difLogistic(Data, group, focal.name, type="both", criterion="LRT",
+ 	alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, 
+	output=c("out","default"))
  \method{print}{Logistic}(x, ...)
  \method{plot}{Logistic}(x, plot="lrStat", item=1, pch=8, number=TRUE, col="red", 
- colIC=rep("black",2), ltyIC=c(1,2), ...)
+ 	 colIC=rep("black",2), ltyIC=c(1,2), save.plot=FALSE, 
+       save.options=c("plot","default","pdf"), ...)
  }
  
 \arguments{
@@ -26,12 +28,17 @@
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
  \item{x}{the result from a \code{Logistik} class object.}
  \item{plot}{character: the type of plot, either \code{"lrStat"} or \code{"itemCurve"}. See \bold{Details}.}
  \item{item}{numeric or character: either the number or the name of the item for which logistic curves are plotted. Used only when \code{plot="itemCurve"}.}
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
  \item{colIC, ltyIC}{vectors of two elements of the usual \code{col} and \code{lty} arguments for logistic curves. Used only when \code{plot="itemCurve"}.}
+ \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
+ \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
+                     and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
 }
 
@@ -54,6 +61,8 @@ A list of class "Logistic" with the following arguments:
   Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
   \item{criterion}{the value of the \code{criterion} argument.}
+  \item{save.output}{the value of the \code{save.output} argument.}
+  \item{output}{the value of the \code{output} argument.}
  }
 
 
@@ -87,6 +96,12 @@ A list of class "Logistic" with the following arguments:
  Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effect sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from
  Zumbo and Thomas (1997) and one from Jodoign and Gierl (2001). The output displays the \eqn{\Delta R^2} measures, together with the two classifications.
 
+ The output of the \code{difLogistic}, as displayed by the \code{print.Logistic} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
+ (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
+ of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of \code{output}. The
+ default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
+ \bold{Examples} section for an illustration.
+
  Two types of plots are available. The first one is obtained by setting \code{plot="lrStat"} and it is the default option. The likelihood ratio statistics are displayed 
  on the Y axis, for each item. The detection threshold is displayed by a horizontal line, and items flagged as DIF are printed with the color defined by argument \code{col}.
  By default, items are spotted with their number identification (\code{number=TRUE}); otherwise they are simply drawn as dots whose form is given by the option \code{pch}.
@@ -97,6 +112,10 @@ A list of class "Logistic" with the following arguments:
  (\code{type="both"}) or only uniform DIF (\code{type="udif"}), only one logistic curve is drawn if the item is not flagged as DIF; otherwise, two curves are displayed
  with a corresponding legend (in the upper left corner). The colors and types of traits for these curves are defined by means of the arguments \code{colIC} and \code{ltyIC}
  respectively. These are set as vectors of length 2, the first element for the reference group and the second for the focal group.
+
+ Both types of plots can be stored in a figure file, either in PDF or JPEG format. Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through 
+ the components of \code{save.options}. The first two components perform similarly as those of the \code{output} argument. The third component is the figure format, with 
+ allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
 }
 
 \references{
@@ -175,10 +194,21 @@ A list of class "Logistic" with the following arguments:
  difLogistic(verbal, group="Gender", focal.name=1, purify=TRUE,
              nrIter=5)
 
+ # Saving the output into the "Lresults.txt" file (and default path)
+ r <- difLogistic(verbal, group=25, focal.name=1, 
+           save.output = TRUE, output = c("Lresults","default"))
+
  # Graphical devices
  plot(r)
  plot(r2)
  plot(r, plot="itemCurve", item=1)
  plot(r, plot="itemCurve", item=6)
+
+ # Plotting results and saving it in a PDF figure
+ plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))
+
+ # Changing the path, JPEG figure
+ path <- "c:/Program Files/"
+ plot(r, save.plot = TRUE, save.options = c("plot", path, "jpeg"))
 }
  }

@@ -1,6 +1,8 @@
 # DIF: COMPARING DIF STATISTICS
 
-dichoDif<-function(Data,group,focal.name,method,alpha=0.05,MHstat="MHChisq",correct=TRUE,stdWeight="focal",thr=0.1,BDstat="BD",type="both",criterion="LRT",model="2PL",c=NULL,engine="ltm",irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10){
+dichoDif<-function(Data,group,focal.name,method,alpha=0.05,MHstat="MHChisq",correct=TRUE,stdWeight="focal",thr=0.1,BDstat="BD",type="both",criterion="LRT",model="2PL",c=NULL,engine="ltm",irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
+{
+internalDicho<-function(){
 mets<-c("MH","Std","Logistic","BD","Lord","Raju","LRT")
 prov.met<-rep(0,length(method))
 for (i in 1:length(method)){
@@ -13,7 +15,7 @@ class(RES)<-"dichoDif"
 return(RES)
 }
 else{
-if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,alpha=alpha,MHstat=MHstat,correct=correct,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter))
+if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,alpha=alpha,MHstat=MHstat,correct=correct,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter, save.output=save.output,output=output))
 else{
 mat<-iters<-conv<-NULL
 for (met in 1:length(method)){
@@ -37,10 +39,19 @@ rname<-NULL
 for (i in 1:nrow(mat)) rname<-c(rname,paste("Item",i,sep=""))
 rownames(mat)<-rname
 }
-RES<-list(DIF=mat,correct=correct,alpha=alpha,MHstat=MHstat,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv)
+RES<-list(DIF=mat,correct=correct,alpha=alpha,MHstat=MHstat,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv, save.output=save.output,output=output)
 class(RES)<-"dichoDif"
 return(RES)}
 }
+}
+resToReturn<-internalDicho()
+if (save.output==TRUE){
+if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-output[2]
+fileName<-paste(wd,output[1],".txt",sep="")
+capture.output(resToReturn,file=fileName)
+}
+return(resToReturn)
 }
 
 # METHODS
@@ -113,6 +124,13 @@ for (i in 1:nrow(res$DIF)) nr[i]<-paste(length(res$DIF[i,][res$DIF[i,]=="DIF"]),
 MAT<-cbind(res$DIF,nr)
 colnames(MAT)[ncol(MAT)]<-"#DIF"
 print(format(MAT,justify="centre"),quote=FALSE)
+}
+if (x$save.output==FALSE) cat("\n","Output was not captured!","\n")
+else {
+if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-x$output[2]
+fileName<-paste(wd,x$output[1],".txt",sep="")
+cat("\n","Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
 }
 }
 

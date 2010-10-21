@@ -1,5 +1,6 @@
-difLRT<-function(Data, group, focal.name, alpha=0.05, purify=FALSE, nrIter=10)
+difLRT<-function(Data, group, focal.name, alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
+internalLRT<-function(){
      if (length(group) == 1) {
            if (is.numeric(group)==TRUE) {
               gr <- Data[, group]
@@ -22,7 +23,7 @@ if (purify==FALSE) {
 STATS<-LRT(DATA,Group)
 if (max(STATS)<=qchisq(1-alpha,1)) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:ncol(DATA))[STATS>qchisq(1-alpha,1)]
-RES<-list(LRT=STATS,alpha=alpha,thr=qchisq(1-alpha,1),DIFitems=DIFitems,purification=purify,names=colnames(DATA))
+RES<-list(LRT=STATS,alpha=alpha,thr=qchisq(1-alpha,1),DIFitems=DIFitems,purification=purify,names=colnames(DATA),save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -59,14 +60,27 @@ nodif<-nodif[noind2]
 }
 DIFitems<-(1:ncol(DATA))[stats1>qchisq(1-alpha,1)]
 }
-RES<-list(LRT=stats1,alpha=alpha,thr=qchisq(1-alpha,1),DIFitems=DIFitems,purification=purify,nrPur=nrPur,convergence=noLoop,names=colnames(DATA))
+RES<-list(LRT=stats1,alpha=alpha,thr=qchisq(1-alpha,1),DIFitems=DIFitems,purification=purify,nrPur=nrPur,convergence=noLoop,names=colnames(DATA),save.output=save.output,output=output)
 }
 class(RES)<-"LRT"
 return(RES)
 }
+resToReturn<-internalLRT()
+if (save.output==TRUE){
+if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-output[2]
+fileName<-paste(wd,output[1],".txt",sep="")
+capture.output(resToReturn,file=fileName)
+}
+return(resToReturn)
+}
 
 
-plot.LRT<-function(x,pch=8,number=TRUE,col="red", ...){
+
+# METHODS
+plot.LRT<-function(x,pch=8,number=TRUE,col="red",  save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
+{
+internalLRT<-function(){
 res <- x
 if (number==FALSE) {
 plot(res$LRT,xlab="Item",ylab="Likelihood Ratio statistic",ylim=c(0,max(c(res$LRT,res$thr)+1)),pch=pch,main="Likelihood Ratio Test")
@@ -79,6 +93,36 @@ if (is.character(res$DIFitems)==FALSE) text(res$DIFitems,res$LRT[res$DIFitems],r
 }
 abline(h=res$thr)
 }
+internalLRT()
+if (save.plot==TRUE){
+plotype<-NULL
+if (save.options[3]=="pdf") plotype<-1
+if (save.options[3]=="jpeg") plotype<-2
+if (is.null(plotype)==TRUE) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
+else {
+if (save.options[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-save.options[2]
+fileName<-paste(wd,save.options[1],switch(plotype,'1'=".pdf",'2'=".jpg"),sep="")
+if (plotype==1){
+{
+pdf(file=fileName)
+internalLRT()
+}
+dev.off()
+}
+if (plotype==2){
+{
+jpeg(file=fileName)
+internalLRT()
+}
+dev.off()
+}
+cat("The plot was captured and saved into","\n"," '",fileName,"'","\n","\n",sep="")
+}
+}
+else cat("The plot was not captured!","\n",sep="")
+}
+
 
 
 print.LRT<-function(x, ...){
@@ -120,7 +164,14 @@ m2<-cbind(rownames(m1)[res$DIFitems])
 rownames(m2)<-rep("",nrow(m2))
 colnames(m2)<-""
 print(m2,quote=FALSE)
-cat("\n","\n")
+cat("\n")
+}
+    if (x$save.output==FALSE) cat("Output was not captured!","\n")
+    else {
+if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
+else wd<-x$output[2]
+fileName<-paste(wd,x$output[1],".txt",sep="")
+cat("Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
 }
 }
 
