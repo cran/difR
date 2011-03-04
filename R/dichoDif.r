@@ -1,9 +1,12 @@
 # DIF: COMPARING DIF STATISTICS
 
-dichoDif<-function(Data,group,focal.name,method,alpha=0.05,MHstat="MHChisq",correct=TRUE,stdWeight="focal",thr=0.1,BDstat="BD",type="both",criterion="LRT",model="2PL",c=NULL,engine="ltm",irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
+
+
+dichoDif<-function(Data,group,focal.name,method,props=NULL,thrTID=1.5,alpha=0.05,MHstat="MHChisq",correct=TRUE,stdWeight="focal",thrSTD=0.1,BDstat="BD",type="both",
+criterion="LRT",model="2PL",c=NULL,engine="ltm",discr=1,irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
 internalDicho<-function(){
-mets<-c("MH","Std","Logistic","BD","Lord","Raju","LRT")
+mets<-c("TID","MH","Std","Logistic","BD","Lord","Raju","LRT")
 prov.met<-rep(0,length(method))
 for (i in 1:length(method)){
 if (sum(method[i]==mets)==1) prov.met[i]<-1
@@ -15,11 +18,15 @@ class(RES)<-"dichoDif"
 return(RES)
 }
 else{
-if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,alpha=alpha,MHstat=MHstat,correct=correct,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter, save.output=save.output,output=output))
+if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,props=props,thrTID=thrTID,alpha=alpha,MHstat=MHstat,
+correct=correct,stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,
+same.scale=same.scale,purify=purify,nrIter=nrIter, save.output=save.output,output=output))
 else{
 mat<-iters<-conv<-NULL
 for (met in 1:length(method)){
-prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],alpha=alpha,MHstat=MHstat,correct=correct,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,irtParam=irtParam,same.scale=same.scale,purify=purify,nrIter=nrIter)
+prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],props=props,thrTID=thrTID,alpha=alpha,MHstat=MHstat,correct=correct,
+stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,same.scale=same.scale,
+purify=purify,nrIter=nrIter)
 if (method[met]=="BD") mat<-cbind(mat,rep("NoDIF",nrow(prov[[1]])))
 else mat<-cbind(mat,rep("NoDIF",length(prov[[1]])))
 if (is.character(prov$DIFitems)==FALSE) mat[prov$DIFitems,met]<-"DIF"
@@ -30,6 +37,7 @@ conv<-c(conv,prov$convergence)
 } 
 }
 method2<-method
+method2[method=="TID"]<-"T.I.D."
 method2[method=="MH"]<-"M-H"
 method2[method=="Std"]<-"Stand."
 colnames(mat)<-method2
@@ -39,7 +47,7 @@ rname<-NULL
 for (i in 1:nrow(mat)) rname<-c(rname,paste("Item",i,sep=""))
 rownames(mat)<-rname
 }
-RES<-list(DIF=mat,correct=correct,alpha=alpha,MHstat=MHstat,stdWeight=stdWeight,thr=thr,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv, save.output=save.output,output=output)
+RES<-list(DIF=mat,props=props,thrTID=thrTID,correct=correct,alpha=alpha,MHstat=MHstat,stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv, save.output=save.output,output=output)
 class(RES)<-"dichoDif"
 return(RES)}
 }
@@ -54,83 +62,127 @@ capture.output(resToReturn,file=fileName)
 return(resToReturn)
 }
 
-# METHODS
-print.dichoDif<-function(x,...){
-res <- x
-if (is.null(res[[1]])==TRUE) cat("Error: '",res[[2]],"' is not a correct method!","\n","\n",sep="")
-else{
-cat("Comparison of DIF detection results using",ncol(res$DIF),"methods","\n","\n")
-methods<-colnames(res$DIF)
-methods2<-methods
-methods2[methods=="M-H"]<-"Mantel-Haenszel"
-methods2[methods=="Stand."]<-"Standardization"
-methods2[methods=="Logistic"]<-"Logistic regression"
-methods2[methods=="BD"]<-"Breslow-Day"
-methods2[methods=="Raju"]<-"Raju's area"
-methods2[methods=="Lord"]<-"Lord's chi-square test"
-methods2[methods=="LRT"]<-"Likelihood ratio test"
-met<-methods2[1]
-for (i in 2:min(c(3,length(methods)))) met<-paste(met,methods2[i],sep=", ")
-if (length(methods)<=3) cat("Methods used:",met,"\n")
-else cat("Methods used: ",met,",","\n",sep="")
-if (length(methods)>3){
-met2<-methods2[4]
-if (length(methods)>4){
-for (i in 5:length(methods)) met2<-paste(met2,methods2[i],sep=", ")
-}
-cat(met2,"\n")
-}
-cat("\n")
-cat("Parameters:","\n")
-cat("Significance level: ",res$alpha,"\n",sep="")
-if (sum(methods=="Stand.")==1) cat("Standardization threshold:",res$thr,"\n")
-if (sum(methods=="M-H")==1){
-if (res$MHstat=="MHChisq") MHmet<-"Chi-square statistic"
-else MHmet<-"Log odds-ratio statistic"
-cat("Mantel-Haenszel DIF statistic:",MHmet,"\n")
-if (res$correct==TRUE) corr<-"Yes"
-else corr<-"No"
-cat("Mantel-Haenszel continuity correction:",corr,"\n")
-}
-if (sum(methods=="Stand.")==1){
-stdw<-ifelse(res$stdWeight=="total","both groups",ifelse(res$stdWeight=="focal","the focal group","the reference group"))
-cat("Weights for standardized P-DIF statistic: based on",stdw,"\n")
-}
-if (res$BDstat=="BD") BDmet<-"Breslow-Day statistic"
-else BDmet<-"trend test statistic"
-cat("Breslow-Day DIF statistic:",BDmet,"\n")
-if (sum(methods=="Logistic")==1){
-cat("Logistic regression DIF statistic:",res$criterion,"statistic","\n")
-resLog<-ifelse(res$type=="both","both",ifelse(res$type=="udif","uniform","non uniform"))
-resLog2<-ifelse(res$type=="both","effects","effect")
-cat("DIF effect(s) tested by logistic regression:",resLog,"DIF",resLog2,"\n")
-}
-if (sum(methods=="Lord" | methods=="Raju")>=1) cat("Item response model:",res$model,"\n")
-if (res$purification==TRUE) {
-cat("Item purification: Yes","\n","\n")
-cat("Item purification results:","\n","\n")
-co<-rep("Yes",length(res$convergence))
-co[res$convergence==FALSE]<-"No"
-resConv<-data.frame(rbind(co,res$nrPur))
-colnames(resConv)<-colnames(res$DIF)
-rownames(resConv)<-c("Convergence","Iterations")
-print(format(resConv,justify="centre"))
-cat("\n")
-}
-else cat("Item purification: No","\n","\n")
-cat("Comparison of DIF detection results:","\n","\n")
-nr<-NULL
-for (i in 1:nrow(res$DIF)) nr[i]<-paste(length(res$DIF[i,][res$DIF[i,]=="DIF"]),"/",ncol(res$DIF),sep="")
-MAT<-cbind(res$DIF,nr)
-colnames(MAT)[ncol(MAT)]<-"#DIF"
-print(format(MAT,justify="centre"),quote=FALSE)
-}
-if (x$save.output==FALSE) cat("\n","Output was not captured!","\n")
-else {
-if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
-else wd<-x$output[2]
-fileName<-paste(wd,x$output[1],".txt",sep="")
-cat("\n","Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
-}
-}
 
+
+# METHODS
+print.dichoDif<-function (x, ...) 
+{
+    res <- x
+    if (is.null(res[[1]]) == TRUE) 
+        cat("Error: '", res[[2]], "' is not a correct method!", 
+            "\n", "\n", sep = "")
+    else {
+        cat("Comparison of DIF detection results using", ncol(res$DIF), 
+            "methods", "\n", "\n")
+        methods <- colnames(res$DIF)
+        methods2 <- methods
+        methods2[methods == "T.I.D."] <- "Transformed item difficulties (TID)"
+        methods2[methods == "M-H"] <- "Mantel-Haenszel"
+        methods2[methods == "Stand."] <- "Standardization"
+        methods2[methods == "Logistic"] <- "Logistic regression"
+        methods2[methods == "BD"] <- "Breslow-Day"
+        methods2[methods == "Raju"] <- "Raju's area"
+        methods2[methods == "Lord"] <- "Lord's chi-square test"
+        methods2[methods == "LRT"] <- "Likelihood ratio test"
+        cat("Methods used:", "\n")
+        for (i in 1:length(methods2)) cat(" ",methods2[i],"\n",sep="")     
+        cat("\n")
+        cat("Parameters:", "\n")
+        cat(" Significance level: ", res$alpha, "\n", sep = "")
+        if (sum(methods == "T.I.D.") == 1) 
+            cat(" TID threshold:", res$thrTID, "\n")
+        if (sum(methods == "Stand.") == 1) 
+            cat(" Standardization threshold:", res$thrSTD, "\n")
+        if (sum(methods == "M-H") == 1) {
+            if (res$MHstat == "MHChisq") 
+                MHmet <- "Chi-square statistic"
+            else MHmet <- "Log odds-ratio statistic"
+            cat(" Mantel-Haenszel DIF statistic:", MHmet, "\n")
+            if (res$correct == TRUE) 
+                corr <- "Yes"
+            else corr <- "No"
+            cat(" Mantel-Haenszel continuity correction:", corr, 
+                "\n")
+        }
+        if (sum(methods == "Stand.") == 1) {
+            stdw <- ifelse(res$stdWeight == "total", "both groups", 
+                ifelse(res$stdWeight == "focal", "the focal group", 
+                  "the reference group"))
+            cat(" Weights for standardized P-DIF statistic: based on", 
+                stdw, "\n")
+        }
+        if (sum(methods == "BD") == 1) {
+            if (res$BDstat == "BD") 
+                BDmet <- "Breslow-Day statistic"
+            else BDmet <- "trend test statistic"
+            cat(" Breslow-Day DIF statistic:", BDmet, "\n")
+        }
+        if (sum(methods == "Logistic") == 1) {
+            cat(" Logistic regression DIF statistic:", res$criterion, 
+                "statistic", "\n")
+            resLog <- ifelse(res$type == "both", "both", ifelse(res$type == 
+                "udif", "uniform", "non uniform"))
+            resLog2 <- ifelse(res$type == "both", "effects", 
+                "effect")
+            cat(" DIF effect(s) tested by logistic regression:", 
+                resLog, "DIF", resLog2, "\n")
+        }
+        if (sum(methods == "Lord" | methods == "Raju") >= 1) {
+            cat(" Item response model:", res$model, "\n")
+            if (res$model != "1PL" | res$engine == "ltm") 
+                cat(" Engine 'ltm' for item parameter estimation", 
+                  "\n")
+            else cat(" Engine 'lme4' for item parameter estimation", 
+                "\n")
+            if (res$model == "1PL" & res$engine == "ltm") {
+                if (is.null(res$discr)) 
+                  cat(" Common discrimination parameter: estimated from 'ltm'", 
+                    "\n")
+                else cat(" Common discrimination parameter: fixed to ", 
+                  res$discr, "\n", sep = "")
+            }
+            if (is.null(res$c) == FALSE) {
+                if (length(res$c) == 1) 
+                  cat(" Common pseudo-guessing value: ", res$c, 
+                    "\n", sep = "")
+                else {
+                  pg <- cbind(res$c)
+                  rownames(pg) <- res$names
+                  colnames(pg) <- "c"
+                  cat(" Common pseudo-guessing values:", "\n")
+                  print(pg)
+                  cat("\n")
+                }
+            }
+        }
+        if (res$purification == TRUE) {
+            cat(" Item purification: Yes", "\n", "\n")
+            cat(" Item purification results:", "\n", "\n")
+            co <- rep("Yes", length(res$convergence))
+            co[res$convergence == FALSE] <- "No"
+            resConv <- data.frame(rbind(co, res$nrPur))
+            colnames(resConv) <- colnames(res$DIF)
+            rownames(resConv) <- c("Convergence", "Iterations")
+            print(format(resConv, justify = "centre"))
+            cat("\n")
+        }
+        else cat(" Item purification: No", "\n", "\n")
+        cat("Comparison of DIF detection results:", "\n", "\n")
+        nr <- NULL
+        for (i in 1:nrow(res$DIF)) nr[i] <- paste(length(res$DIF[i, 
+            ][res$DIF[i, ] == "DIF"]), "/", ncol(res$DIF), sep = "")
+        MAT <- cbind(res$DIF, nr)
+        colnames(MAT)[ncol(MAT)] <- "#DIF"
+        print(format(MAT, justify = "centre"), quote = FALSE)
+    }
+    if (x$save.output == FALSE) 
+        cat("\n", "Output was not captured!", "\n")
+    else {
+        if (x$output[2] == "default") 
+            wd <- paste(getwd(), "/", sep = "")
+        else wd <- x$output[2]
+        fileName <- paste(wd, x$output[1], ".txt", sep = "")
+        cat("\n", "Output was captured and saved into file", 
+            "\n", " '", fileName, "'", "\n", "\n", sep = "")
+    }
+}

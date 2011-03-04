@@ -3,20 +3,22 @@
 \alias{plot.Lord}
 \alias{print.Lord}
 
-\title{Lord's chi-square DIF method}
+\title{Lord's chi-squared DIF method}
 
 \description{
- Performs DIF detection using Lord's chi-square method. 
+ Performs DIF detection using Lord's chi-squared method. 
  }
 
 \usage{
 difLord(Data, group, focal.name, model, c=NULL, engine="ltm", 
-	 irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, 
-	 nrIter=10, save.output=FALSE, output=c("out","default"))
- \method{print}{Lord}(x, ...)
- \method{plot}{Lord}(x, plot = "lordStat", item = 1, pch = 8, number = TRUE, 
- 	col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), 
- 	save.plot=FALSE, save.options=c("plot","default","pdf"), ...)
+  	discr=1, irtParam=NULL, same.scale=TRUE, alpha=0.05,
+  	purify=FALSE, nrIter=10, save.output=FALSE, 
+  	output=c("out","default"))
+\method{print}{Lord}(x, ...)
+\method{plot}{Lord}(x, plot = "lordStat", item = 1, pch = 8, number = TRUE, 
+  	col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), 
+  	save.plot=FALSE, save.options=c("plot","default","pdf"), 
+  	group.names=NULL, ...)
  }
 
 \arguments{
@@ -26,13 +28,16 @@ difLord(Data, group, focal.name, model, c=NULL, engine="ltm",
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}).}
  \item{c}{optional numeric value or vector giving the values of the constrained pseudo-guessing parameters. See \bold{Details}.}
  \item{engine}{character: the engine for estimating the 1PL model, either \code{"ltm"} (default) or \code{"lme4"}.}
+ \item{discr}{either \code{NULL} or a real positive value for the common discrimination parameter (default is 1). Used onlky if \code{model} is \code{"1PL"} and
+             \code{engine} is \code{"ltm"}. See \bold{Details}.}
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
- \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
+ \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).} 
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
- \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"}
+              (default value). See \bold{Details}.}
  \item{x}{the result from a \code{Lord} class object.}
  \item{plot}{character: the type of plot, either \code{"lordStat"} or \code{"itemCurve"}. See \bold{Details}.}
  \item{item}{numeric or character: either the number or the name of the item for which ICC curves are plotted. Used only when \code{plot="itemCurve"}.}
@@ -42,12 +47,14 @@ difLord(Data, group, focal.name, model, c=NULL, engine="ltm",
  \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
  \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
                      and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
+ \item{group.names}{either \code{NULL} (default) or a vector of two character strings giving the names of the reference group and the focal group (in this order)
+                    for display in the legend. Ignored if \code{plot} is \code{"lordStat"}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
  }
 
 \value{
 A list of class "Lord" with the following arguments:
-  \item{LordChi}{the values of the Lord's chi-square statistics.}
+  \item{LordChi}{the values of the Lord's chi-squared statistics.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{DIFitems}{either the column indicators of the items which were detected as DIF items, or "No DIF item detected".}
@@ -61,6 +68,7 @@ A list of class "Lord" with the following arguments:
   \item{model}{the value of \code{model} argument.}
   \item{c}{The value of the \code{c} argument.}
   \item{engine}{The value of the \code{engine} argument.}
+  \item{discr}{the value of the \code{discr} argument.}
   \item{itemParInit}{the matrix of initial parameter estimates,with the same format as \code{irtParam} either provided by the user (through \code{irtParam}) or estimated from the data
    (and displayed without rescaling).}
   \item{itemParFinal}{the matrix of final parameter estimates, with the same format as \code{irtParam}, obtained after item purification. Returned 
@@ -72,23 +80,30 @@ A list of class "Lord" with the following arguments:
  }
  
 \details{
- Lord's chi-square method (Lord, 1980) allows for detecting uniform or non-uniform differential item functioning 
+ Lord's chi-squared method (Lord, 1980) allows for detecting uniform or non-uniform differential item functioning 
  by setting an appropriate item response model. The input can be of two kinds: either by displaying the full data,
  the group membership and the model, or by giving the item parameter estimates (through the option \code{irtParam}).
  Both can be supplied, but in this case only the parameters in \code{irtParam} are used for computing Lord's 
- chi-square statistic.
+ chi-squared statistic.
 
- The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
+ The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. 
  In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
  corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must 
  be a vector of same length as \code{nrow(Data)}.
  
+ Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded for item parameter estimation.
+
  The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  the value of the argument \code{focal.name}. 
  
  If the model is not the 1PL model, or if \code{engine} is equal to \code{"ltm"}, the selected IRT model is fitted using marginal maximum likelihood
  by means of the functions from the \code{ltm} package (Rizopoulos, 2006). Otherwise, the 1PL model is fitted as a generalized 
  linear mixed model, by means of the \code{glmer} function of the \code{lme4} package (Bates and Maechler, 2009).
+
+ With the \code{"1PL"} model and the \code{"ltm"} engine, the common discrimination parameter is set equal to 1 by default. It is possible to fix another value
+ through the argument\code{discr}. Alternatively, this common discrimination parameter can be estimated (though not returned) by fixing \code{discr} to 
+ \code{NULL}.
+
  The 3PL model can be fitted either unconstrained (by setting \code{c} to \code{NULL}) or by fixing the pseudo-guessing values. In the latter 
  case, the argument \code{c} holds either a numeric vector of same length of the number of items, with one value per item pseudo-guessing parameter, 
  or a single value which is duplicated for all the items. If \code{c} is different from \code{NULL} then the 3PL model is always fitted (whatever the value of \code{model}).
@@ -103,7 +118,7 @@ A list of class "Lord" with the following arguments:
  reference group. If not, rescaling is performed by equal means anchoring (Cook and Eignor, 1991). Argument \code{same.scale} is used for 
  this choice (default option is \code{TRUE} and assumes therefore that the parameters are already placed on the same scale). 
 
- The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-square distribution with lower-tail
+ The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
  probability of one minus \code{alpha} and \emph{p} degrees of freedom (\emph{p=1} for the 1PL model, \emph{p=2} for the 2PL model or the 3PL model
  with constrained pseudo-guessing parameters, and \emph{p=3} for the unconstrained 3PL model).
  
@@ -112,13 +127,17 @@ A list of class "Lord" with the following arguments:
  are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
  See Candell and Drasgow (1988) for further details.
 
+ Under the 1PL model, the displayed output also proposes an effect size measure, which is -2.35 times the difference between item difficulties of the reference group
+ and the focal group (Penfield and Camilli, 2007, p. 138). This effect size is similar Mantel-Haenszel's \eqn{\Delta_{MH}} effect size, and the ETS delta scale is used 
+ to classify the effect sizes (Holland and Thayer, 1985).
+
  The output of the \code{difLord}, as displayed by the \code{print.Lord} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
  (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
  of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of \code{output}. The
  default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
  \bold{Examples} section for an illustration.
 
- Two types of plots are available. The first one is obtained by setting \code{plot="lordStat"} and it is the default option. The chi-square statistics are displayed 
+ Two types of plots are available. The first one is obtained by setting \code{plot="lordStat"} and it is the default option. The chi-squared statistics are displayed 
  on the Y axis, for each item. The detection threshold is displayed by a horizontal line, and items flagged as DIF are printed with the color defined by argument \code{col}.
  By default, items are spotted with their number identification (\code{number=TRUE}); otherwise they are simply drawn as dots whose form is given by the option \code{pch}.
 
@@ -127,6 +146,7 @@ A list of class "Lord" with the following arguments:
  if the output argument \code{purification} is \code{TRUE}, otherwise from the \code{itemParInit} matrix and after a rescaling of the item parameters using the 
  \code{\link{itemRescale}} command. A legend is displayed in the upper left corner of the plot. The colors and types of traits for these curves are defined by means of 
  the arguments \code{colIC} and \code{ltyIC} respectively. These are set as vectors of length 2, the first element for the reference group and the second for the focal group.
+ Finally, the argument \code{group.names} permits to display the names of the reference and focal groups (instead of "Reference" and "Focal") in the legend.
 
  Both types of plots can be stored in a figure file, either in PDF or JPEG format. Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through 
  the components of \code{save.options}. The first two components perform similarly as those of the \code{output} argument. The third component is the figure format, with allowed
@@ -142,12 +162,19 @@ A list of class "Lord" with the following arguments:
 
  Cook, L. L. and Eignor, D. R. (1991). An NCME instructional module on IRT equating methods. \emph{Educational Measurement: Issues and Practice, 10}, 37-45.
  
+ Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, New-Jersey:
+ Educational Testing Service.
+ 
  Lord, F. (1980). \emph{Applications of item response theory to practical testing problems}. Hillsdale, NJ: Lawrence Erlbaum Associates. 
  
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
 
- Rizopoulos, D. (2006). ltm: An R package for latent variable modelling and item response theory analyses. \emph{Journal of Statistical Software, 17}, 1-25. URL: http://www.jstatsoft.org/v17/i05/
+ Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray (Eds.), \emph{Handbook of Statistics 26: Psychometrics}
+ (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
+
+ Rizopoulos, D. (2006). ltm: An R package for latent variable modelling and item response theory analyses. \emph{Journal of Statistical Software, 17}, 1-25. 
+ URL: http://www.jstatsoft.org/v17/i05/
 }
 
 \author{

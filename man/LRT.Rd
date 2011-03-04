@@ -21,10 +21,10 @@ A vector with the values of the LRT DIF statistics.
 }
 
 \details{
- This command computes the likelihood-ratio test statistic (Thissen, Steinberg and Wainer, 1988) in the specific framework of differnetial item functioning. 
+ This command computes the likelihood-ratio test statistic (Thissen, Steinberg and Wainer, 1988) in the specific framework of differential item functioning. 
  It forms the basic command of \code{\link{difLRT}} and is specifically designed for this call.
  
- The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
+ The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are allowed but must be coded as \code{NA} values.
   
  The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.

@@ -8,7 +8,7 @@
 }
 
 \usage{
- genMantelHaenszel(data, member, anchor=1:ncol(data))
+genMantelHaenszel(data, member, anchor=1:ncol(data))
 }
 
 \arguments{
@@ -25,14 +25,15 @@ A vector with the values of the generalized Mantel-Haenszel DIF statistics.
  This command computes the generalized Mantel-Haenszel statistic (Somes, 1986) in the specific framework of differential item functioning. It forms the basic command
  of \code{\link{difGMH}} and is specifically designed for this call.
 
- The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
+ The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are allowed but must be coded as \code{NA}
+ values. They are discarded from sum-score computation.
 
  The vector of group membership, specified with \code{member} argument, must hold only zeros and positive integers. The value zero corresponds to the reference group,
  and each positive integer value corresponds to one focal group. At least two different positive integers must be supplied.
 
  Option \code{anchor} sets the items which are considered as anchor items for computing generalized Mantel-Haenszel statistics. Items other than the anchor items and
- the tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is primarily designed to perform 
- item purification.
+ the tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is primarily designed to
+ perform item purification.
 }
 
 \references{
@@ -71,8 +72,8 @@ A vector with the values of the generalized Mantel-Haenszel DIF statistics.
  data(verbal)
  attach(verbal)
 
- # Creating four groups according to gender (0 or 1) and trait anger score
- # ("Low" or "High")
+ # Creating four groups according to gender (0 or 1) and trait anger
+ # score ("Low" or "High")
  # Reference group: women with low trait anger score (<=20)
  group<-rep(0,nrow(verbal))
  group[Anger>20 & Gender==0]<-1

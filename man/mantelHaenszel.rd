@@ -8,7 +8,7 @@
  }
 
 \usage{
- mantelHaenszel(data, member, correct=TRUE, anchor=1:ncol(data))
+mantelHaenszel(data, member, correct=TRUE, anchor=1:ncol(data))
  }
 
 \arguments{
@@ -29,35 +29,41 @@
  This command basically computes the Mantel-Haenszel (1959) statistic in the specific framework of differential item functioning. It forms the basic command
  of \code{\link{difMH}} and is specifically designed for this call.
  
- The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
+ The data are passed through the \code{data} argument, with one row per subject and one column per item. 
+
+ Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded from sum-score computation.
   
  The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
  
  By default, the continuity correction factor -0.5 is used (Holland and Thayer, 1988). One can nevertheless remove it by specifying \code{correct=FALSE}.
 
- Option \code{anchor} sets the items which are considered as anchor items for computing Mantel-Haenszel statistics. Items other than the anchor items and the tested item 
- are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is primarily designed to perform item purification.
+ Option \code{anchor} sets the items which are considered as anchor items for computing Mantel-Haenszel statistics. Items other than the anchor items and the 
+ tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is primarily designed to 
+ perform item purification.
  
- In addition to the Mantel-Haenszel statistics to identify DIF items, \code{mantelHaenszel} computes the estimates of the common odds ratio \eqn{\alpha_{MH}} which are used
- for measuring the effect size of the items (Holland and Thayer, 1985, 1988). They are returned in the \code{resAlpha} arguiment of the output list. Moreover, the logarithm 
- of \eqn{\alpha_{MH}}, say \eqn{\lambda_{MH}}, is asymptotically distributed and its variance is computed and returned into the \code{varLambda} argument. Note that this
- variance is the one proposed by Philips and Holland (1987), since it seems the most accurate expression for the variance of \eqn{\lambda_{MH}} (Penfield and Camilli, 2007).
+ In addition to the Mantel-Haenszel statistics to identify DIF items, \code{mantelHaenszel} computes the estimates of the common odds ratio \eqn{\alpha_{MH}} 
+ which are used for measuring the effect size of the items (Holland and Thayer, 1985, 1988). They are returned in the \code{resAlpha} argument of the output list.
+ Moreover, the logarithm of \eqn{\alpha_{MH}}, say \eqn{\lambda_{MH}}, is asymptotically distributed and its variance is computed and returned into the 
+ \code{varLambda} argument. Note that this variance is the one proposed by Philips and Holland (1987), since it seems the most accurate expression for the variance
+ of \eqn{\lambda_{MH}} (Penfield and Camilli, 2007).
 }
 
 \references{
- Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, New-Jersey:
- Educational Testing Service.
+ Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, 
+ NJ: Educational Testing Service.
 
- Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Ed.), \emph{Test validity}. Hillsdale, New Jersey: Lawrence Erlbaum Associates.
+ Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Ed.), \emph{Test validity}.
+ Hillsdale, NJ: Lawrence Erlbaum Associates.
  
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
 
- Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer Institute, 22}, 719-748.
+ Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer 
+ Institute, 22}, 719-748.
  
- Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray (Eds.), \emph{Handbook of Statistics 26: Psychometrics}
- (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
+ Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray (Eds.), \emph{Handbook of Statistics 26:
+ Psychometrics} (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
 
  Philips, A., and Holland, P. W. (1987). Estimators of the Mantel-Haenszel log odds-ratio estimate. \emph{Biometrics, 43}, 425-431.
  }

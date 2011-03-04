@@ -6,7 +6,7 @@ breslowDay<-function(data,member,anchor=1:ncol(data),BDstat="BD")
       {
       data2<-data[,anchor]
       if (sum(anchor==item)==0) data2<-cbind(data2,data[,item])
-      xj<-rowSums(data2)
+      xj<-rowSums(data2,na.rm=TRUE)
       scores<-sort(unique(xj))
       ind<-1:nrow(data)
       prov<-NULL

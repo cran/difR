@@ -11,10 +11,10 @@
 
 \usage{
 difGMH(Data, group, focal.names, alpha=0.05, purify=FALSE, 
-	 nrIter=10, save.output=FALSE, output=c("out","default"))
- \method{print}{GMH}(x, ...)
- \method{plot}{GMH}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
-       save.options=c("plot","default","pdf"), ...)
+  	nrIter=10, save.output=FALSE, output=c("out","default"))
+\method{print}{GMH}(x, ...)
+\method{plot}{GMH}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
+  	save.options=c("plot","default","pdf"), ...)
 }
 
 \arguments{
@@ -23,15 +23,17 @@ difGMH(Data, group, focal.names, alpha=0.05, purify=FALSE,
  \item{focal.names}{numeric or character vector indicating the levels of \code{group} which correspond to the focal groups.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
- \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
- \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or 
+              \code{"default"} (default value). See \bold{Details}.}
  \item{x}{the result from a \code{GMH} class object.}
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
  \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
- \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
-                     and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
+ \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or
+                    \code{"default"} (default value), and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See
+                    \bold{Details}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
 }
 
@@ -58,37 +60,40 @@ difGMH(Data, group, focal.names, alpha=0.05, purify=FALSE,
  The generalized Mantel-Haenszel statistic (Somes, 1986) can be used to detect uniform differential item functioning among multiple groups,
  without requiring an item response model approach (Penfield, 2001).
  
- The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
- In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
- corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must be
- a vector of same length as \code{nrow(Data)}.
+ The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. In addition, \code{Data} can hold the vector of group membership.
+ If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number.
+ Otherwise, \code{group} must be a vector of same length as \code{nrow(Data)}.
  
- The vector of group membership must hold at least three value, either as numeric or character. The focal groups are defined by the values of the argument \code{focal.names}. 
- If there is a unique focal group, then \code{difGMH} returns the output of \code{\link{difMH}} (\bold{without} continuity correction).
+ Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded from sum-score computation.
 
- The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-square distribution with lower-tail
+ The vector of group membership must hold at least three value, either as numeric or character. The focal groups are defined by the values of the argument
+ \code{focal.names}. If there is a unique focal group, then \code{difGMH} returns the output of \code{\link{difMH}} (\bold{without} continuity correction).
+
+ The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
  probability of one minus \code{alpha} and with as many degrees of freedom as the number of focal groups.
  
  Item purification can be performed by setting \code{purify} to \code{TRUE}. Purification works as follows: if at least one item detected as functioning 
  differently at the first step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
- tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor, 1998),
- or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
+ tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor,
+ 1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
 
  The output of the \code{difGMH}, as displayed by the \code{print.GMH} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
  (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
  of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of \code{output}. The
- default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
- \bold{Examples} section for an illustration.
+ default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see
+ the \bold{Examples} section for an illustration.
 
- The \code{plot.GMH} function displays the DIF statistics in a plot, with each item on the X axis. The type of point and the colour are fixed by the usual \code{pch} and 
- \code{col} arguments. Option \code{number} permits to display the item numbers instead. Also, the plot can be stored in a figure file, either in PDF or JPEG format.
- Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through the components of \code{save.options}. The first two components perform similarly 
- as those of the \code{output} argument. The third component is the figure format, with allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
+ The \code{plot.GMH} function displays the DIF statistics in a plot, with each item on the X axis. The type of point and the colour are fixed by the usual \code{pch}
+ and \code{col} arguments. Option \code{number} permits to display the item numbers instead. Also, the plot can be stored in a figure file, either in PDF or JPEG
+ format. Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through the components of \code{save.options}. The first two components
+ perform similarly as those of the \code{output} argument. The third component is the figure format, with allowed values \code{"pdf"} (default) for PDF file and
+ \code{"jpeg"} for JPEG file.
 }
 
 
 \references{
- Clauser, B. E. and Mazor, K. M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues and Practice, 17}, 31-44.
+ Clauser, B. E. and Mazor, K. M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues
+ and Practice, 17}, 31-44.
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.

@@ -1,14 +1,14 @@
 \name{genLordChi2}
 \alias{genLordChi2}
 
-\title{Generalized Lord's chi-square DIF statistic}
+\title{Generalized Lord's chi-squared DIF statistic}
 
 \description{
- Calculates the generalized Lord's chi-square statistics for DIF detection among multiple groups. 
+ Calculates the generalized Lord's chi-squared statistics for DIF detection among multiple groups. 
  }
 
 \usage{
- genLordChi2(irtParam, nrFocal)
+genLordChi2(irtParam, nrFocal)
  }
 
 \arguments{
@@ -17,11 +17,11 @@
 }
 
 \value{
- A vector with the values of the generalized Lord's chi-square DIF statistics.
+ A vector with the values of the generalized Lord's chi-squared DIF statistics.
  }
  
 \details{
- This command computes the generalized Lord's chi-square statistic (Kim, Cohen and Park, 1995), also called the \emph{Qj} 
+ This command computes the generalized Lord's chi-squared statistic (Kim, Cohen and Park, 1995), also called the \emph{Qj} 
  statistics, in the specific framework of differential item functioning with multiple groups. It forms the basic command 
  of \code{\link{difGenLord}} and is specifically designed for this call.
 
@@ -98,7 +98,7 @@
  irt.scale<-rbind(m0.1PL,itemRescale(m0.1PL,m1.1PL),
  itemRescale(m0.1PL,m2.1PL),itemRescale(m0.1PL,m3.1PL))
 
- # Generalized Lord's chi-square statistics
+ # Generalized Lord's chi-squared statistics
  genLordChi2(irt.scale, nrFocal=3)
  }
  }

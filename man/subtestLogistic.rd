@@ -24,7 +24,8 @@ subtestLogistic(x, items, groups, alpha=0.05)
 
 \value{ 
  A list of class "subLogistic" with the following components:
- \item{stats}{a table with as many rows as tested items, and four columns: the item number, the Wald statistic, the degrees of freedom and the asymptotic \emph{p}-value.}
+ \item{stats}{a table with as many rows as tested items, and four columns: the item number, the Wald statistic, the degrees of freedom and the asymptotic 
+              \emph{p}-value.}
  \item{contrastMatrix}{the contrast matrix used for testing DIF among the groups set up  by \code{groups}.}
  \item{items}{the value of the \code{items} argument.}
  \item{groups}{the value of the \code{groups} argument.}
@@ -45,11 +46,12 @@ subtestLogistic(x, items, groups, alpha=0.05)
 
  The argument \code{items} is a vector of the names of the items to be tested, or their number in the data set. A single item can be specified.
 
- The argument \code{groups} specifies which groups of examinees are considered in this subtest routine. It is a vector of either group names or integer values. In the 
- latter case, the reference group is specified with the 0 (zero) value, while the focal groups are set up by their rank in the \code{x$focal.names} argument. At least
- two groups must be specified, and all groups can be included (which leads back to the generalized logistic regression with the Wald test).
+ The argument \code{groups} specifies which groups of examinees are considered in this subtest routine. It is a vector of either group names or integer values.
+ In the latter case, the reference group is specified with the 0 (zero) value, while the focal groups are set up by their rank in the \code{x$focal.names} argument.
+ At least two groups must be specified, and all groups can be included (which leads back to the generalized logistic regression with the Wald test).
 
- The output provides, among others, the Wald statistics, the degrees of freedom and related asymptotic \emph{p}-values for each tested item, as well as the contrast matrix. 
+ The output provides, among others, the Wald statistics, the degrees of freedom and related asymptotic \emph{p}-values for each tested item, as well as the
+ contrast matrix. 
  }
  
 \references{

@@ -7,7 +7,7 @@ res<-NULL
 for(item in 1:ncol(data)){
 data2<-data[,anchor]
 if (sum(anchor==item)==0) data2<-cbind(data2,data[,item])
-xj<-rowSums(data2)
+xj<-rowSums(data2,na.rm=TRUE)
 scores<-sort(unique(xj))
 nrGroups<-length(unique(member))-1
 a<-e<-rep(0,nrGroups)

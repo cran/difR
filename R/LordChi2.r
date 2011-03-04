@@ -22,8 +22,8 @@ Sig2<-cbind(c(mF[item,3]^2,mF[item,5]),c(mF[item,5],mF[item,4]^2))
 else{
 v1<-mR[item,1:3]
 v2<-mF[item,1:3]
-Sig1<-cbind(c(mR[item,4]^2,mR[item,7],mR[item,8]),c(mR[item,7],mR[item,5]^2,mR[item,9]),c(mR[item,8],mR[item,9],mR[item,3]^2))
-Sig2<-cbind(c(mF[item,4]^2,mF[item,7],mF[item,8]),c(mF[item,7],mF[item,5]^2,mF[item,9]),c(mF[item,8],mF[item,9],mF[item,3]^2))
+Sig1<-cbind(c(mR[item,4]^2,mR[item,7],mR[item,8]),c(mR[item,7],mR[item,5]^2,mR[item,9]),c(mR[item,8],mR[item,9],mR[item,6]^2))
+Sig2<-cbind(c(mF[item,4]^2,mF[item,7],mF[item,8]),c(mF[item,7],mF[item,5]^2,mF[item,9]),c(mF[item,8],mF[item,9],mF[item,6]^2))
 }
 M<-solve(Sig1+Sig2)
 V<-v1-v2

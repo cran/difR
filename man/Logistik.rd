@@ -10,14 +10,15 @@
 
 \usage{
 Logistik(data, member, anchor=1:ncol(data), type="both",
- 	criterion="LRT")
+  	criterion="LRT")
  }
  
 \arguments{
  \item{data}{numeric: the data matrix (one row per subject, one column per item).}
  \item{member}{numeric: the vector of group membership with zero and one entries only. See \bold{Details}.}
  \item{anchor}{a vector of integer values specifying which items (all by default) are currently considered as anchor (DIF free) items. See \bold{Details}.}
- \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
+ \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. 
+            See \bold{Details}.}
  \item{criterion}{a character string specifying which DIF statistic is computed. Possible values are \code{"LRT"} (default) or \code{"Wald"}. See \bold{Details}.}
 }
 
@@ -58,8 +59,8 @@ Logistik(data, member, anchor=1:ncol(data), type="both",
  If \code{criterion} is \code{"LRT"}, the argument \code{type} determines the models to be compared by means of the LRT statistics.
  The three possible values of \code{type} are: \code{type="both"} (default) which tests the hypothesis \eqn{H_0: \gamma_1 = \delta_1=0} by comparing models 
  \eqn{M_0} and \eqn{M_2}; \code{type="nudif"} which tests the hypothesis \eqn{H_0: \delta_1 = 0} by comparing models \eqn{M_0} and \eqn{M_1}; and \code{type="udif"}
- which tests the hypothesis \eqn{H_0: \gamma_1 = 0} by comparing models \eqn{M_1} and \eqn{M_2} (assuming that \eqn{\delta_1 = 0}). In other words, \code{type="both"} tests for
- DIF (without distinction between uniform and nonuniform effects), while \code{type="udif"} and \code{type="nudif"} test for uniform and nonuniform DIF,
+ which tests the hypothesis \eqn{H_0: \gamma_1 = 0} by comparing models \eqn{M_1} and \eqn{M_2} (assuming that \eqn{\delta_1 = 0}). In other words, \code{type="both"}
+ tests for DIF (without distinction between uniform and nonuniform effects), while \code{type="udif"} and \code{type="nudif"} test for uniform and nonuniform DIF,
  respectively. 
 
  If \code{criterion} is \code{"Wald"}, the argument \code{type} determines the logistic model to be considered and the appropriate contrast matrix. 
@@ -67,7 +68,8 @@ Logistik(data, member, anchor=1:ncol(data), type="both",
  the considered model is also model \eqn{M_0} but the contrast matrix has only one row, (0,0,0,1). Eventually, if \code{type=="udif"}, the considered model
  is model \eqn{M_1} and the contrast matrix has one row, (0,0,1). 
 
- The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
+ The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are allowed but must be coded as \code{NA}
+ values. They are discarded from the fitting of the logistic models (see \code{\link{glm}} for further details).
   
  The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
@@ -76,10 +78,10 @@ Logistik(data, member, anchor=1:ncol(data), type="both",
  items and the tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is 
  mainly designed to perform item purification.
 
- The output contains: the selected DIF statistics (either the LRT or the Wald statistic) computed for each item, and two matrices with the parameter estimates of both models, for each item. In
- addition, Nagelkerke's \eqn{R^2} coefficients (Nagelkerke, 1991) are computed for each model and the output returns the differences in these coefficients. 
- Such differences are used as measures of effect size by the \code{\link{difLogistic}} command; see Gomez-Benito, Dolores Hidalgo and Padilla (2009), 
- Jodoign and Gierl (2001) and Zumbo and Thomas (1997). The \code{criterion} argument is also returned.
+ The output contains: the selected DIF statistics (either the LRT or the Wald statistic) computed for each item, and two matrices with the parameter estimates of
+ both models, for each item. In addition, Nagelkerke's \eqn{R^2} coefficients (Nagelkerke, 1991) are computed for each model and the output returns the differences
+ in these coefficients. Such differences are used as measures of effect size by the \code{\link{difLogistic}} command; see Gomez-Benito, Dolores Hidalgo and Padilla
+ (2009), Jodoin and Gierl (2001) and Zumbo and Thomas (1997). The \code{criterion} argument is also returned.
 }
  
 \references{
@@ -89,7 +91,7 @@ Logistik(data, member, anchor=1:ncol(data), type="both",
  Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
  \emph{Applied Measurement in Education, 14}, 329-349.
 
- Johnson, R. A. and Wichern, D. W. (1998). \emph{Applied multivariate statistical analysis (fourth edition)}. Upper saddle river, NJ: prentice-Hall.
+ Johnson, R. A. and Wichern, D. W. (1998). \emph{Applied multivariate statistical analysis (fourth edition)}. Upper Saddle River, NJ: Prentice-Hall.
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.

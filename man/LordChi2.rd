@@ -8,7 +8,7 @@
  }
 
 \usage{
- LordChi2(mR, mF)
+LordChi2(mR, mF)
  }
 
 \arguments{
@@ -28,6 +28,12 @@
  3PL or constrained 3PL). The number of columns therefore equals two, five, nine or six, respectively. Moreover, item parameters of the focal must be on the
  same scale of that of the reference group. If not, make use of e.g. equal means anchoring (Cook and Eignor, 1991) and \code{\link{itemRescale}} to transform 
  them adequately. 
+}
+
+\note{
+ WARNING: the previous versions of \code{LordChi2} were holding an error: under the 3PL model, the covariance matrices \eqn{Sig_1} and \eqn{Sig_2} were wrongly 
+ computed as the variance of the pseudo-guessing parameters were replaced by the parameter estimates. This has been fixed from since version 4.0 of \code{difR}.
+ Many thanks to J. Patrick Meyer (Curry School of Education, University of Virginia) for having discovered this mistake.
 }
 
 \references{

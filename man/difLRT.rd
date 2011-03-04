@@ -11,10 +11,10 @@
 
 \usage{
 difLRT(Data, group, focal.name, alpha=0.05, purify=FALSE, 
- 	nrIter=10, save.output=FALSE, output=c("out","default")) 
- \method{print}{LRT}(x, ...)
- \method{plot}{LRT}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
-      save.options=c("plot","default","pdf"), ...)
+  	nrIter=10, save.output=FALSE, output=c("out","default")) 
+\method{print}{LRT}(x, ...)
+\method{plot}{LRT}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
+  	save.options=c("plot","default","pdf"), ...)
 
 }
 
@@ -24,7 +24,7 @@ difLRT(Data, group, focal.name, alpha=0.05, purify=FALSE,
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
- \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
  \item{x}{the result from a \code{LRT} class object.}
@@ -57,7 +57,7 @@ A list of class "LRT" with the following arguments:
  the Rasch model can be used, so only uniform DIF can be detected. Moreover, items are tested one by one and the other items act as
  anchor items.
 
- The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
+ The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are allowed but must be coded as \code{NA} values.
  In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
  corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must 
  be a vector of same length as \code{nrow(Data)}.
@@ -75,11 +75,11 @@ A list of class "LRT" with the following arguments:
  Each item is tested by incorporating an interaction term, \eqn{\delta_{gj}}, and by testing its statistical significance using the traditional
  likelihood-ratio test.
 
- The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-square distribution with lower-tail
+ The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
  probability of one minus \code{alpha} and one degree of freedom.
  
  Item purification can be performed by setting \code{purify} to \code{TRUE}. In this case, items detected as DIF are iteratively
- removed from the set of tested items, and the procedure is repeated (using the remaining items) until no additionnal item is
+ removed from the set of tested items, and the procedure is repeated (using the remaining items) until no additional item is
  identified as functioning differently. The process stops when either there is no new item detected as DIF, or when \code{nrIter} iterations 
  are run and new DIF items are nevertheless detected. In the latter case a warning message is printed. 
 
@@ -89,7 +89,7 @@ A list of class "LRT" with the following arguments:
  default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
  \bold{Examples} section for an illustration.
 
- The \code{plot.LRT} function displays the DIF statistics in a plot, with each item on the X axis. The type of point and the colour are fixed by the usual \code{pch} and 
+ The \code{plot.LRT} function displays the DIF statistics in a plot, with each item on the X axis. The type of point and the color are fixed by the usual \code{pch} and 
  \code{col} arguments. Option \code{number} permits to display the item numbers instead. Also, the plot can be stored in a figure file, either in PDF or JPEG format.
  Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through the components of \code{save.options}. The first two components perform similarly 
  as those of the \code{output} argument. The third component is the figure format, with allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.

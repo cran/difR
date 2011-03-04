@@ -1,4 +1,4 @@
-difGenLord<-function(Data, group, focal.names, model, c=NULL, engine="ltm", irtParam=NULL, nrFocal=2, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default")) 
+difGenLord<-function(Data, group, focal.names, model, c=NULL, engine="ltm", discr=1, irtParam=NULL, nrFocal=2, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
 internalGLord<-function(){
 if (is.null(irtParam)==FALSE){
@@ -56,7 +56,7 @@ d0[c0,]<-as.numeric(DATA[i,])
 }
 }
 Guess<-c
-if (is.null(Guess)==TRUE) m0<-switch(model,"1PL"=itemParEst(d0,model="1PL",engine=engine),"2PL"=itemParEst(d0,model="2PL"),"3PL"=itemParEst(d0,model="3PL"))
+if (is.null(Guess)==TRUE) m0<-switch(model,"1PL"=itemParEst(d0,model="1PL",engine=engine,discr=discr),"2PL"=itemParEst(d0,model="2PL"),"3PL"=itemParEst(d0,model="3PL"))
 else m0<-itemParEst(d0,model="3PL",c=Guess)
 if (indic==1) irtParam<-m0
 else irtParam<-rbind(irtParam,itemRescale(irtParam[1:nrItems,],m0))
@@ -72,7 +72,7 @@ if (purify==FALSE) {
 STATS<-genLordChi2(irtParam,nrFocal)
 if ((max(STATS))<=Q) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrItems)[STATS>Q]
-RES<-list(genLordChi=STATS,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,itemParInit=itemParInit,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
+RES<-list(genLordChi=STATS,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -83,7 +83,7 @@ if (max(stats1)<=Q){
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 itemParFinal=irtParam
-RES<-list(genLordChi=stats1,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
+RES<-list(genLordChi=stats1,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
 }
 else{
 dif<-(1:nrItems)[stats1>Q]
@@ -132,7 +132,7 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(genLordChi=stats2,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
+RES<-list(genLordChi=stats2,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
 }
 }
 class(RES)<-"GenLord"
@@ -153,7 +153,8 @@ return(resToReturn)
 # METHODS
 plot.GenLord<-function (x, plot = "lordStat", item = 1, pch = 8, number = TRUE, 
     col = "red", colIC = rep("black", length(x$focal.names) + 
-        1), ltyIC = 1:(length(x$focal.names) + 1), save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
+        1), ltyIC = 1:(length(x$focal.names) + 1), save.plot=FALSE,save.options=c("plot","default","pdf"),
+    ref.name=NULL, ...) 
 {
 internalGLord<-function(){
     res <- x
@@ -206,7 +207,8 @@ internalGLord<-function(){
                 ylab = "Probability", main = mainName)
 		for (gr in 1:nrFocal) lines(seq, mod(parItem[gr+1,], seq),
 			 col = colIC[gr+1], lty = ltyIC[gr+1])
-           legnames <- "Reference"
+            if (is.null(ref.name)) legnames <- "Reference"
+            else legnames<-ref.name
                 if (is.character(res$focal.names) == TRUE | is.factor(res$focal.names) == 
                   TRUE) 
                   legnames <- c(legnames, res$focal.names)
@@ -268,6 +270,10 @@ cat("(",nrFocal," focal groups), with ",mod," model and ",pur, "item purificatio
 if (res$estPar==TRUE){
 if (res$model!="1PL" | res$engine=="ltm") cat("Engine 'ltm' for item parameter estimation","\n","\n")
 else cat("Engine 'lme4' for item parameter estimation","\n","\n")
+}
+if (res$model=="1PL" & res$engine=="ltm") {
+if (is.null(res$discr)) cat("Common discrimination parameter: estimated from 'ltm'","\n","\n")
+else cat("Common discrimination parameter: fixed to ",res$discr,"\n","\n",sep="")
 }
 if (is.null(res$c)==FALSE){
 if (length(res$c)==1) cat("Common pseudo-guessing value: ",res$c,"\n","\n",sep="")

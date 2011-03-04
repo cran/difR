@@ -8,11 +8,11 @@
  }
 
 \usage{
- itemPar2PL(data)
+itemPar2PL(data)
  }
 
 \arguments{
- \item{data}{numeric: the data matrix.}
+\item{data}{numeric: the data matrix.}
 }
 
 \value{
@@ -25,7 +25,9 @@
  with the general \code{\link{itemParEst}} command, as well as the methods of Lord (\code{\link{difLord}}) and Raju (\code{\link{difRaju}}) 
  and Generalized Lord's (\code{\link{difGenLord}}) to detect differential item functioning.
 
- The \code{data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
+ The \code{data} is a matrix whose rows correspond to the subjects and columns to the items.
+
+ Missing values are allowed but must be coded as \code{NA} values. They are discarded for item parameter estimation.
   
  The 2PL model is fitted using marginal maximum likelihood by means of the functions from the \code{ltm} package (Rizopoulos, 2006).
  }
@@ -54,8 +56,9 @@
     }
 
 \seealso{
- \code{\link{itemPar1PL}}, \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}}, 
- \code{\link{difRaju}}, \code{\link{difGenLord}}
+ \code{\link{itemPar1PL}}, \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}}, \code{\link{difRaju}}, 
+
+ \code{\link{difGenLord}}
  }
 
 \examples{

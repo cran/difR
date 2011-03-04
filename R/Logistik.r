@@ -10,7 +10,7 @@ Logistik<-function (data, member, anchor = 1:ncol(data), type = "both", criterio
         data2 <- data[, anchor]
         if (sum(anchor == item) == 0) 
             data2 <- cbind(data2, data[, item])
-        score <- rowSums(data2)
+        score <- rowSums(data2, na.rm=TRUE)
         Scores <- sort(unique(score))
         SCORES <- rep(Scores, 2)
         GE <- c(1, 0)

@@ -5,6 +5,21 @@
         **********************************************
 
 
+
+--------------------------------------
+- Changes in difR > 4.0 (2011-03-04) -
+--------------------------------------
+
+MAJOR UPDATES
+
+  o  To implement the SIBTEST method. Currently some R code
+     is available but must be checked for validity.
+
+  o  To add procedures for DIF identification with
+     polytomous items. => SEPARATE PACKAGE
+
+
+
 --------------------------------------
 - Changes in difR > 3.3 (2010-10-21) -
 --------------------------------------

@@ -3,23 +3,23 @@
 \alias{plot.GenLord}
 \alias{print.GenLord}
 
-\title{Generalized Lord's chi-square DIF method}
+\title{Generalized Lord's chi-squared DIF method}
 
 \description{
- Performs DIF detection among multiple groups using generalized Lord's chi-square method. 
+ Performs DIF detection among multiple groups using generalized Lord's chi-squared method. 
  }
 
 \usage{
 difGenLord(Data, group, focal.names, model, c=NULL, engine="ltm", 
-  	irtParam=NULL, nrFocal=2, same.scale=TRUE, alpha=0.05, 
-  	purify=FALSE, nrIter=10, save.output=FALSE, 
+  	discr=1, irtParam=NULL, nrFocal=2, same.scale=TRUE,
+  	alpha=0.05, purify=FALSE, nrIter=10, save.output=FALSE, 
   	output=c("out","default")) 
- \method{print}{GenLord}(x, ...)
- \method{plot}{GenLord}(x, plot = "lordStat", item = 1, pch = 8,
-    number = TRUE, col = "red", colIC = rep("black",
-    length(x$focal.names)+1), ltyIC = 1:(length(x$focal.names)
-    + 1), save.plot=FALSE, save.options=c("plot","default","pdf"),
-    ...)
+\method{print}{GenLord}(x, ...)
+\method{plot}{GenLord}(x, plot = "lordStat", item = 1, pch = 8,
+  	number = TRUE, col = "red", colIC = rep("black",
+  	length(x$focal.names)+1), ltyIC = 1:(length(x$focal.names)
+  	+ 1), save.plot=FALSE, save.options=c("plot","default","pdf"),
+      ref.name=NULL, ...)
  }
 
 \arguments{
@@ -29,12 +29,14 @@ difGenLord(Data, group, focal.names, model, c=NULL, engine="ltm",
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}).}
  \item{c}{optional numeric value or vector giving the values of the constrained pseudo-guessing parameters. See \bold{Details}.}
  \item{engine}{character: the engine for estimating the 1PL model, either \code{"ltm"} (default) or \code{"lme4"}.}
+ \item{discr}{either \code{NULL} or a real positive value for the common discrimination parameter (default is 1). Used onlky if \code{model} is \code{"1PL"} and
+             \code{engine} is \code{"ltm"}. See \bold{Details}.}
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{nrFocal}{numeric: the number of focal groups (default is 2).}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is \code{TRUE}). See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
- \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.} 
  \item{x}{the result from a \code{GenLord} class object.}
@@ -46,12 +48,13 @@ difGenLord(Data, group, focal.names, model, c=NULL, engine="ltm",
  \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
  \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
                      and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
+ \item{ref.name}{either \code{NULL}(default) or a character string for the name of the reference group (to be used instead of "Reference" in the legend). Ignored if \code{plot} is \code{"lordStat"}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
  }
 
 \value{
 A list of class "GenLord" with the following arguments:
-  \item{genLordChi}{the values of the generalized Lord's chi-square statistics.}
+  \item{genLordChi}{the values of the generalized Lord's chi-squared statistics.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{df}{the degrees of freedom of the asymptotic null distribution of the statistics.}
@@ -66,7 +69,8 @@ A list of class "GenLord" with the following arguments:
   \item{model}{the value of \code{model} argument.}
   \item{c}{The value of the \code{c} argument.}
   \item{engine}{The value of the \code{engine} argument.}
-  \item{itemParInit}{the matrix of initial parameter estimates,with the same format as \code{irtParam} either provided by the user (through \code{irtParam}) or estimated from the data
+  \item{discr}{the value of the \code{discr} argument.}
+  \item{itemParInit}{the matrix of initial parameter estimates, with the same format as \code{irtParam} either provided by the user (through \code{irtParam}) or estimated from the data
    (and displayed after rescaling).}
   \item{itemParFinal}{the matrix of final parameter estimates, with the same format as \code{irtParam}, obtained after item purification. Returned 
    only if \code{purify} is \code{TRUE}.}
@@ -78,15 +82,17 @@ A list of class "GenLord" with the following arguments:
  }
  
 \details{
- The generalized Lord's chi-square method (Kim, Cohen and Park, 1995), also referred to as \emph{Qj} statistic, allows for detecting uniform or non-uniform
+ The generalized Lord's chi-squared method (Kim, Cohen and Park, 1995), also referred to as \emph{Qj} statistic, allows for detecting uniform or non-uniform
  differential item functioning among multiple groups by setting an appropriate item response model. The input can be of two kinds: either by displaying 
  the full data, the group membership, the focal groups and the model, or by giving the item parameter estimates (with the option \code{irtParam}).
- Both can be supplied, but in this case only the parameters in \code{irtParam} are used for computing generalized Lord's chi-square statistic.
+ Both can be supplied, but in this case only the parameters in \code{irtParam} are used for computing generalized Lord's chi-squared statistic.
 
- The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
+ The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items.
  In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
  corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must 
  be a vector of same length as \code{nrow(Data)}.
+
+ Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded for item parameter estimation.
  
  The vector of group membership must hold at least three different values, either as numeric or character. The focal groups are defined by
  the values of the argument \code{focal.names}. 
@@ -94,6 +100,11 @@ A list of class "GenLord" with the following arguments:
  If the model is not the 1PL model, or if \code{engine} is equal to \code{"ltm"}, the selected IRT model is fitted using marginal maximum likelihood
  by means of the functions from the \code{ltm} package (Rizopoulos, 2006). Otherwise, the 1PL model is fitted as a generalized 
  linear mixed model, by means of the \code{glmer} function of the \code{lme4} package (Bates and Maechler, 2009).
+
+ With the \code{"1PL"} model and the \code{"ltm"} engine, the common discrimination parameter is set equal to 1 by default. It is possible to fix another value
+ through the argument\code{discr}. Alternatively, this common discrimination parameter can be estimated (though not returned) by fixing \code{discr} to 
+ \code{NULL}.
+
  The 3PL model can be fitted either unconstrained (by setting \code{c} to \code{NULL}) or by fixing the pseudo-guessing values. In the latter 
  case, the argument \code{c} is either a numeric vector of same length of the number of items, with one value per item pseudo-guessing parameter, 
  or a single value which is duplicated for all the items. If \code{c} is different from \code{NULL} then the 3PL model is always fitted (whatever the value of \code{model}).
@@ -109,7 +120,7 @@ A list of class "GenLord" with the following arguments:
  reference group. If not, rescaling is performed by equal means anchoring (Cook and Eignor, 1991). Argument \code{same.scale} is used for 
  this choice (default option is \code{TRUE} and assumes therefore that the parameters are already placed on a same scale). 
 
- The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-square distribution with lower-tail
+ The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
  probability of one minus \code{alpha} and \emph{p} degrees of freedom. The value of \emph{p} is the product of the number of focal groups by the number
  of item parameters to be tested (1 for the 1PL model, 2 for the 2PL model or the constrained 3PL model, and 3 for the unconstrained 3PL model).
  
@@ -124,7 +135,7 @@ A list of class "GenLord" with the following arguments:
  default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
  \bold{Examples} section for an illustration.
 
- Two types of plots are available. The first one is obtained by setting \code{plot="lordStat"} and it is the default option. The chi-square statistics are displayed 
+ Two types of plots are available. The first one is obtained by setting \code{plot="lordStat"} and it is the default option. The chi-squared statistics are displayed 
  on the Y axis, for each item. The detection threshold is displayed by a horizontal line, and items flagged as DIF are printed with the color defined by argument \code{col}.
  By default, items are spotted with their number identification (\code{number=TRUE}); otherwise they are simply drawn as dots whose form is given by the option \code{pch}.
 
@@ -133,6 +144,7 @@ A list of class "GenLord" with the following arguments:
  if the output argument \code{purification} is \code{TRUE}, otherwise from the \code{itemParInit} matrix and after a rescaling of the item parameters using the 
  \code{\link{itemRescale}} command. A legend is displayed in the upper left corner of the plot. The colors and types of traits for these curves are defined by means of 
  the arguments \code{colIC} and \code{ltyIC} respectively. These are set as vectors of length 2, the first element for the reference group and the second for the focal group.
+ Finally, the \code{ref.name} argument permits to display the name if the reference group (instead of "Reference") in the legend.
 
  Both types of plots can be stored in a figure file, either in PDF or JPEG format. Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through
  the components of \code{save.options}. The first two components perform similarly as those of the \code{output} argument. The third component is the figure format, with 
@@ -203,6 +215,9 @@ A list of class "GenLord" with the following arguments:
  difGenLord(Verbal[,1:24], group=Verbal[,25], focal.names=names,
  model="1PL")
 
+ # 1PL model, "ltm" engine, estimated common discrimination 
+ r <- difGenLord(Verbal, group=25, focal.names=names, discr=NULL)
+
  # 1PL model, "lme4" engine 
  difGenLord(Verbal, group="group", focal.name=names, model="1PL",
  engine="lme4")
@@ -244,12 +259,14 @@ A list of class "GenLord" with the following arguments:
  difGenLord(irtParam=irt.scale, nrFocal=3, same.scale=TRUE)
 
  # With item purification
- difGenLord(irtParam=irt.noscale, nrFocal=3, same.scale=FALSE, purify=TRUE)
+ difGenLord(irtParam=irt.noscale, nrFocal=3, same.scale=FALSE, 
+   purify=TRUE)
 
  # Graphical devices
  plot(r)
  plot(r, plot="itemCurve", item=1)
  plot(r, plot="itemCurve", item=6)
+ plot(r, plot="itemCurve", item=6, ref.name="WomanHigh")
 
  # Plotting results and saving it in a PDF figure
  plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))

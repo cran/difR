@@ -8,7 +8,7 @@
 \description{
  The Verbal Aggression data set comes from Vansteelandt (2000) and is made of the responses of 316 subjects (243 women 
  and 73 men) to a questionnaire of 24 items, about verbal aggression. All items describe a frustrating situation together 
- with a verbal agression response. A correct answer responses is coded as 0 and 1, a value of one meaning that the subject 
+ with a verbal aggression response. A correct answer responses is coded as 0 and 1, a value of one meaning that the subject 
  would (want to) respond to the frustrating situation in an aggressive way. In addition, the \emph{Trait Anger} score (Spielberger, 1988) 
  was computed for each subject.
 }
@@ -38,7 +38,7 @@
 }
 
 \source{
- The Verbal agression data set is taken originally from Vansteelandt (2000) and has been used as an illustrative example in De Boeck (2008), De Boeck and Wilson (2004) 
+ The Verbal aggression data set is taken originally from Vansteelandt (2000) and has been used as an illustrative example in De Boeck (2008), De Boeck and Wilson (2004) 
  and Smits, De Boeck and Vansteelandt (2004), among others. The following URL \emph{http://bear.soe.berkely.edu/EIRM/} permits to get access to the full data set.
 }
 
@@ -46,7 +46,7 @@
 \references{
  De Boeck, P. (2008). Random item IRT models. \emph{Psychometrika, 73}, 533-559.
 
- De Boeck, P. and Wilson, M. (2004). \emph{Explanatory item response models: a generalized linear and nonlinear approach}. New-York: Springer.
+ De Boeck, P. and Wilson, M. (2004). \emph{Explanatory item response models: a generalized linear and nonlinear approach}. New York: Springer.
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.

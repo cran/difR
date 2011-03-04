@@ -31,7 +31,8 @@ breslowDay(data, member, anchor=1:ncol(data), BDstat="BD")
  \code{breslowDay} computes one of the Breslow-Day statistics (1980) in the specific framework of differential item functioning. It forms the basic command 
  of \code{\link{difBD}} and is specifically designed for this call.
  
- The data are supplied by the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
+ The data are supplied by the \code{data} argument, with one row per subject and one column per item. Missing values are allowed but must be coded as \code{NA}
+ values. They are discarded from sum-score computation.
   
  The vector of group membership, specified by the \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
@@ -47,14 +48,17 @@ breslowDay(data, member, anchor=1:ncol(data), BDstat="BD")
 
 
 \references{
-Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (2009). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity, 43}, 35-44. 
+Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (2009). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. 
+\emph{Quality and Quantity, 43}, 35-44. 
 
-Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research, vol. I: The analysis of case-control studies}. Scientific Publication No 32. International Agency for Research on Cancer, Lyon, France.
+Breslow, N.E. and Day, N.E. (1980). \emph{Statistical methods in cancer research, vol. I: The analysis of case-control studies}. Scientific Publication No 32. 
+International Agency for Research on Cancer, Lyon, France.
 
 Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
 of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
 
-Penfield, R.D. (2003). Application of the Breslow-Day test of trend in odds ratio heterogeneity to the detection of nonuniform DIF. \emph{Alberta Journal of Educational Research, 49}, 231-243.
+Penfield, R.D. (2003). Application of the Breslow-Day test of trend in odds ratio heterogeneity to the detection of nonuniform DIF. \emph{Alberta Journal of 
+Educational Research, 49}, 231-243.
 }
 
 \author{

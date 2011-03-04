@@ -11,34 +11,43 @@
 
 \usage{
 difLogistic(Data, group, focal.name, type="both", criterion="LRT",
- 	alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, 
-	output=c("out","default"))
- \method{print}{Logistic}(x, ...)
- \method{plot}{Logistic}(x, plot="lrStat", item=1, pch=8, number=TRUE, col="red", 
- 	 colIC=rep("black",2), ltyIC=c(1,2), save.plot=FALSE, 
-       save.options=c("plot","default","pdf"), ...)
+  	alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, 
+  	output=c("out","default"))
+\method{print}{Logistic}(x, ...)
+\method{plot}{Logistic}(x, plot="lrStat", item=1, itemFit="best", 
+  	pch=8, number=TRUE, col="red", colIC=rep("black",2), 
+  	ltyIC=c(1,2),  save.plot=FALSE, 
+  	save.options=c("plot","default","pdf"), 
+  	group.names=NULL, ...)
  }
  
 \arguments{
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{data}) of group membership. See \bold{Details}.}
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
- \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
+ \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. 
+             See \bold{Details}.}
  \item{criterion}{a character string specifying which DIF statistic is computed. Possible values are \code{"LRT"} (default) or \code{"Wald"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
- \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.}
+ \item{nrIter}{numeric: the maximal number of iterations in the item purification process. (default is 10).}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
- \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or 
+               \code{"default"} (default value). See \bold{Details}.}
  \item{x}{the result from a \code{Logistik} class object.}
- \item{plot}{character: the type of plot, either \code{"lrStat"} or \code{"itemCurve"}. See \bold{Details}.}
+ \item{plot}{character: the type of plot, either \code{"lrStat"} (default) or \code{"itemCurve"}. See \bold{Details}.}
  \item{item}{numeric or character: either the number or the name of the item for which logistic curves are plotted. Used only when \code{plot="itemCurve"}.}
+ \item{itemFit}{character: the model to be selected for drawing the item curves. Possible values are \code{"best"} (default) for drawing from the best of the two
+                models, and \code{"null"} for using fitted parameters of the null model \eqn{M_0}. Not used if \code{"plot"} is \code{"lrStat"}. See \bold{Details}.}
  \item{pch, col}{type of usual \code{pch} and \code{col} graphical options.}
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
  \item{colIC, ltyIC}{vectors of two elements of the usual \code{col} and \code{lty} arguments for logistic curves. Used only when \code{plot="itemCurve"}.}
  \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
- \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
-                     and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
+ \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or 
+                    \code{"default"} (default value), and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See 
+                    \bold{Details}.}
+ \item{group.names}{either \code{NULL} (default) or a vector of two character strings giving the names of the reference group and the focal group (in this order)
+                    for display in the legend. Ignored if \code{plot} is \code{"lrStat"}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
 }
 
@@ -47,6 +56,7 @@ difLogistic(Data, group, focal.name, type="both", criterion="LRT",
 A list of class "Logistic" with the following arguments:
   \item{Logistik}{the values of the logistic regression statistics.}
   \item{logitPar}{a matrix with one row per item and four columns, holding the fitted parameters of the best model (among the two tested models) for each item.}
+  \item{parM0}{the matrix of fitted parameters of the null model \eqn{M_0}, as returned by the \code{\link{Logistik}} command.}
   \item{deltaR2}{the differences in Nagelkerke's \eqn{R^2} coefficients. See \bold{Details}.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
@@ -75,15 +85,17 @@ A list of class "Logistic" with the following arguments:
  DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). The argument \code{criterion} permits to select either
  the likelihood ratio test (\code{criterion=="LRT"}) or the Wald test (\code{criterion=="Wald"}). See \code{\link{Logistik}} for further details.
  
- The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
- In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
- corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise,
- \code{group} must be a vector of same length as \code{nrow(Data)}.
+ The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. In addition, \code{Data} can hold the vector of group membership.
+ If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number.
+ Otherwise, \code{group} must be a vector of same length as \code{nrow(Data)}.
  
+ Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded from the fitting of the
+ logistic models (see \code{\link{glm}} for further details).
+
  The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  the value of the argument \code{focal.name}. 
  
- The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-square distribution with lower-tail
+ The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
  probability of one minus \code{alpha} and with one (if \code{type="udif"} or \code{type="nudif"}) or two (if \code{type="both"}) degrees of freedom.
  
  Item purification can be performed by setting \code{purify} to \code{TRUE}. Purification works as follows: if at least one item is detected as functioning 
@@ -94,51 +106,59 @@ A list of class "Logistic" with the following arguments:
 
  The measures of effect size are provided by the difference \eqn{\Delta R^2} between the \eqn{R^2} coefficients of the two nested models (Nagelkerke, 1991; 
  Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effect sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from
- Zumbo and Thomas (1997) and one from Jodoign and Gierl (2001). The output displays the \eqn{\Delta R^2} measures, together with the two classifications.
+ Zumbo and Thomas (1997) and one from Jodoin and Gierl (2001). The output displays the \eqn{\Delta R^2} measures, together with the two classifications.
 
- The output of the \code{difLogistic}, as displayed by the \code{print.Logistic} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
- (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
- of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of \code{output}. The
- default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
- \bold{Examples} section for an illustration.
+ The output of the \code{difLogistic}, as displayed by the \code{print.Logistic} function, can be stored in a text file provided that \code{save.output} is set to
+ \code{TRUE} (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the
+ first component of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of
+ \code{output}. The default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a
+ character string: see the \bold{Examples} section for an illustration.
 
- Two types of plots are available. The first one is obtained by setting \code{plot="lrStat"} and it is the default option. The likelihood ratio statistics are displayed 
- on the Y axis, for each item. The detection threshold is displayed by a horizontal line, and items flagged as DIF are printed with the color defined by argument \code{col}.
- By default, items are spotted with their number identification (\code{number=TRUE}); otherwise they are simply drawn as dots whose form is given by the option \code{pch}.
+ Two types of plots are available. The first one is obtained by setting \code{plot="lrStat"} and it is the default option. The likelihood ratio statistics are
+ displayed on the Y axis, for each item. The detection threshold is displayed by a horizontal line, and items flagged as DIF are printed with the color defined by
+ argument \code{col}. By default, items are spotted with their number identification (\code{number=TRUE}); otherwise they are simply drawn as dots whose form is
+ given by the option \code{pch}.
 
- The other type of plot is obtained by setting \code{plot="itemCurve"}. In this case, the fitted logistic curves are displayed for one specific item set by the argument 
- \code{item}. The latter argument can hold either the name of the item or its number identification. When one tests for nonuniform DIF (\code{type="nudif"}), two logistic
- curves are displayed, either parallel (if the item is not flagged as DIF) or with different slopes (if the item is flagged as DIF). When one tests for both DIF effects
- (\code{type="both"}) or only uniform DIF (\code{type="udif"}), only one logistic curve is drawn if the item is not flagged as DIF; otherwise, two curves are displayed
- with a corresponding legend (in the upper left corner). The colors and types of traits for these curves are defined by means of the arguments \code{colIC} and \code{ltyIC}
- respectively. These are set as vectors of length 2, the first element for the reference group and the second for the focal group.
+ The other type of plot is obtained by setting \code{plot="itemCurve"}. In this case, the fitted logistic curves are displayed for one specific item set by the
+ argument \code{item}. The latter argument can hold either the name of the item or its number identification. If the argument \code{itemFit} takes the value
+ \code{"best"}, the curves are drawn according to the output of the best model among \eqn{M_0} and \eqn{M_1}. That is, two curves are drawn if the item is flagged
+ as DIF, and only one if the item is flagged as non-DIF. If \code{itemFit} takes the value \code{"null"}, then the two curves are drawn from the fitted parameters
+ of the null model \eqn{M_0}. See \code{\link{Logistik}} for further details on the models. The colors and types of traits for these curves are defined by means of
+ the arguments \code{colIC} and \code{ltyIC} respectively. These are set as vectors of length 2, the first element for the reference group and the second for the
+ focal group. Finally, the argument \code{group.names} permits to display the names of the reference and focal groups (instead of "Reference" and "Focal") in the
+ legend.
 
- Both types of plots can be stored in a figure file, either in PDF or JPEG format. Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through 
- the components of \code{save.options}. The first two components perform similarly as those of the \code{output} argument. The third component is the figure format, with 
- allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
+ Both types of plots can be stored in a figure file, either in PDF or JPEG format. Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined
+ through the components of \code{save.options}. The first two components perform similarly as those of the \code{output} argument. The third component is the figure
+ format, with allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
 }
 
 \references{
- Clauser, B.E. and Mazor, K.M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues and Practice, 17}, 31-44. 
+ Clauser, B.E. and Mazor, K.M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues 
+ and Practice, 17}, 31-44. 
 
- Finch, W.H. and French, B. (2007). Detection of crossing differential item functioning: a comparison of four methods. \emph{Educational and Psychological Measurement, 67}, 565-582. 
+ Finch, W.H. and French, B. (2007). Detection of crossing differential item functioning: a comparison of four methods. \emph{Educational and Psychological
+ Measurement, 67}, 565-582. 
  
  Gomez-Benito, J., Dolores Hidalgo, M. and Padilla, J.-L. (2009). Efficacy of effect size measures in logistic regression: an application for detecting DIF. 
  \emph{Methodology, 5}, 18-25.
 
- Hidalgo, M. D. and Lopez-Pina, J.A. (2004). Differential item functioning detection and effect size: a comparison between logistic regression and Mantel-Haenszel procedures. \emph{Educational and Psychological Measurement, 64}, 903-915. 
+ Hidalgo, M. D. and Lopez-Pina, J.A. (2004). Differential item functioning detection and effect size: a comparison between logistic regression and Mantel-Haenszel
+ procedures. \emph{Educational and Psychological Measurement, 64}, 903-915. 
  
  Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
  \emph{Applied Measurement in Education, 14}, 329-349.
 
- Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection of dichotomous differential item functioning.
+ \emph{Behavior Research Methods, 42}, 847-862.
 
  Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692.
 
- Swaminathan, H. and Rogers, H. J. (1990). Detecting differential item functioning using logistic regression procedures. \emph{Journal of Educational Measurement, 27}, 361-370.
+ Swaminathan, H. and Rogers, H. J. (1990). Detecting differential item functioning using logistic regression procedures. \emph{Journal of Educational Measurement,
+ 27}, 361-370.
  
- Zumbo, B.D. (1999). \emph{A handbook on the theory and methods of differential item functioning (DIF): logistic regression modelling as a unitary framework for binary and Likert-type (ordinal) item scores}. Ottawa, ON: Directorate of Human Resources Research and Evaluation, Department of National Defense. 
+ Zumbo, B.D. (1999). \emph{A handbook on the theory and methods of differential item functioning (DIF): logistic regression modelling as a unitary framework for
+ binary and Likert-type (ordinal) item scores}. Ottawa, ON: Directorate of Human Resources Research and Evaluation, Department of National Defense. 
  
  Zumbo, B. D. and Thomas, D. R. (1997). A measure of effect size for a model-based approach for studying DIF. Prince George, Canada: University of Northern British
  Columbia, Edgeworth Laboratory for Quantitative Behavioral Science.
@@ -202,7 +222,9 @@ A list of class "Logistic" with the following arguments:
  plot(r)
  plot(r2)
  plot(r, plot="itemCurve", item=1)
+ plot(r, plot="itemCurve", item=1, itemFit="null")
  plot(r, plot="itemCurve", item=6)
+ plot(r, plot="itemCurve", item=6, itemFit="null")
 
  # Plotting results and saving it in a PDF figure
  plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))

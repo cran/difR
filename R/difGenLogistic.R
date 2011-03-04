@@ -44,7 +44,7 @@ covMat<-PROV$covMat
                 for (idif in 1:length(DIFitems)) logitPar[DIFitems[idif], 
                   ] <- PROV$parM0[DIFitems[idif], ]
             }
-            RES <- list(genLogistik = STATS, logitPar = logitPar, covMat=covMat, 
+            RES <- list(genLogistik = STATS, logitPar = logitPar, parM0=PROV$parM0,covMat=covMat, 
                 deltaR2 = deltaR2, alpha = alpha, thr = Q, DIFitems = DIFitems, 
                 type = type, purification = purify, names = colnames(DATA), 
                 focal.names = focal.names,criterion=criterion,save.output=save.output,output=output)
@@ -121,7 +121,7 @@ covMat<-covMat
                 rownames(difPur) <- ro
                 colnames(difPur) <- co
             }
-            RES <- list(genLogistik = stats1, logitPar = logitPar, covMat=covMat,
+            RES <- list(genLogistik = stats1, logitPar = logitPar, parM0=prov1$parM0,covMat=covMat,
                 deltaR2 = deltaR2, alpha = alpha, thr = Q, DIFitems = DIFitems, 
                 type = type, purification = purify, nrPur = nrPur, 
                 difPur = difPur, convergence = noLoop, names = colnames(DATA), 
@@ -142,9 +142,9 @@ return(resToReturn)
 }
 
 # METHODS
-plot.genLogistic <- function (x, plot = "lrStat", item = 1, pch = 8, number = TRUE, col = "red", 
+plot.genLogistic <- function (x, plot = "lrStat", item = 1, itemFit="best",pch = 8, number = TRUE, col = "red", 
 colIC = rep("black",length(x$focal.names)+1), 
-ltyIC = 1:(length(x$focal.names)+1), title=NULL, save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
+ltyIC = 1:(length(x$focal.names)+1), title=NULL, save.plot=FALSE,save.options=c("plot","default","pdf"),ref.name=NULL,...) 
 {
 internalGenLog<-function(){
     res <- x
@@ -174,18 +174,19 @@ internalGenLog<-function(){
 	else {
       it <- ifelse(is.character(item) | is.factor(item),
 	           (1:length(res$names))[res$names==item],item)
-	logitPar <- res$logitPar[it,]
+	if (itemFit=="best") logitPar <- res$logitPar[it,]
+      else logitPar<-res$parM0[it,]
 	s <- seq(0,length(res$genLogistik),0.1)
  	expit <- function(t) exp(t)/(1+exp(t))
       mainName <- ifelse(is.null(title),ifelse(is.character(res$names[it]),res$names[it],paste("Item ", it, sep="")),title)
       plot(s, expit(logitPar[1]+logitPar[2]*s), col = colIC[1], type = "l",
 		lty = ltyIC[1], ylim = c(0,1), xlab = "Score", ylab = "Probability",
             main=mainName)
-      if (res$type=="nudif" | (res$type!="nudif" & is.character(res$DIFitems) == FALSE & sum(res$DIFitems==it)==1)){
+      if (itemFit=="null" | (itemFit=="best" & is.character(res$DIFitems) == FALSE & sum(res$DIFitems==it)==1)){
 	for (i in 1:length(res$focal.names))
            lines(s, expit(logitPar[1]+logitPar[2]*s+logitPar[2+i]+logitPar[2+length(res$focal.names)+i]*s),
 		  col = colIC[1+i], lty = ltyIC[1+i])
-      legnames <- "Reference"      
+      legnames <- ifelse(is.null(ref.name),"Reference",ref.name)    
       if (is.character(res$focal.names) == TRUE | is.factor(res$focal.names) == 
         TRUE) legnames <- c(legnames,res$focal.names)
       else{

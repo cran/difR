@@ -10,14 +10,15 @@
 
 \usage{
 genLogistik(data, member, anchor=1:ncol(data), type="both",
- 	criterion="LRT") 
+  	criterion="LRT") 
  }
  
 \arguments{
  \item{data}{numeric: the data matrix (one row per subject, one column per item).}
  \item{member}{numeric: the vector of group membership with zero and positive integer entries only. See \bold{Details}.}
  \item{anchor}{a vector of integer values specifying which items (all by default) are currently considered as anchor (DIF free) items. See \bold{Details}.}
- \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
+ \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. 
+            See \bold{Details}.}
  \item{criterion}{character: the type of test statistic used to detect DIF items. Possible values are \code{"LRT"} (default) and \code{"Wald"}. See \bold{Details}.}
 }
 
@@ -31,15 +32,15 @@ genLogistik(data, member, anchor=1:ncol(data), type="both",
                model (\eqn{M_0} if \code{type="both"} or \code{type="nudif"}, \eqn{M_1} if \code{type="udif"}).}
  \item{parM1}{the same matrix as \code{parM0} but with fitted parameters for the "simpler" model (\eqn{M_1} if \code{type="nudif"}, \eqn{M_2} if \code{type="both"}
  		   or \code{type="udif"}).}
- \item{covMat}{a 3-dimensional matrix of size \emph{p} x \emph{p} x \emph{K}, where \emph{p} is the number of estimated parameters and \emph{K} is the number of items,
-               holding the \emph{p} x \emph{p} covariance matrices of the estimated parameters (one matrix for each tested item).}
+ \item{covMat}{a 3-dimensional matrix of size \emph{p} x \emph{p} x \emph{K}, where \emph{p} is the number of estimated parameters and \emph{K} is the number of
+               items, holding the \emph{p} x \emph{p} covariance matrices of the estimated parameters (one matrix for each tested item).}
  \item{criterion}{the value of the \code{criterion} argument.}
  }
 
 
 \details{
- This command computes the generalized logistic regression statistic (Magis, Raiche, Beland and Gerard, 2010) in the specific framework of differential item functioning
- among  \eqn{(J+1)} groups and \emph{J} is the number of focal groups. It forms the basic command of \code{\link{difGenLogistic}} and is specifically 
+ This command computes the generalized logistic regression statistic (Magis, Raiche, Beland and Gerard, 2010) in the specific framework of differential item
+ functioning among  \eqn{(J+1)} groups and \emph{J} is the number of focal groups. It forms the basic command of \code{\link{difGenLogistic}} and is specifically 
  designed for this call.
  
  The three possible models to be fitted are:
@@ -51,8 +52,8 @@ genLogistik(data, member, anchor=1:ncol(data), type="both",
  where \eqn{\pi_i} is the probability of answering correctly the item in group \emph{i} (\eqn{i = 0, ..., J}) and \eqn{X} is the sum score. Parameters
  \eqn{\alpha} and \eqn{\beta} are the common intercept and the slope of the logistic curves, while \eqn{\gamma_i} and \eqn{\delta_i} are group-specific
  parameters. For identification reasons the parameters \eqn{\gamma_0} and \eqn{\delta_0} of the reference group are set to zero. The set of parameters
- \eqn{\{\gamma_i: i = 1, ..., J\}} of the focal groups (\eqn{g=i}) represents the uniform DIF effect accross all groups, and the set of parameters 
- \eqn{\{\delta_i: i = 1, ..., n\}} is used to model nonuniform DIF effect accross all groups.
+ \eqn{\{\gamma_i: i = 1, ..., J\}} of the focal groups (\eqn{g=i}) represents the uniform DIF effect across all groups, and the set of parameters 
+ \eqn{\{\delta_i: i = 1, ..., n\}} is used to model nonuniform DIF effect across all groups.
  The models are fitted with the \code{\link{glm}} function.
 
  Two tests are available: the Wald test and the likelihood ratio test. With the likelihood ratio test, two nested models are fitted and compared by means
@@ -65,7 +66,8 @@ genLogistik(data, member, anchor=1:ncol(data), type="both",
  for DIF (without distinction between uniform and nonuniform effects), while \code{type="udif"} and \code{type="nudif"} test for uniform and nonuniform DIF,
  respectively. Whatever the tested DIF effects, this is a simultaneous test of the equality of focal group parameters to zero.
 
- The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
+ The data are passed through the \code{data} argument, with one row per subject and one column per item.  Missing values are allowed but must be coded as 
+ \code{NA} values. They are discarded from the fitting of the logistic models (see \code{\link{glm}} for further details).
   
  The vector of group membership, specified with \code{member} argument, must hold only zeros and positive integers. The value zero corresponds to the
  reference group, and each positive integer value corresponds to one focal group. At least two different positive integers must be supplied.
@@ -76,7 +78,7 @@ genLogistik(data, member, anchor=1:ncol(data), type="both",
 
  In addition to the results of the fitted models (model parameters, covariance matrices, test statistics), Nagelkerke's \eqn{R^2} coefficients (Nagelkerke, 1991)
  are computed for each model and the output returns the differences in these coefficients. Such differences are used as measures of effect size by the
- \code{\link{difGenLogistic}} command; see Gomez-Benito, Dolores Hidalgo and Padilla (2009), Jodoign and Gierl (2001) and Zumbo and Thomas (1997).
+ \code{\link{difGenLogistic}} command; see Gomez-Benito, Dolores Hidalgo and Padilla (2009), Jodoin and Gierl (2001) and Zumbo and Thomas (1997).
 }
  
 \references{

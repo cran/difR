@@ -8,7 +8,7 @@
 }
 
 \usage{
- itemPar3PLconst(data, c=rep(0,ncol(data)))
+itemPar3PLconst(data, c=rep(0,ncol(data)))
 }
 
 \arguments{
@@ -29,7 +29,9 @@
  The output is similar to that of \code{\link{itemPar2PL}} method to fit the 2PL model; an additional column is included and holds the fixed pseudo-guessing 
  parameter values.
 
- The \code{data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
+ The \code{data} is a matrix whose rows correspond to the subjects and columns to the items. 
+
+ Missing values are allowed but must be coded as \code{NA} values. They are discarded for item parameter estimation.
 
  The argument \code{c} can be either a single numeric value or a numeric vector of the same length of the number of items. In the former case, the pseudo-guessing
  parameters are considered to be all identical to the given \code{c} value; otherwise \code{c} is directly used to constraint these parameters.
@@ -61,8 +63,9 @@
    }
    
 \seealso{
- \code{\link{itemPar1PL}}, \code{\link{itemPar2PL}}, \code{\link{itemPar3PL}}, \code{\link{itemParEst}}, \code{\link{difLord}}, 
- \code{\link{difRaju}}, \code{\link{difGenLord}}
+ \code{\link{itemPar1PL}}, \code{\link{itemPar2PL}}, \code{\link{itemPar3PL}}, \code{\link{itemParEst}}, \code{\link{difLord}}, \code{\link{difRaju}}, 
+
+ \code{\link{difGenLord}}
  }
 
 \examples{

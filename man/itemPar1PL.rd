@@ -8,12 +8,14 @@
  }
 
 \usage{
- itemPar1PL(data, engine="ltm")
+itemPar1PL(data, engine="ltm", discr=1)
  }
 
 \arguments{
  \item{data}{numeric: the data matrix.}
  \item{engine}{character: the engine for estimating the 1PL model, either \code{"ltm"} (default) or \code{"lme4"}.}
+ \item{discr}{either \code{NULL} or a real positive value for the common discrimination parameter (default is 1). Not used if \code{engine} is \code{"lme4"}.
+             See \bold{Details}.}
  }
 
 \value{
@@ -25,11 +27,17 @@
  with the general \code{\link{itemParEst}} command, as well as the methods of Lord (\code{\link{difLord}}) and Raju (\code{\link{difRaju}}) and
  Generalized Lord's (\code{\link{difGenLord}}) to detect differential item functioning.
 
- The \code{data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
-  
+ The \code{data} is a matrix whose rows correspond to the subjects and columns to the items. 
+
+ Missing values are allowed but must be coded as \code{NA} values. They are discarded for item parameter estimation.
+ 
  The estimation engine is set by the \code{engine} argument. By default (\code{engine="ltm"}), the Rasch model is fitted using marginal maximum likelihood, by means of 
  the function \code{rasch} from the \code{ltm} package (Rizopoulos, 2006). The other option, \code{engine="lme4"}, permits to fit the Rasch model as a generalized 
  linear mixed model, by means of the \code{glmer} function of the \code{lme4} package (Bates and Maechler, 2009).
+
+ With the \code{"ltm"} engine, the common discrimination parameter is set equal to 1 by default. It is possible to fix another value through the argument\code{discr}.
+ Alternatively, this common discrimination parameter can be estimated (though not returned) by fixing \code{discr} to \code{NULL}. See the functionalities of 
+ \code{\link{rasch}} command for further details.
  }
 
 \references{ 
@@ -58,8 +66,9 @@
     }
 
 \seealso{
- \code{\link{itemPar2PL}}, \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}},
- \code{\link{difRaju}}, \code{\link{difGenLord}}
+ \code{\link{itemPar2PL}}, \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}}, \code{\link{difRaju}}, 
+
+\code{\link{difGenLord}}
  }
 
 \examples{
@@ -70,6 +79,9 @@
  
  # Getting item parameter estimates ('ltm' engine)
  itemPar1PL(verbal[,1:24])
+
+ # Estimating the common discrimination parameter instead
+ itemPar1PL(verbal[,1:24], discr=NULL)
 
  # Getting item parameter estimates ('lme4' engine) 
  itemPar1PL(verbal[,1:24], engine="lme4")

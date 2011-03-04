@@ -1,4 +1,4 @@
-difRaju<-function(Data, group, focal.name, model, c=NULL, engine="ltm", irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default"))
+difRaju<-function(Data, group, focal.name, model, c=NULL, engine="ltm", discr=1,irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default"))
 {
 internalRaju<-function(){
 if (is.null(irtParam)==FALSE){
@@ -58,8 +58,8 @@ d1[c1,]<-as.numeric(DATA[i,])
 
 Guess<-c
 if (is.null(Guess)==TRUE){
-m0<-switch(model,"1PL"=itemParEst(d0,model="1PL",engine=engine),"2PL"=itemParEst(d0,model="2PL"))
-m1<-switch(model,"1PL"=itemParEst(d1,model="1PL",engine=engine),"2PL"=itemParEst(d1,model="2PL"))
+m0<-switch(model,"1PL"=itemParEst(d0,model="1PL",engine=engine,discr=discr),"2PL"=itemParEst(d0,model="2PL"))
+m1<-switch(model,"1PL"=itemParEst(d1,model="1PL",engine=engine,discr=discr),"2PL"=itemParEst(d1,model="2PL"))
 }
 else{
 m0<-itemParEst(d0,model="3PL",c=Guess)
@@ -76,7 +76,7 @@ if (purify==FALSE) {
 STATS<-RajuZ(m0,m1p)[,3]
 if (max(abs(STATS))<=qnorm(1-alpha/2)) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrItems)[abs(STATS)>qnorm(1-alpha/2)]
-RES<-list(RajuZ=STATS,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,itemParInit=itemParInit,estPar=estPar,names=dataName,save.output=save.output,output=output)
+RES<-list(RajuZ=STATS,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -87,7 +87,7 @@ if (max(abs(stats1))<=qnorm(1-alpha/2)){
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 itemParFinal=rbind(m0,m1p)
-RES<-list(RajuZ=stats1,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
+RES<-list(RajuZ=stats1,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 else{ 
 dif<-(1:nrItems)[abs(stats1)>qnorm(1-alpha/2)]
@@ -132,7 +132,7 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(RajuZ=stats2,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
+RES<-list(RajuZ=stats2,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 }
 class(RES)<-"Raj"
@@ -213,6 +213,10 @@ if (res$estPar==TRUE){
 if (res$model!="1PL" | res$engine=="ltm") cat("Engine 'ltm' for item parameter estimation","\n","\n")
 else cat("Engine 'lme4' for item parameter estimation","\n","\n")
 }
+if (res$model=="1PL" & res$engine=="ltm") {
+if (is.null(res$discr)) cat("Common discrimination parameter: estimated from 'ltm'","\n","\n")
+else cat("Common discrimination parameter: fixed to ",res$discr,"\n","\n",sep="")
+}
 if (is.null(res$c)==FALSE){
 if (length(res$c)==1) cat("Common pseudo-guessing value:",res$c,"\n","\n")
 else 
@@ -269,6 +273,38 @@ print(m2,quote=FALSE)
 cat("\n")
 }
 }
+if (res$model=="1PL"){
+cat("Effect size (ETS Delta scale):", "\n", "\n")
+    cat("Effect size code:", "\n")
+    cat(" 'A': negligible effect", "\n")
+    cat(" 'B': moderate effect", "\n")
+    cat(" 'C': large effect", "\n", "\n")
+if (res$purification) pars<-res$itemParFinal
+else pars<-res$itemParInit
+J<-nrow(pars)/2
+mR<-pars[1:J,1]
+mF<-itemRescale(pars[1:J,],pars[(J+1):(2*J),])[,1]
+rr1<-round(mF-mR,4)
+rr2<-round(-2.35*rr1,4)
+    symb1 <- symnum(abs(rr2), c(0, 1, 1.5, Inf), symbols = c("A", 
+        "B", "C"))
+    matR2 <- cbind(rr1, rr2)
+    matR2 <- noquote(cbind(format(matR2, justify = "right"), 
+        symb1))
+    if (is.null(res$names) == FALSE) 
+        rownames(matR2) <- res$names
+    else {
+        rn <- NULL
+        for (i in 1:nrow(matR2)) rn[i] <- paste("Item", i, sep = "")
+        rownames(matR2) <- rn
+    }
+    colnames(matR2) <- c("mF-mR", "deltaRaju", "")
+    print(matR2)
+    cat("\n")
+    cat("Effect size codes: 0 'A' 1.0 'B' 1.5 'C'", "\n")
+    cat(" (for absolute values of 'deltaRaju')", "\n", "\n")
+}
+
     if (x$save.output==FALSE) cat("Output was not captured!","\n")
     else {
 if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")

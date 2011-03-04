@@ -1,4 +1,4 @@
-difLord<-function(Data, group, focal.name, model, c=NULL, engine="ltm", irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10, save.output=FALSE, output=c("out","default"))
+difLord<-function(Data, group, focal.name, model, c=NULL, engine="ltm", discr=1,irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10, save.output=FALSE, output=c("out","default"))
 {
 internalLord<-function(){
 if (is.null(irtParam)==FALSE){
@@ -61,8 +61,8 @@ d1[c1,]<-as.numeric(DATA[i,])
 Guess<-c
 if (is.null(Guess)==TRUE) {
 Q<-switch(model,"1PL"=qchisq(1-alpha,1),"2PL"=qchisq(1-alpha,2),"3PL"=qchisq(1-alpha,3))
-m0<-switch(model,"1PL"=itemParEst(d0,model="1PL",engine=engine),"2PL"=itemParEst(d0,model="2PL"),"3PL"=itemParEst(d0,model="3PL"))
-m1<-switch(model,"1PL"=itemParEst(d1,model="1PL",engine=engine),"2PL"=itemParEst(d1,model="2PL"),"3PL"=itemParEst(d1,model="3PL"))
+m0<-switch(model,"1PL"=itemParEst(d0,model="1PL",engine=engine,discr=discr),"2PL"=itemParEst(d0,model="2PL"),"3PL"=itemParEst(d0,model="3PL"))
+m1<-switch(model,"1PL"=itemParEst(d1,model="1PL",engine=engine,discr=discr),"2PL"=itemParEst(d1,model="2PL"),"3PL"=itemParEst(d1,model="3PL"))
 }
 else{
 Q<-qchisq(1-alpha,2)
@@ -81,7 +81,7 @@ if (purify==FALSE) {
 STATS<-LordChi2(m0,m1p)
 if ((max(STATS))<=Q) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrItems)[STATS>Q]
-RES<-list(LordChi=STATS,alpha=alpha,thr=Q,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,itemParInit=itemParInit,estPar=estPar,names=dataName,save.output=save.output,output=output)
+RES<-list(LordChi=STATS,alpha=alpha,thr=Q,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -92,7 +92,7 @@ if (max(stats1)<=Q){
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 itemParFinal=rbind(m0,m1p)
-RES<-list(LordChi=stats1,alpha=alpha,thr=Q,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
+RES<-list(LordChi=stats1,alpha=alpha,thr=Q,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 else{
 dif<-(1:nrItems)[stats1>Q]
@@ -137,7 +137,7 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(LordChi=stats2,alpha=alpha,thr=Q,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
+RES<-list(LordChi=stats2,alpha=alpha,thr=Q,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 }
 class(RES)<-"Lord"
@@ -157,7 +157,7 @@ return(resToReturn)
 # METHODS
 
 plot.Lord<-function (x, plot = "lordStat", item = 1, pch = 8, number = TRUE, 
-    col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
+    col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), save.plot=FALSE,save.options=c("plot","default","pdf"), group.names=NULL, ...) 
 {
 internalLord<-function(){
     res <- x
@@ -213,7 +213,9 @@ internalLord<-function(){
                 ylab = "Probability", main = mainName)
             lines(seq, mod(parFoc,seq), col = colIC[2], 
                   lty = ltyIC[2])
-            legend(-4, 1, c("Reference", "Focal"), col = colIC, 
+            if (is.null(group.names)) legnames<-c("Reference", "Focal")
+            else legnames<-group.names
+            legend(-4, 1, legnames, col = colIC, 
                   lty = ltyIC, bty = "n")
       }
    }
@@ -261,6 +263,10 @@ cat("with ",mod," model and ",pur, "item purification","\n","\n",sep="")
 if (res$estPar==TRUE){
 if (res$model!="1PL" | res$engine=="ltm") cat("Engine 'ltm' for item parameter estimation","\n","\n")
 else cat("Engine 'lme4' for item parameter estimation","\n","\n")
+}
+if (res$model=="1PL" & res$engine=="ltm") {
+if (is.null(res$discr)) cat("Common discrimination parameter: estimated from 'ltm'","\n","\n")
+else cat("Common discrimination parameter: fixed to ",res$discr,"\n","\n",sep="")
 }
 if (is.null(res$c)==FALSE){
 if (length(res$c)==1) cat("Common pseudo-guessing value: ",res$c,"\n","\n",sep="")
@@ -312,6 +318,37 @@ rownames(m2)<-rep("",nrow(m2))
 colnames(m2)<-""
 print(m2,quote=FALSE)
 cat("\n")
+}
+if (res$model=="1PL"){
+cat("Effect size (ETS Delta scale):", "\n", "\n")
+    cat("Effect size code:", "\n")
+    cat(" 'A': negligible effect", "\n")
+    cat(" 'B': moderate effect", "\n")
+    cat(" 'C': large effect", "\n", "\n")
+if (res$purification) pars<-res$itemParFinal
+else pars<-res$itemParInit
+J<-nrow(pars)/2
+mR<-pars[1:J,1]
+mF<-itemRescale(pars[1:J,],pars[(J+1):(2*J),])[,1]
+rr1<-round(mF-mR,4)
+rr2<-round(-2.35*rr1,4)
+    symb1 <- symnum(abs(rr2), c(0, 1, 1.5, Inf), symbols = c("A", 
+        "B", "C"))
+    matR2 <- cbind(rr1, rr2)
+    matR2 <- noquote(cbind(format(matR2, justify = "right"), 
+        symb1))
+    if (is.null(res$names) == FALSE) 
+        rownames(matR2) <- res$names
+    else {
+        rn <- NULL
+        for (i in 1:nrow(matR2)) rn[i] <- paste("Item", i, sep = "")
+        rownames(matR2) <- rn
+    }
+    colnames(matR2) <- c("mF-mR", "deltaLord", "")
+    print(matR2)
+    cat("\n")
+    cat("Effect size codes: 0 'A' 1.0 'B' 1.5 'C'", "\n")
+    cat(" (for absolute values of 'deltaLord')", "\n", "\n")
 }
     if (x$save.output==FALSE) cat("Output was not captured!","\n")
     else {

@@ -7,15 +7,115 @@
 
 
 ------------------------------------
+- Changes in difR 4.0 (2011-03-04) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  An important mistake in the R code has been fixed. Under
+     the 3PL model, Lord's chi-squared statistics were 
+     were wrongly computed (see the 'LordChi2' help file for
+     further details). This has now been fixed. Many thanks
+     to J. Patrick Meyer (Curry School of Education, 
+     University of Virginia) for having discovered this
+     mistake.
+
+  o  The non-IRT methods of TID, Mantel-Haenszel, Breslow-
+     Day, standardization and generalized Mantel-Haenszel
+     can now handle data sets with missing values. They must
+     be coded as NA values into the data set. Basically, 
+     they are withdrawn from the computation of sum-scores.
+
+  o  The non-IRT methods of logistic regression and
+     generalized logistic regression can now handle data sets
+     with missing values. They must be coded as NA values
+     into the data set. Basically, they are withdrawn from
+     the computation of sum-scores and the fitting of
+     logistic models.
+
+  o  The IRT methods of Lord, Raju, LRT and generalized Lord
+     can now handle data sets with missing values, as both 
+     'ltm' and 'lme4' support for missing data. They must
+     be coded as NA values into the data set. They are 
+     withdrawn from the fitting of the IRT models.
+
+  o  The Transformed Item Difficulties (TID) method, also
+     known as Angoff's Delta method, is now available. The
+     function 'trItemDiff' computes the perpendicular 
+     distances and the 'difTID' function returns the full
+     output, similarly to other DIF methods.
+
+  o  An effect size measure has been added for the Lord and 
+     Raju methods when the 1PL model is used. It is based 
+     on the difference in item difficulties. See the help
+     files of the methods 'difLord' and 'difRaju'.
+
+  o  The 'itemPar1PL' has a new argument, called 'discr', to
+     fix the common discrimination parameter. By default it
+     is equal to 1, and can be changed to any other value.
+     Alternatively, fixing it to 'NULL' will lead to the
+     estimation of this common parameter (only with the 'ltm'
+     package).
+
+  o  The 'difLogistic' and 'difGenLogistic' functions return
+     now the fitted parameters of the null model M_0 (see 
+     the help file for details on this null model). This is
+     to propose other graphical displays of the item curves
+     (see below).
+
+  o  The 'plot.Logistic' and 'plot.genLogistic' functions
+     have been updated. The new argument 'itemFit' permits
+     to select whether the item curves are displayed
+     according to the best model (i.e. model M_0 if the item
+     is flagged as DIF and model M_1 otherwise) or the null
+     model (i.e. M_0).
+
+
+MINOR UPDATES
+
+  o  The functions 'selectDif' and 'dichoDif' have been 
+     updated to allow for the TID method.
+
+   o The functions 'itemParEst', 'difLord', 'difRaju',
+     'difGenLord', 'selectDif', 'selectGenDif', 'dichoDif'
+     and 'genDichoDif' have been updated to incorporate the
+     new 'discr' argument of 'itemPar1PL' function.
+
+  o  The former argument 'thr' of 'difStd' method has been
+     renamed to 'thrSTD', as there is now an equivalent one
+     for the TID method that is called 'thrTID'.
+
+  o  The 'plot.Logistic' and 'plot.Lord' functions have a new
+     argument, called 'group.names', to provide the names of
+     the reference and focal group for the legend.
+
+  o  The 'plot.genLogistic' and 'plot.GenLord' functions have
+     a new argument, called 'ref.name', to provide the name
+     of the reference group for the legend.
+
+  o  The help files have been checked, typos have been fixed
+     and some descriptions have been rewritten for sake of
+     consistency.
+
+  o  The 'print.dichoDif' function has been slightly
+     modified: the DIF methods are now printed as a list and
+     not one after each other.
+
+  o  A minor bug was fixed in the 'print.dichoDif' function:
+     options of the Breslow-Day method were printed even
+     when this method was not requested!
+
+
+------------------------------------
 - Changes in difR 3.3 (2010-10-21) -
 ------------------------------------
 
 MAJOR UPDATES
 
-  o  It is now possible to cature and save the output of each
+  o  It is now possible to capture and save the output of each
      DIF method directly from the 'dif...' functions. The 
      arguments 'save.output' and 'output' control for saving
-     the output (as displayed by the corresponding 'print.'
+     the output (as displayed by the corresponding 'print'
      function) into a text file, whose name and path are
      specified within the 'output' argument.
 
@@ -23,15 +123,15 @@ MAJOR UPDATES
      and 'genDichoDif' have been adapted in order to allow
      for saving their output too
 
-  o  Similarly, the plots drawn from the 'plot.' functions can
+  o  Similarly, the plots drawn from the 'plot' functions can
      be captured into either PDF or JPEG format, by using the
      newly added 'save.plot' and 'save.options' arguments.
      They define the name of the figure, the path where it is
      saved, and the format of the figure.
 
-  o  In addition, the 'print.' functions display a message to
+  o  In addition, the 'print' functions display a message to
      specify whether the output was saved (and where the saved
-     file is located) or not, and the 'plot.' functions display
+     file is located) or not, and the 'plot' functions display
      a message into the R console to specify whether the plot 
      was not captured, the format is incorrect, or the plot was 
      captured and where it was stored.
@@ -40,7 +140,7 @@ MAJOR UPDATES
 MINOR UPDATES
 
   o  Several help files have been updated to describe the 
-     corresponding 'plot.' functions.
+     corresponding 'plot' functions.
 
   o  Several typos have been fixed.
 

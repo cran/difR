@@ -11,11 +11,12 @@
 
 \usage{
 difRaju(Data, group, focal.name, model, c=NULL, engine="ltm", 
- 	irtParam=NULL,  same.scale=TRUE, alpha=0.05, purify=FALSE, 
- 	nrIter=10, save.output=FALSE, output=c("out","default")) 
- \method{print}{Raj}(x, ...)
- \method{plot}{Raj}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
-      save.options=c("plot","default","pdf"), ...)
+  	discr=1, irtParam=NULL,  same.scale=TRUE, alpha=0.05,
+  	purify=FALSE, nrIter=10, save.output=FALSE, 
+  	output=c("out","default")) 
+\method{print}{Raj}(x, ...)
+\method{plot}{Raj}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
+  	save.options=c("plot","default","pdf"), ...)
  }
 
 \arguments{
@@ -25,11 +26,13 @@ difRaju(Data, group, focal.name, model, c=NULL, engine="ltm",
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}).}
  \item{c}{optional numeric value or vector giving the values of the constrained pseudo-guessing parameters. See \bold{Details}.}
  \item{engine}{character: the engine for estimating the 1PL model, either \code{"ltm"} (default) or \code{"lme4"}.}
+ \item{discr}{either \code{NULL} or a real positive value for the common discrimination parameter (default is 1). Used onlky if \code{model} is \code{"1PL"} and
+             \code{engine} is \code{"ltm"}. See \bold{Details}.}
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
- \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
+ \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).} 
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
  \item{x}{the result from a \code{Raj} class object.}
@@ -57,6 +60,7 @@ A list of class "Raj" with the following arguments:
   \item{model}{the value of \code{model} argument.}
   \item{c}{The value of the \code{c} argument.}
   \item{engine}{The value of the \code{engine} argument.}
+  \item{discr}{the value of the \code{discr} argument.}
   \item{itemParInit}{the matrix of initial parameter estimates,with the same format as \code{irtParam} either provided by the user (through \code{irtParam}) or estimated from the data
    (and displayed without rescaling).}
   \item{itemParFinal}{the matrix of final parameter estimates, with the same format as \code{irtParam}, obtained after item purification. Returned 
@@ -73,17 +77,23 @@ A list of class "Raj" with the following arguments:
  the group membership and the model, or by giving the item parameter estimates (with the option \code{irtParam}).
  Both can be supplied, but in this case only the parameters in \code{irtParam} are used for computing Raju's statistic.
 
- The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
- In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
- corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must 
- be a vector of same length as \code{nrow(Data)}.
+ The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. In addition, \code{Data} can hold the vector of group membership. 
+ If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number.
+ Otherwise, \code{group} must be a vector of same length as \code{nrow(Data)}.
  
+ Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded for item parameter estimation.
+
  The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  the value of the argument \code{focal.name}. 
  
  If the model is not the 1PL model, or if \code{engine} is equal to \code{"ltm"}, the selected IRT model is fitted using marginal maximum likelihood
  by means of the functions from the \code{ltm} package (Rizopoulos, 2006). Otherwise, the 1PL model is fitted as a generalized 
  linear mixed model, by means of the \code{glmer} function of the \code{lme4} package (Bates and Maechler, 2009).
+ 
+ With the \code{"1PL"} model and the \code{"ltm"} engine, the common discrimination parameter is set equal to 1 by default. It is possible to fix another value
+ through the argument\code{discr}. Alternatively, this common discrimination parameter can be estimated (though not returned) by fixing \code{discr} to 
+ \code{NULL}.
+
  The 3PL model can be fitted either unconstrained (by setting \code{c} to \code{NULL}) or by fixing the pseudo-guessing values. In the latter 
  case, the argument \code{c} holds either a numeric vector of same length of the number of items, with one value per item pseudo-guessing parameter, 
  or a single value which is duplicated for all the items. If \code{c} is different from \code{NULL} then the 3PL model is always fitted (whatever the value of \code{model}).
@@ -98,13 +108,17 @@ A list of class "Raj" with the following arguments:
  reference group. If not, rescaling is performed by equal means anchoring (Cook and Eignor, 1991). Argument \code{same.scale} is used for 
  this choice (default option is \code{TRUE} and assumes therefore that the parameters are already placed on the same scale).  
 
- The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the normal distribution with lower-tail
- probability of one minus \code{alpha}/2.
+ The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the stanard normal distribution with lower-tail
+ probability of 1-\code{alpha}/2.
  
  Item purification can be performed by setting \code{purify} to \code{TRUE}. In this case, the purification occurs in the equal means anchoring process. Items 
  detected as DIF are iteratively removed from the set of items used for equal means anchoring, and the procedure is repeated until either the same items
  are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
  See Candell and Drasgow (1988) for further details.
+
+ Under the 1PL model, the displayed output also proposes an effect size measure, which is -2.35 times the difference between item difficulties of the reference group
+ and the focal group (Penfield and Camilli, 2007, p. 138). This effect size is similar Mantel-Haenszel's \eqn{\Delta_{MH}} effect size, and the ETS delta scale is used 
+ to classify the effect sizes (Holland and Thayer, 1985).
 
  The output of the \code{difRaju}, as displayed by the \code{print.Raj} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
  (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
@@ -112,7 +126,7 @@ A list of class "Raj" with the following arguments:
  default value is \code{"default"}, meaning that the file will be saved in the current working directory. Any other path can be specified as a character string: see the 
  \bold{Examples} section for an illustration.
 
- The \code{plot.Raj} function displays the DIF statistics in a plot, with each item on the X axis. The type of point and the colour are fixed by the usual \code{pch} and 
+ The \code{plot.Raj} function displays the DIF statistics in a plot, with each item on the X axis. The type of point and the color are fixed by the usual \code{pch} and 
  \code{col} arguments. Option \code{number} permits to display the item numbers instead. Also, the plot can be stored in a figure file, either in PDF or JPEG format.
  Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through the components of \code{save.options}. The first two components perform similarly 
  as those of the \code{output} argument. The third component is the figure format, with allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
@@ -126,9 +140,15 @@ A list of class "Raj" with the following arguments:
  \emph{Applied Psychological Measurement, 12}, 253-260. 
 
  Cook, L. L. and Eignor, D. R. (1991). An NCME instructional module on IRT equating methods. \emph{Educational Measurement: Issues and Practice, 10}, 37-45.
+
+ Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, NJ:
+ Educational Testing Service.
  
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+
+ Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray (Eds.), \emph{Handbook of Statistics 26: Psychometrics}
+ (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
 
  Raju, N.S. (1988). The area between two item characteristic curves. \emph{Psychometrika, 53}, 495-502. 
 

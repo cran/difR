@@ -8,7 +8,7 @@
  }
 
 \usage{
- RajuZ(mR, mF)
+RajuZ(mR, mF)
  }
 
 \arguments{

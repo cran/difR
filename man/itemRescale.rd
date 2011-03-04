@@ -7,7 +7,7 @@
  Rescale the item parameters from one data set to the scale of the parameters from another data set, using equal means anchoring.}
 
 \usage{
- itemRescale(mR, mF, items=1:nrow(mR))
+itemRescale(mR, mF, items=1:nrow(mR))
  }
 
 \arguments{
@@ -28,7 +28,7 @@
  number in either \code{mR} or \code{mF}, and are passed through the \code{items} argument.
 
  \code{itemRescale} primarily serves as a routine for item purification in Lord (\code{\link{difLord}}) and Raju (\code{\link{difRaju}}) 
- Generalized Lord's (\code{\link{difGenLord}})methods of DIF identification (Candell and Drasgow, 1988).
+ Generalized Lord's (\code{\link{difGenLord}}) methods of DIF identification (Candell and Drasgow, 1988).
 }
 
 \references{
@@ -57,7 +57,9 @@
     }
 
 \seealso{
- \code{\link{itemPar1PL}}, \code{\link{itemPar2PL}},  \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{difLord}}, \code{\link{difRaju}}, \code{\link{difGenLord}} 
+ \code{\link{itemPar1PL}}, \code{\link{itemPar2PL}},  \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{difLord}}, \code{\link{difRaju}}, 
+
+ \code{\link{difGenLord}} 
 }
 
 \examples{
@@ -73,7 +75,7 @@
  data.ref<-verbal[,1:24][order(Gender),][1:nR,]
  data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
 
- # Estimating item parfameters in each data set with 1PL model
+ # Estimating item parameters in each data set with 1PL model
  mR<-itemPar1PL(data.ref)
  mF<-itemPar1PL(data.focal)
 
@@ -84,7 +86,7 @@
  # anchoring
  itemRescale(mR, mF, items=1:10)
 
- # Estimating item parfameters in each data set with 2PL model
+ # Estimating item parameters in each data set with 2PL model
  mR<-itemPar2PL(data.ref)
  mF<-itemPar2PL(data.focal)
 

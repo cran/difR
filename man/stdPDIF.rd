@@ -8,7 +8,7 @@
  }
 
 \usage{
- stdPDIF(data, member, anchor=1:ncol(data), stdWeight="focal")
+stdPDIF(data, member, anchor=1:ncol(data), stdWeight="focal")
  }
  
 \arguments{
@@ -26,32 +26,36 @@ A list with two arguments:
  }
  
 \details{
- This command computes the standardized P-DIF statistic in the specific framework of differential item functioning (Dorans and Kullick, 1986). It forms the basic command 
- of \code{\link{difStd}} and is specifically designed for this call. In addition, the standardized alpha values (Dorans, 1989) are also computed
- as a basis for effect size calculation.
+ This command computes the standardized P-DIF statistic in the specific framework of differential item functioning (Dorans and Kulick, 1986). It forms the basic
+ command of \code{\link{difStd}} and is specifically designed for this call. In addition, the standardized alpha values (Dorans, 1989) are also computed as a basis
+ for effect size calculation.
 
- The standardized P-DIF statistic is a weighted average of the difference in proportions of successes in the reference group and in the focal group.
- The average is computed accross the test score strata. The weights can be of three kinds (Dorans, 1989; Dorans and Kullick, 1986) and are specified through the \code{stdWeight} argument: 
- the proportion of focal groups examinees within each stratum (\code{stdWeight="focal"}), the proportion of reference group examinees within each stratum (\code{stdWeight="reference"}), 
- and the proportion of examinees (from both groups) within each stratum (\code{stdWeight="total"}). By default, the weights are built from the focal group. 
+ The standardized P-DIF statistic is a weighted average of the difference in proportions of successes in the reference group and in the focal group. The average is
+ computed across the test score strata. The weights can be of three kinds (Dorans, 1989; Dorans and Kulick, 1986) and are specified through the \code{stdWeight} 
+ argument: the proportion of focal groups examinees within each stratum (\code{stdWeight="focal"}), the proportion of reference group examinees within each stratum
+ (\code{stdWeight="reference"}), and the proportion of examinees (from both groups) within each stratum (\code{stdWeight="total"}). By default, the weights are
+ built from the focal group. 
  
- Similarly to the 'alpha' estimates of the common odds ratio for the Mantel-Haenszel method (see \code{\link{mantelHaenszel}}), the \emph{standardized alpha values} can be
- computed as rough measures of effect sizes, after a transformation to the Delta Scale (Holland, 1985). See Dorans (1989, p.228, Eqn.15) for
- further details. 
+ Similarly to the 'alpha' estimates of the common odds ratio for the Mantel-Haenszel method (see \code{\link{mantelHaenszel}}), the \emph{standardized alpha values}
+ can be computed as rough measures of effect sizes, after a transformation to the Delta Scale (Holland, 1985). See Dorans (1989, p.228, Eqn.15) for further details. 
  
- The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are not allowed.
+ The data are passed through the \code{data} argument, with one row per subject and one column per item. Missing values are allowed but must be coded as \code{NA}
+ values. They are discarded from sum-score computation.
   
- The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
- reference group and a value of one to the focal group.
+ The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the reference group and a
+ value of one to the focal group.
  
- Option \code{anchor} sets the items which are considered as anchor items for computing standardized P-DIF statistics. Items other than the anchor items and the tested item 
- are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is mainly designed to perform item purification.
+ Option \code{anchor} sets the items which are considered as anchor items for computing standardized P-DIF statistics. Items other than the anchor items and the
+ tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is mainly designed to
+ perform item purification.
 }
 
 \references{
- Dorans, N. J. (1989). Two new approaches to assessing differential item functioning: standardization and the Mantel-Haenszel method. \emph{Applied Measurement in Education, 2}, 217-233. 
+ Dorans, N. J. (1989). Two new approaches to assessing differential item functioning: standardization and the Mantel-Haenszel method. \emph{Applied Measurement
+ in Education, 2}, 217-233. 
  
- Dorans, N. J. and Kullick, E. (1986). Demonstrating the utility of the standardization approach to assessing unexpected differential item performance on the Scholastic Aptitude Test. \emph{Journal of Educational Measurement, 23}, 355-368.
+ Dorans, N. J. and Kulick, E. (1986). Demonstrating the utility of the standardization approach to assessing unexpected differential item performance on the
+ Scholastic Aptitude Test. \emph{Journal of Educational Measurement, 23}, 355-368.
 
  Holland, P. W. (1985, October). \emph{On the study of differential item performance without IRT}. Paper presented at the meeting of 
  Military Testing Association, San Diego (CA).  

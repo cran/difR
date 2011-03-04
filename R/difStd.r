@@ -1,4 +1,4 @@
-difStd <-function(Data,group,focal.name,stdWeight="focal",thr=0.1,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
+difStd <-function(Data,group,focal.name,stdWeight="focal",thrSTD=0.1,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
 internalSTD<-function(){
      if (length(group) == 1) {
@@ -23,9 +23,9 @@ internalSTD<-function(){
 resProv<-stdPDIF(DATA,Group,stdWeight=stdWeight)
 STATS <- resProv$resStd
 ALPHA <- resProv$resAlpha
- if (max(abs(STATS))<=thr) DIFitems<-"No DIF item detected"
- else DIFitems <-(1:ncol(DATA))[abs(STATS)>thr]
-RES <-list(PDIF=STATS,stdAlpha=ALPHA,thr=thr,DIFitems=DIFitems,purification=purify,names=colnames(DATA),stdWeight=stdWeight,save.output=save.output,output=output)
+ if (max(abs(STATS))<=thrSTD) DIFitems<-"No DIF item detected"
+ else DIFitems <-(1:ncol(DATA))[abs(STATS)>thrSTD]
+RES <-list(PDIF=STATS,stdAlpha=ALPHA,thr=thrSTD,DIFitems=DIFitems,purification=purify,names=colnames(DATA),stdWeight=stdWeight,save.output=save.output,output=output)
 }
 else{
 nrPur<-0
@@ -34,12 +34,12 @@ noLoop<-FALSE
 resProv<-stdPDIF(DATA,Group,stdWeight=stdWeight)
 stats1 <-resProv$resStd
 alpha1<-resProv$resAlpha
-if (max(abs(stats1))<=thr) {
+if (max(abs(stats1))<=thrSTD) {
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 }
 else{
-dif    <-(1:ncol(DATA))[abs(stats1)>thr]
+dif    <-(1:ncol(DATA))[abs(stats1)>thrSTD]
 difPur<-rep(0,length(stats1))
 difPur[dif]<-1
 repeat{
@@ -56,8 +56,8 @@ if (sum(i==dif)==0) nodif<-c(nodif,i)
 resProv<-stdPDIF(DATA,Group,anchor=nodif,stdWeight=stdWeight)
 stats2 <-resProv$resStd
 alpha2<-resProv$resAlpha
-if (max(abs(stats2))<=thr) dif2<-NULL
-else dif2<-(1:ncol(DATA))[abs(stats2)>thr]
+if (max(abs(stats2))<=thrSTD) dif2<-NULL
+else dif2<-(1:ncol(DATA))[abs(stats2)>thrSTD]
 difPur<-rbind(difPur,rep(0,ncol(DATA)))
 difPur[nrPur+1,dif2]<-1
 if (length(dif)!=length(dif2)) dif<-dif2
@@ -74,7 +74,7 @@ else dif<-dif2
 }
 stats1<-stats2
 alpha1<-alpha2
-DIFitems <-(1:ncol(DATA))[abs(stats1)>thr]
+DIFitems <-(1:ncol(DATA))[abs(stats1)>thrSTD]
 }
 if (is.null(difPur)==FALSE){
 ro<-co<-NULL
@@ -83,7 +83,7 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(PDIF=stats1,stdAlpha=alpha1,thr=thr,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA),stdWeight=stdWeight,save.output=save.output,output=output)
+RES<-list(PDIF=stats1,stdAlpha=alpha1,thr=thrSTD,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,names=colnames(DATA),stdWeight=stdWeight,save.output=save.output,output=output)
 }
 class(RES)<-"PDIF"
 return(RES)

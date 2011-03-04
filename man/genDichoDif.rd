@@ -11,11 +11,11 @@
 
 \usage{
 genDichoDif(Data, group, focal.names, method, type="both",
-   criterion="LRT", alpha=0.05, model="2PL", c=NULL,
-   engine = "ltm", irtParam=NULL, nrFocal=2, same.scale=TRUE,
-   purify=FALSE, nrIter=10, save.output=FALSE, 
-   output=c("out","default")) 
- \method{print}{genDichoDif}(x, ...)
+  	criterion="LRT", alpha=0.05, model="2PL", c=NULL,
+  	engine = "ltm", discr=1, irtParam=NULL, nrFocal=2, 
+  	same.scale=TRUE, purify=FALSE, nrIter=10, 
+  	save.output=FALSE, output=c("out","default")) 
+\method{print}{genDichoDif}(x, ...)
  }
  
 \arguments{
@@ -24,18 +24,22 @@ genDichoDif(Data, group, focal.names, method, type="both",
  \item{focal.names}{numeric or character vector indicating the levels of \code{group} which correspond to the focal groups.}
  \item{method}{character: the name of the selected methods. See \bold{Details}.}
  \item{type}{a character string specifying which DIF effects must be tested (default is \code{"both"}). See \bold{Details}.}
- \item{criterion}{character: the type of test statistic used to detect DIF items with generalized logistic regression. Possible values are \code{"LRT"} (default) and \code{"Wald"}. See \bold{Details}.}
+ \item{criterion}{character: the type of test statistic used to detect DIF items with generalized logistic regression. Possible values are \code{"LRT"} (default)
+                  and \code{"Wald"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}). Default is \code{"2PL"}.}
  \item{c}{optional numeric value or vector giving the values of the constrained pseudo-guessing parameters. See \bold{Details}.}
  \item{engine}{character: the engine for estimating the 1PL model, either \code{"ltm"} (default) or \code{"lme4"}.}
+ \item{discr}{either \code{NULL} or a real positive value for the common discrimination parameter (default is 1). Used onlky if \code{model} is \code{"1PL"} and
+             \code{engine} is \code{"ltm"}. See \bold{Details}.}
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{nrFocal}{numeric: the number of focal groups (default is 2).}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
- \item{nrIter}{numeric: the maximal number of iterations in the item purification process. Default is 10.} 
+ \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).} 
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
- \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
+ \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or
+              \code{"default"} (default value). See \bold{Details}.}
  \item{x}{result from a \code{genDichoDif} class object.}
  \item{...}{other generic parameters for the \code{print} function.}
 }
@@ -49,6 +53,8 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
   \item{criterion}{the value of the \code{criterion} argument.}
   \item{model}{the value of \code{model} option.}
   \item{c}{the value of \code{c} option.}
+  \item{engine}{The value of the \code{engine} argument.}
+  \item{discr}{the value of the \code{discr} argument.}
   \item{irtParam}{the value of \code{irtParam} option.}
   \item{same.scale}{the value of \code{same.scale} option.}
   \item{purification}{the value of \code{purify} option.} 
@@ -61,19 +67,22 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
  }
 
 \details{
- \code{genDichoDif} is a generic function which calls one or several DIF detection methods among multiple groups, and summarize their output. The possible methods are:
- \code{"GMH"} for Generalized Mantel-Haenszel (Penfield, 2001), \code{"genLogistic"} for generalized logistic regression (Magis, Raiche Beland and Gerard, 2010) and 
- \code{"genLord"} for generalized Lord's chi-square test (Kim, Cohen and Park, 1995).
+ \code{genDichoDif} is a generic function which calls one or several DIF detection methods among multiple groups, and summarize their output. The possible methods
+ are: \code{"GMH"} for Generalized Mantel-Haenszel (Penfield, 2001), \code{"genLogistic"} for generalized logistic regression (Magis, Raiche Beland and Gerard, 2010)
+ and \code{"genLord"} for generalized Lord's chi-square test (Kim, Cohen and Park, 1995).
 
- If \code{method} has a single component, the output of \code{genDichoDif} is exactly the one provided by the method itself. Otherwise, the main  output is a matrix with one row 
- per item and one column per method. For each specified method and related arguments, items detected as DIF and non-DIF are respectively encoded as \code{"DIF"} and
- \code{"NoDIF"}. When printing the output an additional column is added, counting the number of times each item was detected as functioning differently (Note: this is just an
- informative summary, since the methods are obviously not independent for the detection of DIF items).
+ If \code{method} has a single component, the output of \code{genDichoDif} is exactly the one provided by the method itself. Otherwise, the main  output is a matrix
+ with one row per item and one column per method. For each specified method and related arguments, items detected as DIF and non-DIF are respectively encoded as
+ \code{"DIF"} and \code{"NoDIF"}. When printing the output an additional column is added, counting the number of times each item was detected as functioning
+ differently (Note: this is just an informative summary, since the methods are obviously not independent for the detection of DIF items).
 
- The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.In addition, \code{Data} can hold the vector of group 
- membership. If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise,
- \code{group} must be a vector of same length as \code{nrow(Data)}.
+ The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. In addition, \code{Data} can hold the vector of group membership. 
+ If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number.
+ Otherwise, \code{group} must be a vector of same length as \code{nrow(Data)}.
  
+ Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded from either the computation
+ of the sum-scores, the fitting of the logistic models or the IRT models (according to the method).
+
  The vector of group membership must hold at least three different values, either as numeric or character. The focal groups are defined by
  the values of the argument \code{focal.names}. 
 
@@ -82,7 +91,7 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
  Furthermore, the argument \code{criterion} defines which test must be used, either the Wald test (\code{"Wald"}) or the likelihood ratio test
  (\code{"LRT"}).
 
- For generalized Lord method, one can specify either the IRT model to be fitted (by means of \code{model}, \code{c} and \code{engine} arguments), 
+ For generalized Lord method, one can specify either the IRT model to be fitted (by means of \code{model}, \code{c}, \code{engine} and \code{discr} arguments), 
  or the item parameter estimates with arguments \code{irtParam} and \code{same.scale}. See \code{\link{difGenLord}} for further details. 
 
  The threshold for detecting DIF items depends on the method and is depending on the significance level set by \code{alpha}.
@@ -90,20 +99,22 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification process is slightly different 
  for IRT and for non-IRT based methods. See the corresponding methods for further information.
 
- The output of the \code{genDichoDif} function can be stored in a text file by fixing \code{save.output} and \code{output} appropriately. See the help file of \code{\link{selectGenDif}}
- function (or any other DIF method) for further information.
+ The output of the \code{genDichoDif} function can be stored in a text file by fixing \code{save.output} and \code{output} appropriately. See the help file of
+ \code{\link{selectGenDif}} function (or any other DIF method) for further information.
 }
  
 \references{
- Kim, S.-H., Cohen, A.S. and Park, T.-H. (1995). Detection of differential item functioning in multiple groups. \emph{Journal of Educational Measurement, 32}, 261-276. 
+ Kim, S.-H., Cohen, A.S. and Park, T.-H. (1995). Detection of differential item functioning in multiple groups. \emph{Journal of Educational Measurement, 32},
+ 261-276. 
  
- Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection of dichotomous differential item functioning.
+ \emph{Behavior Research Methods, 42}, 847-862.
 
  Magis, D., Raiche, G., Beland, S. and Gerard, P. (2010). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
  manuscript.
 
- Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures. \emph{Applied Measurement in Education, 14}, 235-259. 
+ Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures. \emph{Applied Measurement
+ in Education, 14}, 235-259. 
  }
  
 \author{

@@ -1,7 +1,7 @@
 # DIF: COMPARING DIF STATISTICS
 
 genDichoDif <- function (Data, group, focal.names, method, type=  "both", criterion="LRT",
-    alpha = 0.05, model = "2PL", c = NULL, engine="ltm", irtParam = NULL, 
+    alpha = 0.05, model = "2PL", c = NULL, engine="ltm", discr=1,irtParam = NULL, 
     nrFocal = 2, same.scale = TRUE, purify = FALSE, nrIter = 10, save.output=FALSE, output=c("out","default"))  
 {
 internalGenDicho<-function(){
@@ -20,14 +20,14 @@ internalGenDicho<-function(){
     else {
         if (length(method) == 1) 
             return(selectGenDif(Data = Data, group = group, focal.names = focal.names, type=type, criterion=criterion,
-                method = method, alpha = alpha, model = model, c = c, irtParam = irtParam, 
+                method = method, alpha = alpha, model = model, c = c, engine=engine,discr=discr,irtParam = irtParam, 
                 same.scale = same.scale, purify = purify, nrIter = nrIter,save.output=save.output,output=output))
         else {
             mat <- iters <- conv <- NULL
             for (met in 1:length(method)) {
                 prov <- selectGenDif(Data = Data, group = group, 
                   focal.names = focal.names, type=type,criterion=criterion, method = method[met], 
-                  alpha = alpha, model = model, c = c, irtParam = irtParam, 
+                  alpha = alpha, model = model, c = c, engine=engine,discr=discr, irtParam = irtParam, 
                   same.scale = same.scale, purify = purify, nrIter = nrIter)
                 mat <- cbind(mat, rep("NoDIF", length(prov[[1]])))
                 if (is.character(prov$DIFitems) == FALSE) 
@@ -52,7 +52,7 @@ internalGenDicho<-function(){
                 rownames(mat) <- rname
             }
             RES <- list(DIF = mat, alpha = alpha, method = method,
-                type = type, criterion=criterion, model = model, c = c, irtParam = irtParam, 
+                type = type, criterion=criterion, model = model, c = c, engine=engine,discr=discr,irtParam = irtParam, 
 		    same.scale = same.scale, purification = purify, nrPur = iters, 
                 convergence = conv,save.output=save.output,output=output)
             class(RES) <- "genDichoDif"
@@ -105,7 +105,26 @@ else cat("DIF effects tested by generalized logistic regression: ",res$type,
          " DIF effect","\n",sep="")
 cat("DIF flagging criterion:",ifelse(res$criterion=="Wald","Wald test","Likelihood ratio test"),"\n")
 }
-if (sum(methods=="genLord")==1) cat("Item response model:",res$model,"\n")
+if (sum(methods=="Lord") ==1) {
+cat("Item response model:",res$model,"\n")
+if (res$model!="1PL" | res$engine=="ltm") cat("Engine 'ltm' for item parameter estimation","\n")
+else cat("Engine 'lme4' for item parameter estimation","\n")
+if (res$model=="1PL" & res$engine=="ltm") {
+if (is.null(res$discr)) cat("Common discrimination parameter: estimated from 'ltm'","\n")
+else cat("Common discrimination parameter: fixed to ",res$discr,"\n",sep="")
+}
+if (is.null(res$c)==FALSE){
+if (length(res$c)==1) cat("Common pseudo-guessing value: ",res$c,"\n",sep="")
+else {
+pg<-cbind(res$c)
+rownames(pg)<-res$names
+colnames(pg)<-"c"
+cat("Common pseudo-guessing values:","\n")
+print(pg)
+cat("\n")
+}
+}
+}
 if (res$purification==TRUE) {
 cat("Item purification: Yes","\n","\n")
 cat("Item purification results:","\n","\n")

@@ -8,7 +8,7 @@
 }
 
 \usage{
- itemPar3PL(data)
+itemPar3PL(data)
 }
 
 \arguments{
@@ -28,7 +28,9 @@
  and \emph{se(c)}. Eventually, the last three columns contain the covariances between item parameters, respectively \emph{cov(a,b)}, \emph{cov(a,c)} and 
  \emph{cov(b,c)}.
 
- The \code{data} is a matrix whose rows correspond to the subjects and columns to the items. Missing values are not allowed.
+ The \code{data} is a matrix whose rows correspond to the subjects and columns to the items. 
+
+ Missing values are allowed but must be coded as \code{NA} values. They are discarded for item parameter estimation.
   
  The 3PL model is fitted using marginal maximum likelihood by means of the functions from the \code{ltm} package (Rizopoulos, 2006).
 }
@@ -57,8 +59,9 @@
     }
      
 \seealso{
- \code{\link{itemPar1PL}}, \code{\link{itemPar2PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}}, 
- \code{\link{difRaju}}, \code{\link{difGenLord}}
+ \code{\link{itemPar1PL}}, \code{\link{itemPar2PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}}, \code{\link{difRaju}}, 
+
+ \code{\link{difGenLord}}
  }
 
 \examples{

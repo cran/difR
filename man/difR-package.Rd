@@ -12,6 +12,7 @@
 
  Methods currently available are:
   \enumerate{
+  \item{Transformed Item Difficulties (TID) method (Angoff and Ford, 1973)}
   \item{Mantel-Haenszel (Holland and Thayer, 1988)}
   \item{Standardization (Dorans and Kullick, 1986)}
   \item{Breslow-Day (Aguerri et al., 2009; Penfield, 2003)}
@@ -31,8 +32,8 @@
  \tabular{ll}{
   Package: \tab difR \cr
   Type:    \tab Package \cr
-  Version: \tab 3.3 \cr
-  Date:    \tab 2010-10-21\cr
+  Version: \tab 4.0 \cr
+  Date:    \tab 2011-03-04\cr
   Depends: \tab R (>= 2.8.0), lme4, ltm \cr
   License: \tab see file LICENSE \cr
   }
@@ -41,6 +42,8 @@
 
 \references{
  Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (2009). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. \emph{Quality and Quantity, 43}, 35-44. 
+
+ Angoff, W. H., and Ford, S. F. (1973). Item-race interaction on a test of scholastic aptitude. \emph{}Journal of Educational Measurement, 95-106.
 
  Dorans, N. J. and Kullick, E. (1986). Demonstrating the utility of the standardization approach to assessing unexpected differential item performance on the Scholastic Aptitude Test. \emph{Journal of Educational Measurement, 23}, 355-368.
 
