@@ -7,6 +7,25 @@
 
 
 ------------------------------------
+- Changes in difR 4.1 (2011-06-22) -
+------------------------------------
+
+MINOR UPDATE
+
+  o  The R code used in 'mantelHaenszel' and 'difMH' 
+     functions was modified to overcome a technical issue.
+     With some large data sets, the computation of MH DIF
+     statistics was impossible due to integer overflow. The
+     'mantelHaenszel' function was then returning NA values,
+     'difMH' was stopping with an error message because of 
+     these NAs. The R code was modified to avoid integer
+     overeflow and ensure stable computation of MH DIF
+     statistics. Many thanks to Shih-Ying Yao (University
+     of California - Berkeley) for noticing this issue and
+     helping in solving it.
+
+
+------------------------------------
 - Changes in difR 4.0 (2011-03-04) -
 ------------------------------------
 

@@ -5,7 +5,7 @@ mantelHaenszel<-function (data, member, correct = TRUE, anchor = 1:ncol(data))
         data2 <- data[, anchor]
         if (sum(anchor == item) == 0) 
             data2 <- cbind(data2, data[, item])
-        xj <- rowSums(data2,na.rm=TRUE)
+        xj <- rowSums(data2, na.rm = TRUE)
         scores <- sort(unique(xj))
         prov <- NULL
         ind <- 1:nrow(data)
@@ -26,8 +26,8 @@ mantelHaenszel<-function (data, member, correct = TRUE, anchor = 1:ncol(data))
                 0])
             Tj <- length(ind[xj == scores[j]])
             if (Tj > 1) 
-                prov <- rbind(prov, c(Aj, nrj * m1j/Tj, nrj * 
-                  nfj * m1j * m0j/(Tj^2 * (Tj - 1)), scores[j], 
+                prov <- rbind(prov, c(Aj, nrj * m1j/Tj, (((nrj * 
+                  nfj)/Tj) * (m1j/Tj) * (m0j/(Tj - 1))), scores[j], 
                   Bj, Cj, Dj, Tj))
         }
         if (correct == TRUE) 

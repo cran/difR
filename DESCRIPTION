@@ -2,8 +2,8 @@ Package: difR
 Type: Package
 Title: Collection of methods to detect dichotomous differential item
         functioning (DIF) in psychometrics
-Version: 4.0
-Date: 2011-03-04
+Version: 4.1
+Date: 2011-06-22
 Author: David Magis (U Liege), Sebastien Beland (UQAM) and Gilles
         Raiche (UQAM)
 Maintainer: David Magis <david.magis@ulg.ac.be>
@@ -15,6 +15,6 @@ Description: The difR package contains several traditional methods to
         than one focal group.
 License: file LICENSE
 LazyLoad: yes
-Packaged: 2011-03-04 15:30:43 UTC; User
+Packaged: 2011-06-22 11:42:20 UTC; User
 Repository: CRAN
-Date/Publication: 2011-03-04 16:22:14
+Date/Publication: 2011-06-22 16:32:00

@@ -1,129 +1,137 @@
 # DIF MANTEL-HAENZEL
 
 difMH<-function (Data, group, focal.name, MHstat = "MHChisq", correct = TRUE, 
-    alpha = 0.05, purify = FALSE, nrIter = 10, save.output=FALSE, output=c("out","default")) 
+    alpha = 0.05, purify = FALSE, nrIter = 10, save.output = FALSE, 
+    output = c("out", "default")) 
 {
-internalMH<-function(){
-    if (length(group) == 1) {
-        if (is.numeric(group) == TRUE) {
-            gr <- Data[, group]
-            DATA <- Data[, (1:ncol(Data)) != group]
-            colnames(DATA) <- colnames(Data)[(1:ncol(Data)) != 
-                group]
+    internalMH <- function() {
+        if (length(group) == 1) {
+            if (is.numeric(group) == TRUE) {
+                gr <- Data[, group]
+                DATA <- Data[, (1:ncol(Data)) != group]
+                colnames(DATA) <- colnames(Data)[(1:ncol(Data)) != 
+                  group]
+            }
+            else {
+                gr <- Data[, colnames(Data) == group]
+                DATA <- Data[, colnames(Data) != group]
+                colnames(DATA) <- colnames(Data)[colnames(Data) != 
+                  group]
+            }
         }
         else {
-            gr <- Data[, colnames(Data) == group]
-            DATA <- Data[, colnames(Data) != group]
-            colnames(DATA) <- colnames(Data)[colnames(Data) != 
-                group]
+            gr <- group
+            DATA <- Data
         }
-    }
-    else {
-        gr <- group
-        DATA <- Data
-    }
-    Group <- rep(0, nrow(DATA))
-    Group[gr == focal.name] <- 1
-    Q <- switch(MHstat, MHChisq = qchisq(1 - alpha, 1), logOR = qnorm(1 - 
-        alpha/2))
-    if (is.null(Q) == TRUE) 
-        stop("'MHstat' argument not valid", call. = FALSE)
-    if (purify == FALSE) {
-        PROV <- mantelHaenszel(DATA, Group, correct = correct)
-        if (MHstat == "MHChisq") 
-            STATS <- PROV$resMH
-        else STATS <- log(PROV$resAlpha)/sqrt(PROV$varLambda)
-        if (max(abs(STATS)) <= Q) 
-            DIFitems <- "No DIF item detected"
-        else DIFitems <- (1:ncol(DATA))[abs(STATS) > Q]
-        RES <- list(MH = STATS, alphaMH = PROV$resAlpha, varLambda = PROV$varLambda, 
-            MHstat = MHstat, alpha = alpha, thr = Q, DIFitems = DIFitems, 
-            correct = correct, purification = purify, names = colnames(DATA), save.output=save.output,output=output)
-    }
-    else {
-        nrPur <- 0
-        difPur <- NULL
-        noLoop <- FALSE
-        prov1 <- mantelHaenszel(DATA, Group, correct = correct)
-        if (MHstat == "MHChisq") 
-            stats1 <- prov1$resMH
-        else stats1 <- log(prov1$resAlpha)/sqrt(prov1$varLambda)
-        if (max(abs(stats1)) <= Q) {
-            DIFitems <- "No DIF item detected"
-            noLoop <- TRUE
+        Group <- rep(0, nrow(DATA))
+        Group[gr == focal.name] <- 1
+        Q <- switch(MHstat, MHChisq = qchisq(1 - alpha, 1), logOR = qnorm(1 - 
+            alpha/2))
+        if (is.null(Q) == TRUE) 
+            stop("'MHstat' argument not valid", call. = FALSE)
+        if (purify == FALSE) {
+            PROV <- mantelHaenszel(DATA, Group, correct = correct)
+            if (MHstat == "MHChisq") 
+                STATS <- PROV$resMH
+            else STATS <- log(PROV$resAlpha)/sqrt(PROV$varLambda)
+            if (max(abs(STATS),na.rm=TRUE) <= Q) 
+                DIFitems <- "No DIF item detected"
+            else DIFitems <- (1:ncol(DATA))[is.na(STATS)==FALSE & abs(STATS) > Q]
+            RES <- list(MH = STATS, alphaMH = PROV$resAlpha, 
+                varLambda = PROV$varLambda, MHstat = MHstat, 
+                alpha = alpha, thr = Q, DIFitems = DIFitems, 
+                correct = correct, purification = purify, names = colnames(DATA), 
+                save.output = save.output, output = output)
         }
         else {
-            dif <- (1:ncol(DATA))[abs(stats1) > Q]
-            difPur <- rep(0, length(stats1))
-            difPur[dif] <- 1
-            repeat {
-                if (nrPur >= nrIter) 
-                  break
-                else {
-                  nrPur <- nrPur + 1
-                  nodif <- NULL
-                  if (is.null(dif) == TRUE) 
-                    nodif <- 1:ncol(DATA)
+            nrPur <- 0
+            difPur <- NULL
+            noLoop <- FALSE
+            prov1 <- mantelHaenszel(DATA, Group, correct = correct)
+            if (MHstat == "MHChisq") 
+                stats1 <- prov1$resMH
+            else stats1 <- log(prov1$resAlpha)/sqrt(prov1$varLambda)
+            if (max(abs(stats1),na.rm=TRUE) <= Q) {
+                DIFitems <- "No DIF item detected"
+                noLoop <- TRUE
+            }
+            else {
+                dif <- (1:ncol(DATA))[is.na(stats1)==FALSE & abs(stats1) > Q]
+                difPur <- rep(0, length(stats1))
+                difPur[dif] <- 1
+                repeat {
+                  if (nrPur >= nrIter) 
+                    break
                   else {
-                    for (i in 1:ncol(DATA)) {
-                      if (sum(i == dif) == 0) 
-                        nodif <- c(nodif, i)
+                    nrPur <- nrPur + 1
+                    nodif <- NULL
+                    if (is.null(dif) == TRUE) 
+                      nodif <- 1:ncol(DATA)
+                    else {
+                      for (i in 1:ncol(DATA)) {
+                        if (sum(i == dif) == 0) 
+                          nodif <- c(nodif, i)
+                      }
                     }
-                  }
-                  prov2 <- mantelHaenszel(DATA, Group, correct = correct, 
-                    anchor = nodif)
-                  if (MHstat == "MHChisq") 
-                    stats2 <- prov2$resMH
-                  else stats2 <- log(prov2$resAlpha)/sqrt(prov2$varLambda)
-                  if (max(abs(stats2)) <= Q) 
-                    dif2 <- NULL
-                  else dif2 <- (1:ncol(DATA))[abs(stats2) > Q]
-                  difPur <- rbind(difPur, rep(0, ncol(DATA)))
-                  difPur[nrPur + 1, dif2] <- 1
-                  if (length(dif) != length(dif2)) 
-                    dif <- dif2
-                  else {
-                    dif <- sort(dif)
-                    dif2 <- sort(dif2)
-                    if (sum(dif == dif2) == length(dif)) {
-                      noLoop <- TRUE
-                      break
+                    prov2 <- mantelHaenszel(DATA, Group, correct = correct, 
+                      anchor = nodif)
+                    if (MHstat == "MHChisq") 
+                      stats2 <- prov2$resMH
+                    else stats2 <- log(prov2$resAlpha)/sqrt(prov2$varLambda)
+                    if (max(abs(stats2),na.rm=TRUE) <= Q) 
+                      dif2 <- NULL
+                    else dif2 <- (1:ncol(DATA))[is.na(stats2)==FALSE & abs(stats2) > 
+                      Q]
+                    difPur <- rbind(difPur, rep(0, ncol(DATA)))
+                    difPur[nrPur + 1, dif2] <- 1
+                    if (length(dif) != length(dif2)) 
+                      dif <- dif2
+                    else {
+                      dif <- sort(dif)
+                      dif2 <- sort(dif2)
+                      if (sum(dif == dif2) == length(dif)) {
+                        noLoop <- TRUE
+                        break
+                      }
+                      else dif <- dif2
                     }
-                    else dif <- dif2
                   }
                 }
+                stats1 <- stats2
+                prov1 <- prov2
+                DIFitems <- (1:ncol(DATA))[is.na(stats1)==FALSE & abs(stats1) > Q]
             }
-            stats1 <- stats2
-            prov1 <- prov2
-            DIFitems <- (1:ncol(DATA))[abs(stats1) > Q]
+            if (is.null(difPur) == FALSE) {
+                ro <- co <- NULL
+                for (ir in 1:nrow(difPur)) ro[ir] <- paste("Step", 
+                  ir - 1, sep = "")
+                for (ic in 1:ncol(difPur)) co[ic] <- paste("Item", 
+                  ic, sep = "")
+                rownames(difPur) <- ro
+                colnames(difPur) <- co
+            }
+            RES <- list(MH = stats1, alphaMH = prov1$resAlpha, 
+                varLambda = prov1$varLambda, MHstat = MHstat, 
+                alpha = alpha, thr = qchisq(1 - alpha, 1), DIFitems = DIFitems, 
+                correct = correct, purification = purify, nrPur = nrPur, 
+                difPur = difPur, convergence = noLoop, names = colnames(DATA), 
+                save.output = save.output, output = output)
         }
-        if (is.null(difPur) == FALSE) {
-            ro <- co <- NULL
-            for (ir in 1:nrow(difPur)) ro[ir] <- paste("Step", 
-                ir - 1, sep = "")
-            for (ic in 1:ncol(difPur)) co[ic] <- paste("Item", 
-                ic, sep = "")
-            rownames(difPur) <- ro
-            colnames(difPur) <- co
-        }
-        RES <- list(MH = stats1, alphaMH = prov1$resAlpha, varLambda = prov1$varLambda, 
-            MHstat = MHstat, alpha = alpha, thr = qchisq(1 - 
-                alpha, 1), DIFitems = DIFitems, correct = correct, 
-            purification = purify, nrPur = nrPur, difPur = difPur, 
-            convergence = noLoop, names = colnames(DATA),save.output=save.output,output=output)
+        class(RES) <- "MH"
+        return(RES)
     }
-    class(RES) <- "MH"
-    return(RES)
+    resToReturn <- internalMH()
+    if (save.output == TRUE) {
+        if (output[2] == "default") 
+            wd <- paste(getwd(), "/", sep = "")
+        else wd <- output[2]
+        fileName <- paste(wd, output[1], ".txt", sep = "")
+        capture.output(resToReturn, file = fileName)
+    }
+    return(resToReturn)
 }
-resToReturn<-internalMH()
-if (save.output==TRUE){
-if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
-else wd<-output[2]
-fileName<-paste(wd,output[1],".txt",sep="")
-capture.output(resToReturn,file=fileName)
-}
-return(resToReturn)
-}
+
+
 
 
 # METHODS

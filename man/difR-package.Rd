@@ -21,7 +21,7 @@
   \item{Raju's area (Raju, 1990)}
   \item{Likelihood-ratio test (Thissen, Steinberg and Wainer, 1988)}
   \item{Generalized Mantel-Haenszel (Penfield, 2001)}
-  \item{Generalized logistic regression (Magis, Raiche, Beland and Gerard, 2010)}
+  \item{Generalized logistic regression (Magis, Raiche, Beland and Gerard, 2011)}
   \item{Generalized Lord's chi-square test (Kim, Cohen and Park, 1995).}
     }
 
@@ -32,8 +32,8 @@
  \tabular{ll}{
   Package: \tab difR \cr
   Type:    \tab Package \cr
-  Version: \tab 4.0 \cr
-  Date:    \tab 2011-03-04\cr
+  Version: \tab 4.1 \cr
+  Date:    \tab 2011-06-22\cr
   Depends: \tab R (>= 2.8.0), lme4, ltm \cr
   License: \tab see file LICENSE \cr
   }
@@ -56,7 +56,7 @@
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
 
- Magis, D., Raiche, G., Beland, S. and Gerard, P. (2010). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
+ Magis, D., Raiche, G., Beland, S. and Gerard, P. (2011). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
  manuscript.
 
  Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures. \emph{Applied Measurement in Education, 14}, 235-259. 
