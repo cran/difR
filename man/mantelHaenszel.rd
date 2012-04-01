@@ -8,64 +8,82 @@
  }
 
 \usage{
-mantelHaenszel(data, member, correct=TRUE, anchor=1:ncol(data))
+mantelHaenszel(data, member, correct=TRUE, exact=FALSE,
+  anchor=1:ncol(data))
  }
 
 \arguments{
  \item{data}{numeric: the data matrix (one row per subject, one column per item).}
  \item{member}{numeric: the vector of group membership with zero and one entries only. See \bold{Details}.}
- \item{correct}{logical: should the continuity correction be used? (default is TRUE).}
- \item{anchor}{a vector of integer values specifying which items (all by default) are currently considered as anchor (DIF free) items. See \bold{Details}.}
+ \item{correct}{logical: should the continuity correction be used? (default is \code{TRUE}).}
+ \item{exact}{logical: should an exact test be computed? (default is \code{FALSE}).}
+ \item{anchor}{a vector of integer values specifying which items (all by default) are currently considered as anchor
+              (DIF free) items. See \bold{Details}.}
  }
 
 \value{
- A list with three arguments:
- \item{resMH}{the vector of the Mantel-Haenszel DIF statistics.}
- \item{resAlpha}{the vector of the Mantel-Haenszel estimates of the common odds ratios.}
- \item{varLambda}{the variance of the \eqn{\lambda_{MH}} statistic. See \bold{Details}.}
+ A list with several arguments:
+ \item{resMH}{the vector of the Mantel-Haenszel DIF statistics (either asymptotic or exact).}
+ \item{resAlpha}{the vector of the (asymptotic) Mantel-Haenszel estimates of the common odds ratios. Returned only if
+                 \code{exact} is \code{FALSE}.}
+ \item{varLambda}{the (asymptotic) variance of the \eqn{\lambda_{MH}} statistic. Returned only if \code{exact} is 
+                 \code{FALSE}. See \bold{Details}.}
+ \item{Pval}{the exact P-values of the MH test. Returned only if \code{exact} is \code{TRUE}.}
  }
  
 \details{
- This command basically computes the Mantel-Haenszel (1959) statistic in the specific framework of differential item functioning. It forms the basic command
- of \code{\link{difMH}} and is specifically designed for this call.
+ This command basically computes the Mantel-Haenszel (1959) statistic in the specific framework of differential item 
+ functioning. It forms the basic command of \code{\link{difMH}} and is specifically designed for this call.
  
  The data are passed through the \code{data} argument, with one row per subject and one column per item. 
 
- Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded from sum-score computation.
+ Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They 
+ are discarded from sum-score computation.
   
- The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
- reference group and a value of one to the focal group.
+ The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero 
+ corresponding to the reference group and a value of one to the focal group.
  
- By default, the continuity correction factor -0.5 is used (Holland and Thayer, 1988). One can nevertheless remove it by specifying \code{correct=FALSE}.
+ By default, the continuity correction factor -0.5 is used (Holland and Thayer, 1988). One can nevertheless remove it by 
+ specifying \code{correct=FALSE}.
 
- Option \code{anchor} sets the items which are considered as anchor items for computing Mantel-Haenszel statistics. Items other than the anchor items and the 
- tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is primarily designed to 
- perform item purification.
+ By default, the asymptotic Mantel-Haenszel statistic is computed. However, the exact statistics and related P-values can
+ be obtained by specifying the logical argument \code{exact} to \code{TRUE}. See Agresti (1990, 1992) for further 
+ details about exact inference.
+
+ Option \code{anchor} sets the items which are considered as anchor items for computing Mantel-Haenszel statistics. Items
+ other than the anchor items and the tested item are discarded. \code{anchor} must hold integer values specifying the
+ column numbers of the corresponding anchor items. It is primarily designed to perform item purification.
  
- In addition to the Mantel-Haenszel statistics to identify DIF items, \code{mantelHaenszel} computes the estimates of the common odds ratio \eqn{\alpha_{MH}} 
- which are used for measuring the effect size of the items (Holland and Thayer, 1985, 1988). They are returned in the \code{resAlpha} argument of the output list.
- Moreover, the logarithm of \eqn{\alpha_{MH}}, say \eqn{\lambda_{MH}}, is asymptotically distributed and its variance is computed and returned into the 
- \code{varLambda} argument. Note that this variance is the one proposed by Philips and Holland (1987), since it seems the most accurate expression for the variance
- of \eqn{\lambda_{MH}} (Penfield and Camilli, 2007).
+ In addition to the Mantel-Haenszel statistics to identify DIF items, \code{mantelHaenszel} computes the estimates of the
+ common odds ratio \eqn{\alpha_{MH}} which are used for measuring the effect size of the items (Holland and Thayer, 1985,
+ 1988). They are returned in the \code{resAlpha} argument of the output list. Moreover, the logarithm of 
+ \eqn{\alpha_{MH}}, say \eqn{\lambda_{MH}}, is asymptotically distributed and its variance is computed and returned into
+ the \code{varLambda} argument. Note that this variance is the one proposed by Philips and Holland (1987), since it seems
+ the most accurate expression for the variance of \eqn{\lambda_{MH}} (Penfield and Camilli, 2007).
 }
 
 \references{
- Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, 
- NJ: Educational Testing Service.
+ Agresti, A. (1990). \emph{Categorical data analysis}. New York: Wiley.
 
- Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Ed.), \emph{Test validity}.
- Hillsdale, NJ: Lawrence Erlbaum Associates.
+ Agresti, A. (1992). A survey of exact inference for contingency tables. \emph{Statistical Science, 7}, 131-177.
+
+ Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. 
+ \emph{Research Report RR-85-43}. Princeton, NJ: Educational Testing Service.
+
+ Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer
+ and H. I. Braun (Ed.), \emph{Test validity}. Hillsdale, NJ: Lawrence Erlbaum Associates.
  
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
 
- Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer 
- Institute, 22}, 719-748.
+ Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. 
+ \emph{Journal of the National Cancer Institute, 22}, 719-748.
  
- Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray (Eds.), \emph{Handbook of Statistics 26:
- Psychometrics} (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
+ Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray 
+ (Eds.), \emph{Handbook of Statistics 26: Psychometrics} (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
 
- Philips, A., and Holland, P. W. (1987). Estimators of the Mantel-Haenszel log odds-ratio estimate. \emph{Biometrics, 43}, 425-431.
+ Philips, A., and Holland, P. W. (1987). Estimators of the Mantel-Haenszel log odds-ratio estimate. \emph{Biometrics, 43},
+ 425-431.
  }
 
 
@@ -96,8 +114,11 @@ mantelHaenszel(data, member, correct=TRUE, anchor=1:ncol(data))
 
  # With and without continuity correction
  mantelHaenszel(verbal[,1:24], verbal[,26])
- mantelHaenszel(verbal[,1:24], verbal[,26],correct=FALSE)
+ mantelHaenszel(verbal[,1:24], verbal[,26], correct=FALSE)
  
+ # Exact test
+ mantelHaenszel(verbal[,1:24], verbal[,26], exact=TRUE)
+
  # Removing item 6 from the set of anchor items
  mantelHaenszel(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
  }

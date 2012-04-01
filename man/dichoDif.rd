@@ -9,11 +9,11 @@
  }
 
 \usage{
-dichoDif(Data, group, focal.name, method, props=NULL,
-  	thrTID=1.5, alpha=0.05, MHstat="MHChisq", correct=TRUE,
-  	stdWeight="focal", thrSTD=0.1, BDstat="BD", type="both",
-  	criterion="LRT", model="2PL", c=NULL, engine="ltm", 
-  	discr=1, irtParam=NULL, same.scale=TRUE, purify=FALSE,
+dichoDif(Data, group, focal.name, method, props=NULL, thrTID=1.5, 
+  	alpha=0.05, MHstat="MHChisq", correct=TRUE, exact=FALSE, 
+  	stdWeight="focal", thrSTD=0.1, BDstat="BD", type="both", 
+  	criterion="LRT", model="2PL", c=NULL, engine="ltm", discr=1,
+  	irtParam=NULL, same.scale=TRUE, signed=FALSE, purify=FALSE, 
   	nrIter=10, save.output=FALSE, output=c("out","default")) 
 \method{print}{dichoDif}(x, ...)
  }
@@ -29,6 +29,7 @@ dichoDif(Data, group, focal.name, method, props=NULL,
  \item{MHstat}{character: specifies the DIF statistic to be used for DIF identification. Possible values are \code{"MHChisq"} (default) and \code{"logOR"}. 
               See \bold{Details}.}
  \item{correct}{logical: should the Mantel-Haenszel continuity correction be used? (default is TRUE).}
+ \item{exact}{logical: should an exact test be computed? (default is \code{FALSE}).}
  \item{stdWeight}{character: the type of weights used for the standardized P-DIF statistic. Possible values are \code{"focal"} (default),
                   \code{"reference"} and \code{"total"}. See \bold{Details}.}
  \item{thrSTD}{numeric: the threshold (cut-score) for standardized P-DIF statistic (default is 0.10).}
@@ -43,6 +44,8 @@ dichoDif(Data, group, focal.name, method, props=NULL,
              \code{engine} is \code{"ltm"}. See \bold{Details}.}
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
+ \item{signed}{logical: should the Raju's statistics be computed using the signed (\code{TRUE}) or unsigned (\code{FALSE}, default)
+               area? See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
@@ -57,21 +60,22 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
   \item{DIF}{a character matrix with one row per item and whose columns refer to the different specified detection methods. See \bold{Details}.}
   \item{props}{the value of the \code{props} argument.}
   \item{thrTID}{the value of the \code{thrTID} argument.}
-  \item{correct}{the value of \code{correct} option.}
+  \item{correct}{the value of \code{correct} argument.}
+  \item{exact}{the value of \code{exact} argument.}
   \item{alpha}{the significance level \code{alpha}.}
   \item{MHstat}{the value of the \code{MHstat} argument.}
   \item{stdWeight}{the value of the \code{stdWeight} argument.}
-  \item{thrSTD}{the value of \code{thrSTD} option.}
+  \item{thrSTD}{the value of \code{thrSTD} argument.}
   \item{BDstat}{the value of the \code{BDstat} argument.}
   \item{type}{the value of the \code{type} argument.}
   \item{criterion}{the value of the \code{criterion} argument.}
-  \item{model}{the value of \code{model} option.}
-  \item{c}{the value of \code{c} option.}
+  \item{model}{the value of \code{model} argument.}
+  \item{c}{the value of \code{c} argument.}
   \item{engine}{The value of the \code{engine} argument.}
   \item{discr}{the value of the \code{discr} argument.}
-  \item{irtParam}{the value of \code{irtParam} option.}
-  \item{same.scale}{the value of \code{same.scale} option.}
-  \item{purification}{the value of \code{purify} option.} 
+  \item{irtParam}{the value of \code{irtParam} argument.}
+  \item{same.scale}{the value of \code{same.scale} argument.}
+  \item{purification}{the value of \code{purify} argument.} 
   \item{nrPur}{an integer vector (of length equal to the number of methods) with the number of iterations in the purification process. 
    Returned only if \code{purify} is TRUE.}
   \item{convergence}{a logical vector (of length equal to the number of methods) indicating whether the iterative purification process converged. 
@@ -102,7 +106,7 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
  The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by the value of the argument 
  \code{focal.name}. 
 
- With the TID method,  one can alternatively provide the matrix of proportions of success in for each item in each group. This matrix must have the same format
+ With the TID method, one can alternatively provide the matrix of proportions of success in for each item in each group. This matrix must have the same format
  as that provided to the \code{\link{trItemDiff}} function; see the corresponding help file for further details.
 
  For Lord and Raju methods, one can specify either the IRT model to be fitted (by means of \code{model}, \code{c}, \code{engine} and \code{discr} arguments), 
@@ -116,6 +120,10 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
  specified by the argument \code{MHstat}, and the default value is \code{"MHChisq"} for the chi-square statistic. Moreover, the option \code{correct}
  specifies whether the continuity correction has to be applied to Mantel-Haenszel statistic. See \code{\link{difMH}} for further details.
 
+ By default, the asymptotic Mantel-Haenszel statistic is computed. However, the exact statistics and related P-values can
+ be obtained by specifying the logical argument \code{exact} to \code{TRUE}. See Agresti (1990, 1992) for further 
+ details about exact inference.
+
  The weights for computing the standardized P-DIF statistics are defined through the argument \code{stdWeight}, with possible values
  \code{"focal"} (default value), \code{"reference"} and \code{"total"}. See \code{\link{stdPDIF}} for further details. 
 
@@ -128,6 +136,9 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
  to be computed, either the likelihood ratio test statistic (by setting \code{criterion="LRT"}) or the Wald test (by setting \code{criterion="Wald"}).
  See \code{\link{Logistik}} for further details.
 
+ For Raju's method, the type of area (signed or unsigned) is fixed by the logical \code{signed} argument, with default value \code{FALSE}
+ (i.e. unsigned areas). See \code{\link{RajuZ}} for further details.
+
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification process is slightly different 
  for IRT and for non-IRT based methods. See the corresponding methods for further information.
 
@@ -136,6 +147,10 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
 }
  
 \references{
+ Agresti, A. (1990). \emph{Categorical data analysis}. New York: Wiley.
+
+ Agresti, A. (1992). A survey of exact inference for contingency tables. \emph{Statistical Science, 7}, 131-177.
+
  Aguerri, M.E., Galibert, M.S., Attorresi, H.F. and Maranon, P.P. (2009). Erroneous detection of nonuniform DIF using the Breslow-Day test in a short test. 
  \emph{Quality and Quantity, 43}, 35-44. 
 

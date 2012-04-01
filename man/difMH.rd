@@ -10,9 +10,9 @@
  }
 
 \usage{
-difMH(Data, group, focal.name , MHstat="MHChisq",
-  	correct=TRUE, alpha=0.05, purify=FALSE, nrIter=10,
-  	save.output=FALSE, output=c("out","default")) 
+difMH(Data, group, focal.name , MHstat="MHChisq", correct=TRUE, exact=FALSE, 
+  	alpha=0.05, purify=FALSE, nrIter=10, save.output=FALSE, 
+  	output=c("out","default")) 
 \method{print}{MH}(x, ...)
 \method{plot}{MH}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
   	save.options=c("plot","default","pdf"), ...)
@@ -25,6 +25,7 @@ difMH(Data, group, focal.name , MHstat="MHChisq",
  \item{MHstat}{character: specifies the DIF statistic to be used for DIF identification. Possible values are \code{"MHChisq"} (default) and \code{"logOR"}. 
                See \bold{Details }.}
  \item{correct}{logical: should the continuity correction be used? (default is \code{TRUE})}
+ \item{exact}{logical: should an exact test be computed? (default is \code{FALSE}).}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
@@ -43,14 +44,16 @@ difMH(Data, group, focal.name , MHstat="MHChisq",
 
 \value{
 A list of class "MH" with the following arguments:
-  \item{MH}{the values of the Mantel-Haenszel DIF statistics.}
-  \item{alphaMH}{the values of the mantel-Haenszel estimates of common odds ratios.}
-  \item{varLambda}{the values of the variances of the log odds-ratio statistics.}
-  \item{MHstat}{the value of the \code{MHstat} argument.}
+  \item{MH}{the values of the Mantel-Haenszel DIF statistics (either exact or asymptotic).}
+  \item{alphaMH}{the values of the mantel-Haenszel estimates of common odds ratios. Returned only if \code{exact} is \code{FALSE}.}
+  \item{varLambda}{the values of the variances of the log odds-ratio statistics. Returned only if \code{exact} is \code{FALSE}.}
+  \item{Pval}{the exact P-values of the exact MH test. Returned only if \code{exact} is \code{TRUE}.}
+  \item{MHstat}{the value of the \code{MHstat} argument. Returned only if \code{exact} is \code{FALSE}.}
   \item{alpha}{the value of \code{alpha} argument.}
-  \item{thr}{the threshold (cut-score) for DIF detection.}
+  \item{thr}{the threshold (cut-score) for DIF detection. Returned only if \code{exact} is \code{FALSE}.}
   \item{DIFitems}{either the column indicators of the items which were detected as DIF items, or "No DIF item detected".}
   \item{correct}{the value of \code{correct} option.}
+  \item{exact}{the value of \code{exact} option.}
   \item{purification}{the value of \code{purify} option.} 
   \item{nrPur}{the number of iterations in the item purification process. Returned only if \code{purify} is \code{TRUE}.}
   \item{difPur}{a binary matrix with one row per iteration in the item purification process and one column per item. Zeros and ones in the \emph{i}-th 
@@ -79,17 +82,22 @@ A list of class "MH" with the following arguments:
  statistic is used. The other optional value is \code{"logOR"}, and the log odds-ratio statistic (that is, the log of \code{alphaMH} divided by the square root
  of \code{varLambda}) is used. See Penfield and Camilli (2007), Philips and Holland (1987) and \code{\link{mantelHaenszel}} help file.
  
+ By default, the asymptotic Mantel-Haenszel statistic is computed. However, the exact statistics and related P-values can
+ be obtained by specifying the logical argument \code{exact} to \code{TRUE}. See Agresti (1990, 1992) for further 
+ details about exact inference.
+
  The threshold (or cut-score) for classifying items as DIF depends on the DIF statistic. With the Mantel-Haenszel chi-squared statistic (\code{MHstat=="MHChisq"}),
  it is computed as the quantile of the chi-square distribution with lower-tail probability of one minus \code{alpha} and with one degree of freedom. With 
  the log odds-ratio statistic (\code{MHstat=="logOR"}), it is computed as the quantile of the standard normal distribution with lower-tail probability of
- 1-\code{alpha}/2. 
+ 1-\code{alpha}/2. WIth exact inference, it is simply the \code{alpha} level since exact P-values are returned.
  
  By default, the continuity correction factor -0.5 is used (Holland and Thayer, 1988). One can nevertheless remove it by specifying \code{correct=FALSE}.
  
  In addition, the Mantel-Haenszel estimates of the common odds ratios \eqn{\alpha_{MH}} are used to measure the effect sizes of the items. These are obtained by
  \eqn{\Delta_{MH} = -2.35 \log \alpha_{MH}} (Holland and Thayer, 1985). According to the ETS delta scale, the effect size of an item is classified as negligible
  if \eqn{|\Delta_{MH}| \leq 1}, moderate  if \eqn{1 \leq |\Delta_{MH}| \leq 1.5}, and large if \eqn{|\Delta_{MH}| \geq 1.5}. The values of the effect sizes, 
- together with the ETS classification, are printed with the output.
+ together with the ETS classification, are printed with the output. Note that this is returned only for asymptotic tests, i.e.
+ when \code{exact} is \code{FALSE}.
 
  Item purification can be performed by setting \code{purify} to \code{TRUE}. Purification works as follows: if at least one item was detected as functioning 
  differently at some step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
@@ -106,11 +114,15 @@ A list of class "MH" with the following arguments:
  and \code{col} arguments. Option \code{number} permits to display the item numbers instead. Also, the plot can be stored in a figure file, either in PDF or JPEG
  format. Fixing \code{save.plot} to \code{TRUE} allows this process. The figure is defined through the components of \code{save.options}. The first two components
  perform similarly as those of the \code{output} argument. The third component is the figure format, with allowed values \code{"pdf"} (default) for PDF file and
- \code{"jpeg"} for JPEG file.
+ \code{"jpeg"} for JPEG file. Note that no plot is returned for exact inference.
 }
 
 
 \references{
+ Agresti, A. (1990). \emph{Categorical data analysis}. New York: Wiley.
+
+ Agresti, A. (1992). A survey of exact inference for contingency tables. \emph{Statistical Science, 7}, 131-177.
+
  Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, NJ: 
  Educational Testing Service.
 
@@ -169,7 +181,10 @@ A list of class "MH" with the following arguments:
  difMH(verbal[,1:24], group=verbal[,25], focal.name=1)
 
  # With log odds-ratio statistic
- r2 <- difMH(verbal, group=25, focal.name=1, MHstat = "logOR")
+ r2 <- difMH(verbal, group=25, focal.name=1, MHstat="logOR")
+
+ # With exact inference
+ difMH(verbal, group=25, focal.name=1, exact=TRUE)
 
  # With item purification
  difMH(verbal, group="Gender", focal.name=1, purify=TRUE)

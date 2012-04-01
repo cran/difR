@@ -8,17 +8,21 @@
  }
 
 \usage{
-RajuZ(mR, mF)
+RajuZ(mR, mF, signed=FALSE)
  }
 
 \arguments{
  \item{mR}{numeric: the matrix of item parameter estimates (one row per item) for the reference group. See \bold{Details}.}
  \item{mF}{numeric: the matrix of item parameter estimates (one row per item) for the focal group. See \bold{Details}.}
+ \item{signed}{logical: should the \emph{signed} area be computed, or the \emph{unsigned} (i.e. in absolute value) ara?
+               Default is \code{FALSE}, i.e. the unsigned area. See \bold{Details}.}
 }
 
 \value{
- A matrix with one row per item and three columns, holding respectively Raju's area between the two item characteristic curves, its 
- standard error and the Raju DIF statistic (the latter being the ratio of the first two columns).
+ A list with two components:
+ \item{res}{a matrix with one row per item and three columns, holding respectively Raju's area between the two item characteristic curves, its 
+ standard error and the Raju DIF statistic (the latter being the ratio of the first two columns).}
+ \item{signed}{the value of the \code{signed} argument.}
 }
  
 \details{
@@ -29,6 +33,12 @@ RajuZ(mR, mF)
  or constrained 3PL). The number of columns therefore equals two, five or six, respectively. Note that the unconstrained 3PL model cannot be used in this 
  method: all pseudo-guessing parameters must be equal in both groups of subjects. Moreover, item parameters of the focal must be on the  same scale of that 
  of the reference group. If not, make use of e.g. equal means anchoring (Cook and Eignor, 1991) and \code{\link{itemRescale}} to transform them adequately. 
+
+ By default, the \emph{unsigned} area, given by Equation (57) in Raju (1990), is computed. It makes use of Equations (14), (15), (23) and
+ (46) for the numerator, and Equations (17), (33) to (39), and (52) for the denominator of the \emph{Z} statistic. However, the
+ \emph{signed} area, given by Equation (56) in Raju (1990), can be used instead. In this case, Equations (14), (21) and (44) are used
+ for the numerator, and Equations (17), (25) and (48) for the denominator. The choice of the type of area is fixed by the logical
+ \emph{signed} argument, with default value \code{FALSE}. 
 }
 
 \references{
@@ -78,18 +88,27 @@ RajuZ(mR, mF)
  mR<-itemParEst(data.ref,model="1PL")
  mF<-itemParEst(data.focal,model="1PL")
  mF<-itemRescale(mR, mF)
+
+ # Signed and unsigned Raju statistics
  RajuZ(mR, mF)
+ RajuZ(mR, mF, signed=TRUE)
 
  # Pre-estimation of the item parameters (2PL model)
  mR<-itemParEst(data.ref,model="2PL")
  mF<-itemParEst(data.focal,model="2PL")
  mF<-itemRescale(mR, mF)
- RajuZ(mR, mF)
 
+ # Signed and unsigned Raju statistics
+ RajuZ(mR, mF)
+ RajuZ(mR, mF, signed=TRUE)
+ 
  # Pre-estimation of the item parameters (constrained 3PL model)
  mR<-itemParEst(data.ref,model="3PL",c=0.05)
  mF<-itemParEst(data.focal,model="3PL",c=0.05)
  mF<-itemRescale(mR, mF)
+ 
+ # Signed and unsigned Raju statistics
  RajuZ(mR, mF)
+ RajuZ(mR, mF, signed=TRUE)
  }
  }

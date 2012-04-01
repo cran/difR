@@ -1,6 +1,6 @@
-mantelHaenszel<-function (data, member, correct = TRUE, anchor = 1:ncol(data)) 
+mantelHaenszel<-function (data, member, correct = TRUE, exact=FALSE,anchor = 1:ncol(data)) 
 {
-    res <- resAlpha <- varLambda <- NULL
+    res <- resAlpha <- varLambda <- RES<-NULL
     for (item in 1:ncol(data)) {
         data2 <- data[, anchor]
         if (sum(anchor == item) == 0) 
@@ -25,11 +25,23 @@ mantelHaenszel<-function (data, member, correct = TRUE, anchor = 1:ncol(data))
             m0j <- length(ind[xj == scores[j] & data[, item] == 
                 0])
             Tj <- length(ind[xj == scores[j]])
+if (exact){
+if (Tj > 1) prov <- c(prov, c(Aj,Bj, Cj, Dj))
+}
+else{
             if (Tj > 1) 
                 prov <- rbind(prov, c(Aj, nrj * m1j/Tj, (((nrj * 
                   nfj)/Tj) * (m1j/Tj) * (m0j/(Tj - 1))), scores[j], 
                   Bj, Cj, Dj, Tj))
+}
         }
+if (exact){
+tab<-array(prov,c(2,2,length(prov)/4))
+pr<-mantelhaen.test(tab,exact=TRUE)
+RES<-rbind(RES,c(item,pr$statistic,pr$p.value))
+
+}
+else{
         if (correct == TRUE) 
             res[item] <- (abs(sum(prov[, 1] - prov[, 2])) - 0.5)^2/sum(prov[, 
                 3])
@@ -42,5 +54,7 @@ mantelHaenszel<-function (data, member, correct = TRUE, anchor = 1:ncol(data))
             resAlpha[item] * (prov[, 5] + prov[, 6]))/prov[, 
             8]^2)/(2 * (sum(prov[, 1] * prov[, 7]/prov[, 8]))^2)
     }
-    return(list(resMH = res, resAlpha = resAlpha, varLambda = varLambda))
+}
+if (exact) return(list(resMH=RES[,2],Pval=RES[,3]))
+else    return(list(resMH = res, resAlpha = resAlpha, varLambda = varLambda))
 }

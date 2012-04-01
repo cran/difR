@@ -239,7 +239,7 @@ dev.off()
 }
 if (plotype==2){
 {
-jpeg(file=fileName)
+jpeg(filename=fileName)
 internalLord()
 }
 dev.off()

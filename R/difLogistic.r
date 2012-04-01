@@ -225,7 +225,7 @@ plot.Logistic<-function (x, plot = "lrStat", item = 1, itemFit="best", pch = 8, 
             }
             if (plotype == 2) {
                 {
-                  jpeg(file = fileName)
+                  jpeg(filename = fileName)
                   internalLog()
                 }
                 dev.off()

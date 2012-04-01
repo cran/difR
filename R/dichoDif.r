@@ -2,8 +2,8 @@
 
 
 
-dichoDif<-function(Data,group,focal.name,method,props=NULL,thrTID=1.5,alpha=0.05,MHstat="MHChisq",correct=TRUE,stdWeight="focal",thrSTD=0.1,BDstat="BD",type="both",
-criterion="LRT",model="2PL",c=NULL,engine="ltm",discr=1,irtParam=NULL,same.scale=TRUE,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
+dichoDif<-function(Data,group,focal.name,method,props=NULL,thrTID=1.5,alpha=0.05,MHstat="MHChisq",correct=TRUE,exact=FALSE,stdWeight="focal",thrSTD=0.1,BDstat="BD",type="both",
+criterion="LRT",model="2PL",c=NULL,engine="ltm",discr=1,irtParam=NULL,same.scale=TRUE,signed=FALSE,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
 internalDicho<-function(){
 mets<-c("TID","MH","Std","Logistic","BD","Lord","Raju","LRT")
@@ -19,14 +19,14 @@ return(RES)
 }
 else{
 if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,props=props,thrTID=thrTID,alpha=alpha,MHstat=MHstat,
-correct=correct,stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,
-same.scale=same.scale,purify=purify,nrIter=nrIter, save.output=save.output,output=output))
+correct=correct,exact=exact,stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,
+same.scale=same.scale,signed=signed,purify=purify,nrIter=nrIter, save.output=save.output,output=output))
 else{
 mat<-iters<-conv<-NULL
 for (met in 1:length(method)){
-prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],props=props,thrTID=thrTID,alpha=alpha,MHstat=MHstat,correct=correct,
+prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],props=props,thrTID=thrTID,alpha=alpha,MHstat=MHstat,correct=correct,exact=exact,
 stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,same.scale=same.scale,
-purify=purify,nrIter=nrIter)
+signed=signed,purify=purify,nrIter=nrIter)
 if (method[met]=="BD") mat<-cbind(mat,rep("NoDIF",nrow(prov[[1]])))
 else mat<-cbind(mat,rep("NoDIF",length(prov[[1]])))
 if (is.character(prov$DIFitems)==FALSE) mat[prov$DIFitems,met]<-"DIF"
@@ -47,7 +47,9 @@ rname<-NULL
 for (i in 1:nrow(mat)) rname<-c(rname,paste("Item",i,sep=""))
 rownames(mat)<-rname
 }
-RES<-list(DIF=mat,props=props,thrTID=thrTID,correct=correct,alpha=alpha,MHstat=MHstat,stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,same.scale=same.scale,purification=purify,nrPur=iters,convergence=conv, save.output=save.output,output=output)
+RES<-list(DIF=mat,props=props,thrTID=thrTID,correct=correct,exact=exact,alpha=alpha,MHstat=MHstat,stdWeight=stdWeight,thrSTD=thrSTD,
+BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,same.scale=same.scale,
+signed=signed,purification=purify,nrPur=iters,convergence=conv, save.output=save.output,output=output)
 class(RES)<-"dichoDif"
 return(RES)}
 }
@@ -98,11 +100,11 @@ print.dichoDif<-function (x, ...)
                 MHmet <- "Chi-square statistic"
             else MHmet <- "Log odds-ratio statistic"
             cat(" Mantel-Haenszel DIF statistic:", MHmet, "\n")
-            if (res$correct == TRUE) 
-                corr <- "Yes"
+            if (res$correct) corr <- "Yes"
             else corr <- "No"
-            cat(" Mantel-Haenszel continuity correction:", corr, 
-                "\n")
+            cat(" Mantel-Haenszel continuity correction:", corr, "\n")
+            if (res$exact) cat(" Type of Mantel-Haenszel test: exact test","\n")
+            else cat(" Type of Mantel-Haenszel test: asymptotic test","\n")
         }
         if (sum(methods == "Stand.") == 1) {
             stdw <- ifelse(res$stdWeight == "total", "both groups", 
@@ -155,6 +157,10 @@ print.dichoDif<-function (x, ...)
                 }
             }
         }
+        if (sum(methods == "Raju") == 1) {
+            if (res$signed) cat(" Type of Raju's Z statistic: signed area", "\n")
+            else cat(" Type of Raju's Z statistic: unsigned area", "\n")
+}
         if (res$purification == TRUE) {
             cat(" Item purification: Yes", "\n", "\n")
             cat(" Item purification results:", "\n", "\n")

@@ -10,10 +10,9 @@
  }
 
 \usage{
-difRaju(Data, group, focal.name, model, c=NULL, engine="ltm", 
-  	discr=1, irtParam=NULL,  same.scale=TRUE, alpha=0.05,
-  	purify=FALSE, nrIter=10, save.output=FALSE, 
-  	output=c("out","default")) 
+difRaju(Data, group, focal.name, model, c=NULL, engine="ltm", discr=1, 
+  	irtParam=NULL,  same.scale=TRUE, alpha=0.05, signed=FALSE, purify=FALSE, 
+  	nrIter=10, save.output=FALSE, output=c("out","default"))   	
 \method{print}{Raj}(x, ...)
 \method{plot}{Raj}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
   	save.options=c("plot","default","pdf"), ...)
@@ -26,11 +25,13 @@ difRaju(Data, group, focal.name, model, c=NULL, engine="ltm",
  \item{model}{character: the IRT model to be fitted (either \code{"1PL"}, \code{"2PL"} or \code{"3PL"}).}
  \item{c}{optional numeric value or vector giving the values of the constrained pseudo-guessing parameters. See \bold{Details}.}
  \item{engine}{character: the engine for estimating the 1PL model, either \code{"ltm"} (default) or \code{"lme4"}.}
- \item{discr}{either \code{NULL} or a real positive value for the common discrimination parameter (default is 1). Used onlky if \code{model} is \code{"1PL"} and
+ \item{discr}{either \code{NULL} or a real positive value for the common discrimination parameter (default is 1). Used only if \code{model} is \code{"1PL"} and
              \code{engine} is \code{"ltm"}. See \bold{Details}.}
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
+ \item{signed}{logical: should the Raju's statistics be computed using the signed (\code{TRUE}) or unsigned (\code{FALSE}, default)
+               area? See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).} 
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
@@ -50,6 +51,7 @@ A list of class "Raj" with the following arguments:
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{DIFitems}{either the column indicators of the items which were detected as DIF items, or "No DIF item detected".}
+  \item{signed}{the value of the \code{signed} argument.}
   \item{purification}{the value of \code{purify} option.} 
   \item{nrPur}{the number of iterations in the item purification process. Returned only if \code{purify} is \code{TRUE}.}
   \item{difPur}{a binary matrix with one row per iteration in the item purification process and one column per item. Zeros and ones in the \emph{i}-th 
@@ -76,6 +78,10 @@ A list of class "Raj" with the following arguments:
  by setting an appropriate item response model. The input can be of two kinds: either by displaying the full data,
  the group membership and the model, or by giving the item parameter estimates (with the option \code{irtParam}).
  Both can be supplied, but in this case only the parameters in \code{irtParam} are used for computing Raju's statistic.
+
+ By default, the Raju's \emph{Z} statistics are obtained by using the \emph{unsigned} areas between the ICCs. However, these
+ statistics can also be computed using the \emph{signed} areas, by setting the argument \code{signed} to \code{TRUE} (default
+ value is \code{FALSE}). See \code{\link{RajuZ}} for further details.
 
  The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. In addition, \code{Data} can hold the vector of group membership. 
  If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number.
@@ -192,21 +198,36 @@ A list of class "Raj" with the following arguments:
  difRaju(verbal, group="Gender", focal.name=1, model="1PL")
  difRaju(verbal[,1:24], group=verbal[,25], focal.name=1, model="1PL")
 
+ # With signed areas
+ difRaju(verbal, group=25, focal.name=1, model="1PL", signed=TRUE)
+
  # (1PL model, "lme4" engine) 
  difRaju(verbal, group="Gender", focal.name=1, model="1PL",
  engine="lme4")
 
- # 2PL model 
+ # 2PL model, signed and unsigned areas
  difRaju(verbal, group="Gender", focal.name=1, model="2PL")
+ difRaju(verbal, group="Gender", focal.name=1, model="2PL", signed=TRUE)
 
  # 3PL model with all pseudo-guessing parameters constrained to 0.05
+ # Signed and unsigned areas
  difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05)
-
+ difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05,
+   signed=TRUE)
+ 
  # Same models, with item purification
  difRaju(verbal, group="Gender", focal.name=1, model="1PL", purify=TRUE)
  difRaju(verbal, group="Gender", focal.name=1, model="2PL", purify=TRUE)
  difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05,
  purify=TRUE)
+
+ # With signed areas
+ difRaju(verbal, group="Gender", focal.name=1, model="1PL", purify=TRUE,
+   signed=TRUE)
+ difRaju(verbal, group="Gender", focal.name=1, model="2PL", purify=TRUE,
+   signed=TRUE)
+ difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05,
+ purify=TRUE, signed=TRUE)
 
  ## Splitting the data into reference and focal groups
  nF<-sum(Gender)

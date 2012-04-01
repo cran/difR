@@ -32,8 +32,8 @@
  \tabular{ll}{
   Package: \tab difR \cr
   Type:    \tab Package \cr
-  Version: \tab 4.1 \cr
-  Date:    \tab 2011-06-22\cr
+  Version: \tab 4.2 \cr
+  Date:    \tab 2012-03-29\cr
   Depends: \tab R (>= 2.8.0), lme4, ltm \cr
   License: \tab see file LICENSE \cr
   }

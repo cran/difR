@@ -1,4 +1,4 @@
-difRaju<-function(Data, group, focal.name, model, c=NULL, engine="ltm", discr=1,irtParam=NULL, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default"))
+difRaju<-function(Data, group, focal.name, model, c=NULL, engine="ltm", discr=1,irtParam=NULL, same.scale=TRUE, alpha=0.05, signed=FALSE, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default"))
 {
 internalRaju<-function(){
 if (is.null(irtParam)==FALSE){
@@ -73,21 +73,21 @@ estPar<-TRUE
 }
 
 if (purify==FALSE) {
-STATS<-RajuZ(m0,m1p)[,3]
+STATS<-RajuZ(m0,m1p,signed=signed)$res[,3]
 if (max(abs(STATS))<=qnorm(1-alpha/2)) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrItems)[abs(STATS)>qnorm(1-alpha/2)]
-RES<-list(RajuZ=STATS,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,estPar=estPar,names=dataName,save.output=save.output,output=output)
+RES<-list(RajuZ=STATS,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,signed=signed,purification=purify,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 else{
 nrPur<-0
 difPur<-NULL
 noLoop<-FALSE
-stats1<-RajuZ(m0,m1p)[,3]
+stats1<-RajuZ(m0,m1p,signed=signed)$res[,3]
 if (max(abs(stats1))<=qnorm(1-alpha/2)){
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 itemParFinal=rbind(m0,m1p)
-RES<-list(RajuZ=stats1,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
+RES<-list(RajuZ=stats1,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=DIFitems,signed=signed,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 else{ 
 dif<-(1:nrItems)[abs(stats1)>qnorm(1-alpha/2)]
@@ -107,7 +107,7 @@ for (i in 1:nrItems){
 if (sum(i==dif)==0) nodif<-c(nodif,i)
 }
 }
-stats2<-RajuZ(m0,itemRescale(m0,m1,items=nodif))[,3]
+stats2<-RajuZ(m0,itemRescale(m0,m1,items=nodif),signed=signed)$res[,3]
 if (max(abs(stats2))<=qnorm(1-alpha/2)) dif2<-NULL
 else dif2 <- (1:nrItems)[abs(stats2)>qnorm(1-alpha/2)]
 difPur<-rbind(difPur,rep(0,nrItems))
@@ -132,7 +132,7 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(RajuZ=stats2,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
+RES<-list(RajuZ=stats2,alpha=alpha,thr=qnorm(1-alpha/2),DIFitems=dif2,signed=signed,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,save.output=save.output,output=output)
 }
 }
 class(RES)<-"Raj"
@@ -187,7 +187,7 @@ dev.off()
 }
 if (plotype==2){
 {
-jpeg(file=fileName)
+jpeg(filename=fileName)
 internalRaju()
 }
 dev.off()
@@ -209,7 +209,9 @@ cat("Detection of Differential Item Functioning using Raju's method","\n")
 if (res$purification==TRUE) pur<-"with "
 else pur<-"without "
 cat("with ",res$model," model and ",pur, "item purification","\n","\n",sep="")
-if (res$estPar==TRUE){
+if (res$signed) cat("Type of Raju's Z statistic: based on signed area","\n","\n")
+else cat("Type of Raju's Z statistic: based on unsigned area","\n","\n")
+if (res$estPar){
 if (res$model!="1PL" | res$engine=="ltm") cat("Engine 'ltm' for item parameter estimation","\n","\n")
 else cat("Engine 'lme4' for item parameter estimation","\n","\n")
 }
