@@ -7,7 +7,20 @@
 
 
 --------------------------------------
-- Changes in difR > 4.2 (2012-04-01S) -
+- Changes in difR > 4.3 (2012-06-13) -
+--------------------------------------
+
+MAJOR UPDATES
+
+  o  To implement the SIBTEST method. Currently some R code
+     is available but must be checked for validity.
+
+  o  To integrate the confidence intervals for the common
+     MH log-odds ratio to existing 'difMH' function.
+
+
+--------------------------------------
+- Changes in difR > 4.2 (2012-04-01) -
 --------------------------------------
 
 MAJOR UPDATES

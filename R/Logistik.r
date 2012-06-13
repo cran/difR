@@ -1,7 +1,7 @@
 # DIF: LOGISTIC REGRESSION
 Logistik<-function (data, member, anchor = 1:ncol(data), type = "both", criterion="LRT") 
 {
-    R2 <- function(m, n) 1 - (exp(-m$null.deviance/2)/exp(-m$deviance/2))^(2/n)
+    R2 <- function(m, n) 1 - (exp(-m$null.deviance/2+m$deviance/2))^(2/n)
     R2max <- function(m, n) 1 - (exp(-m$null.deviance/2))^(2/n)
     R2DIF <- function(m, n) R2(m, n)/R2max(m, n)
     dev <- deltaR <- NULL

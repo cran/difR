@@ -6,6 +6,24 @@
 
 
 ------------------------------------
+- Changes in difR 4.3 (2012-06-13) -
+------------------------------------
+
+MINOR UPDATES
+
+  o  The computation of the R^2 coefficients in the 
+     'Logistik' function was slightly modified to overcome
+     a mathematical issue. With large data sets, the null 
+     and model deviances are very large and the ratio of    
+     exponentials of the deviances might return NaN values
+     and affect the output of the 'difLogistic'. Many thanks
+     to Marco Pomati (University of Bristol, UK) for 
+     noticing this issue.
+
+ o  Several typos were fixed.
+
+
+------------------------------------
 - Changes in difR 4.2 (2012-04-01) -
 ------------------------------------
 
