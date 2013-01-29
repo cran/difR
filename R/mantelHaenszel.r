@@ -5,6 +5,7 @@ mantelHaenszel<-function (data, member, correct = TRUE, exact=FALSE,anchor = 1:n
         data2 <- data[, anchor]
         if (sum(anchor == item) == 0) 
             data2 <- cbind(data2, data[, item])
+if (!is.matrix(data2)) data2<-cbind(data2)
         xj <- rowSums(data2, na.rm = TRUE)
         scores <- sort(unique(xj))
         prov <- NULL

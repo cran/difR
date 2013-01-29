@@ -6,6 +6,23 @@
 
 
 ------------------------------------
+- Changes in difR 4.4 (2013-01-29) -
+------------------------------------
+
+MINOR UPDATES
+
+  o  The 'mantelHaenszel' function was updated to avoid a
+     technical issue that was occuring in extreme cases. 
+     When all items but one are flagged as DIF, and item
+     purification process is run, then 'mantelHaenszel' was
+     trying to compute 'rowSums' on a vector and not on a 
+     one-column matrix, thus leading to an error. This was
+     fixed. Many thanks to Yung Chih Ou (Department of 
+     Educational Psychology and Counseling, National Taiwan
+     Normal University) for noticing this issue.
+
+
+------------------------------------
 - Changes in difR 4.3 (2012-06-13) -
 ------------------------------------
 
