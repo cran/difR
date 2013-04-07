@@ -18,7 +18,7 @@ itemPar3PLconst(data, c=rep(0,ncol(data)))
 
 \value{
  A matrix with one row per item and six columns: the item discrimination \emph{a} and difficulty estimates \emph{b}, the corresponding standard errors \emph{se(a)} and \emph{se(b)}, 
- the covariances \emph{cov(a,b)}and the constrained pseudo-guessing values \emph{c}.
+ the covariances \emph{cov(a,b)} and the constrained pseudo-guessing values \emph{c}.
 }
  
 \details{
@@ -39,6 +39,10 @@ itemPar3PLconst(data, c=rep(0,ncol(data)))
  The constrained 3PL model is fitted using marginal maximum likelihood by means of the functions from the \code{ltm} package (Rizopoulos, 2006).
 }
 
+\note{
+ The constrained 3PL model is fitted under the linear parametrization in \code{tpm}, the covariance matrix is extracted with the \code{vcov()} function, and final standard errors and covariances are derived by the Delta method. See Rizopoulos (2006) for further details, and the \code{Note.pdf} document in the \code{difR} package for mathematical details.
+}
+
 \references{ 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
@@ -49,18 +53,19 @@ itemPar3PLconst(data, c=rep(0,ncol(data)))
 
 \author{
     Sebastien Beland \cr
-    Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
+    Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{sebastien.beland.1@hotmail.com} \cr
+    \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Research Group of Quantitative Psychology and Individual Differences \cr
-    Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    Department of Education, University of Liege \cr
+    Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
+    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
-    Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
+    Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
     \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
-   }
+ }
+
    
 \seealso{
  \code{\link{itemPar1PL}}, \code{\link{itemPar2PL}}, \code{\link{itemPar3PL}}, \code{\link{itemParEst}}, \code{\link{difLord}}, \code{\link{difRaju}}, 

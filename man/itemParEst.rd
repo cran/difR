@@ -54,6 +54,11 @@ itemParEst(data, model, c=NULL, engine="ltm", discr=1)
  the first five being identical to those from the 2PL model, and the last one holds the fixed pseudo-guessing parameters.
  }
 
+\note{
+ Whenever making use of the \code{ltm} package to fit the IRT models, the linear parametrization is used, the covariance matrix is extracted with the \code{vcov()} function, and final standard errors and covariances are derived by the Delta method. See Rizopoulos (2006) for further details, and the \code{Note.pdf} document in the \code{difR} package for mathematical details.
+}
+
+
 \references{ 
  Bates, D. and Maechler, M. (2009). lme4: Linear mixed-effects models using S4 classes. R package version 0.999375-31. http://CRAN.R-project.org/package=lme4
 
@@ -64,20 +69,22 @@ itemParEst(data, model, c=NULL, engine="ltm", discr=1)
  1-25. URL: http://www.jstatsoft.org/v17/i05/
  }
 
+
 \author{
     Sebastien Beland \cr
-    Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
+    Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{sebastien.beland.1@hotmail.com} \cr
+    \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Research Group of Quantitative Psychology and Individual Differences \cr
-    Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    Department of Education, University of Liege \cr
+    Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
+    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
-    Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
+    Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
     \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
-    }
+ }
+
 
 \seealso{
  \code{\link{itemPar1PL}}, \code{\link{itemPar2PL}}, \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{difLord}}, \code{\link{difRaju}}, 

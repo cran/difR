@@ -4,7 +4,7 @@
 \title{Item parameter estimation for DIF detection using 2PL model}
 
 \description{
- Fits the 2PL model and returns related item parameter estimates.
+ Fits the 2PL model and returns related item parameter estimates, standard errors and covariances between item parameters.
  }
 
 \usage{
@@ -29,8 +29,12 @@ itemPar2PL(data)
 
  Missing values are allowed but must be coded as \code{NA} values. They are discarded for item parameter estimation.
   
- The 2PL model is fitted using marginal maximum likelihood by means of the functions from the \code{ltm} package (Rizopoulos, 2006).
+ The 2PL model is fitted using marginal maximum likelihood by means of the functions from the \code{ltm} package (Rizopoulos, 2006). 
  }
+
+\note{
+ The 2PL model is fitted under the linear parametrization in \code{ltm}, the covariance matrix is extracted with the \code{vcov()} function, and final standard errors and covariances are derived by the Delta method. See Rizopoulos (2006) for further details, and the \code{Note.pdf} document in the \code{difR} package for mathematical details.
+}
 
 \references{ 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
@@ -42,18 +46,19 @@ itemPar2PL(data)
 
 \author{
     Sebastien Beland \cr
-    Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
+    Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{sebastien.beland.1@hotmail.com} \cr
+    \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Research Group of Quantitative Psychology and Individual Differences \cr
-    Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    Department of Education, University of Liege \cr
+    Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
+    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
-    Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
+    Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
     \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
-    }
+ }
+
 
 \seealso{
  \code{\link{itemPar1PL}}, \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}}, \code{\link{difRaju}}, 

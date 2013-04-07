@@ -53,13 +53,11 @@ trItemDiff(prop, anchor=1:nrow(prop))
 
 \author{
     David Magis \cr
-    Research Group of Quantitative Psychology and Individual Differences \cr
-    Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
-    Department of Mathematics \cr
-    University of Liege, Belgium \cr
-    \email{david.magis@ulg.ac.be} \cr
-    }
+    Department of Education, University of Liege \cr
+    Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
+    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+ }
+
 
 \seealso{
  \code{\link{difTID}}, \code{\link{dichoDif}}

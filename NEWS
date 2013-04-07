@@ -6,6 +6,35 @@
 
 
 ------------------------------------
+- Changes in difR 4.5 (2013-04-07) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  In the 'itemPar2PL', 'itemPar3PL' and 'itemPar3PLconst'     
+     functions, the extraction of the standard errors and 
+     covariances between the item parameters was not 
+     performed accurately from the output of the 'ltm' and
+     'tpm' functions. Actually, the values were extracted
+     from the linear parametrization of the model, not from
+     its IRT form. This was corrected by an appropriate  
+     application of the Delta method. A note was also added
+     in the 'difR/doc' folder with mathematical details and
+     notations for the Delta method. Many thanks to Emily
+     Price (Department of Educational Research and Evaluation,   
+     Ohio University) for noticing this issue, and to Dimitris
+     Rizopoulos (Erasmus University Rotterdam, The Netherlands) 
+     for providing key information to fix this problem.
+
+
+MINOR UPDATES
+
+  o  The authors' affiliations were updated.
+
+  o  Several typos were fixed.
+
+
+------------------------------------
 - Changes in difR 4.4 (2013-01-29) -
 ------------------------------------
 

@@ -52,18 +52,19 @@ itemPar1PL(data, engine="ltm", discr=1)
 
 \author{
     Sebastien Beland \cr
-    Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
+    Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{sebastien.beland.1@hotmail.com} \cr
+    \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Research Group of Quantitative Psychology and Individual Differences \cr
-    Katholieke Universiteit Leuven \cr
-    \email{David.Magis@psy.kuleuven.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    Department of Education, University of Liege \cr
+    Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
+    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
-    Centre sur les Applications des Modeles de Reponses aux Items (CAMRI) \cr
+    Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
     \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
-    }
+ }
+
 
 \seealso{
  \code{\link{itemPar2PL}}, \code{\link{itemPar3PL}}, \code{\link{itemPar3PLconst}}, \code{\link{itemParEst}}, \code{\link{difLord}}, \code{\link{difRaju}}, 
