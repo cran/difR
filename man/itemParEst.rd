@@ -8,7 +8,7 @@
  }
 
 \usage{
-itemParEst(data, model, c=NULL, engine="ltm", discr=1)
+itemParEst(data, model, c = NULL, engine = "ltm", discr = 1)
  }
 
 \arguments{
@@ -82,7 +82,7 @@ itemParEst(data, model, c=NULL, engine="ltm", discr=1)
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -99,22 +99,22 @@ itemParEst(data, model, c=NULL, engine="ltm", discr=1)
  data(verbal)
 
  # Estimation of the item parameters (1PL model, "ltm" engine)
- items.1PL<-itemParEst(verbal[,1:24],model="1PL")
+ items.1PL <- itemParEst(verbal[,1:24], model = "1PL")
 
  # Estimation of the item parameters (1PL model, "ltm" engine,
  # estimated common discrimination parameter)
- items.1PL<-itemParEst(verbal[,1:24],model="1PL", discr=NULL)
+ items.1PL <- itemParEst(verbal[,1:24], model = "1PL", discr = NULL)
 
  # Estimation of the item parameters (1PL model, "lme4" engine)
- items.1PL<-itemParEst(verbal[,1:24],model="1PL", engine="lme4")
+ items.1PL <- itemParEst(verbal[,1:24], model = "1PL", engine = "lme4")
 
  # Estimation of the item parameters (2PL model)
- items.2PL<-itemParEst(verbal[,1:24],model="2PL")
+ items.2PL <- itemParEst(verbal[,1:24], model = "2PL")
 
  # Estimation of the item parameters (3PL model)
- # items.3PL<-itemParEst(verbal[,1:24],model="3PL")
+ # items.3PL <- itemParEst(verbal[,1:24], model = "3PL")
 
  # Constraining all pseudo-guessing values to be equal to 0.05
- items.3PLc<-itemParEst(verbal[,1:24],model="3PL",c=0.05)
+ items.3PLc <- itemParEst(verbal[,1:24], model = "3PL", c = 0.05)
 }
 }

@@ -52,7 +52,7 @@
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 \seealso{
@@ -67,8 +67,8 @@
  contrastMatrix(3, "1PL")
  contrastMatrix(4, "1PL")
 
- # Contrast matrices with 2PL, constrained and unconstrained 3PL models,
- # and three focal groups
+ # Contrast matrices with 2PL, constrained and unconstrained 3PL models and three 
+ # focal groups
  contrastMatrix(3, "2PL")
  contrastMatrix(3, "3PLc")
  contrastMatrix(3, "3PL")

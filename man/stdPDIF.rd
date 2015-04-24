@@ -8,7 +8,7 @@
  }
 
 \usage{
-stdPDIF(data, member, anchor=1:ncol(data), stdWeight="focal")
+stdPDIF(data, member, anchor = 1:ncol(data), stdWeight = "focal")
  }
  
 \arguments{
@@ -76,7 +76,7 @@ A list with two arguments:
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -93,12 +93,12 @@ A list with two arguments:
  stdPDIF(verbal[,1:24], verbal[,26])
 
  # All items as anchor items, reference group weights
- stdPDIF(verbal[,1:24], verbal[,26], stdWeight="reference")
+ stdPDIF(verbal[,1:24], verbal[,26], stdWeight = "reference")
 
  # All items as anchor items, both groups' weights
- stdPDIF(verbal[,1:24], verbal[,26], stdWeight="total")
+ stdPDIF(verbal[,1:24], verbal[,26], stdWeight = "total")
 
  # Removing item 6 from the set of anchor items
- stdPDIF(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
+ stdPDIF(verbal[,1:24], verbal[,26], anchor = c(1:5,7:24))
  }
  }

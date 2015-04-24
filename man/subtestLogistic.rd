@@ -9,7 +9,7 @@
  }
 
 \usage{
-subtestLogistic(x, items, groups, alpha=0.05)
+subtestLogistic(x, items, groups, alpha = 0.05)
 \method{print}{subLogistic}(x, ...)
  }
  
@@ -72,7 +72,7 @@ subtestLogistic(x, items, groups, alpha=0.05)
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -90,36 +90,36 @@ subtestLogistic(x, items, groups, alpha=0.05)
  # Creating four groups according to gender (0 or 1) and trait anger score
  # ("Low" or "High")
  # Reference group: women with low trait anger score (<=20)
- group<-rep("WomanLow",nrow(verbal))
- group[Anger>20 & Gender==0]<-"WomanHigh"
- group[Anger<=20 & Gender==1]<-"ManLow"
- group[Anger>20 & Gender==1]<-"ManHigh"
+ group <- rep("WomanLow",nrow(verbal))
+ group[Anger>20 & Gender==0] <- "WomanHigh"
+ group[Anger<=20 & Gender==1] <- "ManLow"
+ group[Anger>20 & Gender==1] <- "ManHigh"
 
  # New data set
- Verbal<-cbind(verbal[,1:24],group)
+ Verbal <- cbind(verbal[,1:24], group)
 
  # Reference group: "WomanLow"
- names<-c("WomanHigh","ManLow","ManHigh")
+ names <- c("WomanHigh", "ManLow", "ManHigh")
 
  # Testing all types of DIF with all items
- rDIF<-difGenLogistic(Verbal, group=25, focal.names=names)
- rUDIF<-difGenLogistic(Verbal, group=25, focal.names=names, type="udif")
- rNUDIF<-difGenLogistic(Verbal, group=25, focal.names=names, type="nudif")
+ rDIF <- difGenLogistic(Verbal, group = 25, focal.names = names)
+ rUDIF <- difGenLogistic(Verbal, group = 25, focal.names = names, type = "udif")
+ rNUDIF <- difGenLogistic(Verbal, group = 25, focal.names = names, type = "nudif")
 
  # Subtests between the reference group and the first two focal groups
  # for item "S2WantShout" (item 6) and the three types of DIF
- subGroups <- c("WomanLow","WomanHigh","ManLow")
- subtestLogistic(rDIF, items=6, groups=subGroups)
- subtestLogistic(rUDIF, items=6, groups=subGroups)
- subtestLogistic(rNUDIF, items=6, groups=subGroups) 
+ subGroups <- c("WomanLow", "WomanHigh", "ManLow")
+ subtestLogistic(rDIF, items = 6, groups = subGroups)
+ subtestLogistic(rUDIF, items = 6, groups = subGroups)
+ subtestLogistic(rNUDIF, items = 6, groups = subGroups) 
 
  # Subtests between the reference group and the first focal group
  # for items "S2WantShout" (item 6) and "S3WantCurse" (item 7)
  # (only both DIF effects)
- subGroups <- c("WomanLow","WomanHigh")
- items1 <- c("S2WantShout","S3WantCurse")
+ subGroups <- c("WomanLow", "WomanHigh")
+ items1 <- c("S2WantShout", "S3WantCurse")
  items2 <- 6:7
- subtestLogistic(rDIF, items=items1, groups=subGroups)
- subtestLogistic(rDIF, items=items2, groups=subGroups)
+ subtestLogistic(rDIF, items = items1, groups = subGroups)
+ subtestLogistic(rDIF, items = items2, groups = subGroups)
  }
  }

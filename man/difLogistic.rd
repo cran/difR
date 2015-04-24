@@ -10,26 +10,27 @@
  }
 
 \usage{
-difLogistic(Data, group, focal.name, type="both", criterion="LRT",
-  	alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, 
-  	output=c("out","default"))
+difLogistic(Data, group, focal.name, anchor = NULL, member.type = "group", 
+ 	match = "score", type = "both", criterion = "LRT", alpha = 0.05, 
+ 	purify = FALSE, nrIter = 10, save.output = FALSE, 
+ 	output = c("out", "default"))
 \method{print}{Logistic}(x, ...)
-\method{plot}{Logistic}(x, plot="lrStat", item=1, itemFit="best", 
-  	pch=8, number=TRUE, col="red", colIC=rep("black",2), 
-  	ltyIC=c(1,2),  save.plot=FALSE, 
-  	save.options=c("plot","default","pdf"), 
-  	group.names=NULL, ...)
+\method{plot}{Logistic}(x, plot="lrStat", item = 1, itemFit = "best", pch = 8, number = TRUE,
+ 	col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), save.plot = FALSE,
+ 	save.options = c("plot", "default", "pdf"), group.names = NULL, ...)
  }
  
 \arguments{
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{data}) of group membership. See \bold{Details}.}
- \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
- \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. 
-             See \bold{Details}.}
+ \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group. Ignored if \code{member.type} is not \code{"group"}.}
+\item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. Ignored if \code{match} is not \code{"score"}. See \bold{Details}.}
+ \item{member.type}{character: either \code{"group"} (default) to specify that group membership is made of two groups, or \code{"cont"} to indicate that group membership is based on a  continuous criterion. See \bold{Details}.}
+ \item{match}{specifies the type of matching criterion. Can be either \code{"score"} (default) to compute the test score, or any continuous or discrete variable with the same length as the number of rows of \code{Data}. See \bold{Details}.}
+ \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
  \item{criterion}{a character string specifying which DIF statistic is computed. Possible values are \code{"LRT"} (default) or \code{"Wald"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
- \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
+ \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE). Ignored if \code{match} is not \code{"score"}.}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. (default is 10).}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or 
@@ -61,6 +62,8 @@ A list of class "Logistic" with the following arguments:
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{DIFitems}{either the column indicators for the items which were detected as DIF items, or "No DIF item detected".}
+ \item{member.type}{the value of the \code{member.type} argument.}
+\item{match}{a character string, either \code{"score"} or \code{"matching variable"} depending on the \code{match} argument.}
   \item{type}{the value of \code{type} argument.}
   \item{purification}{the value of \code{purify} option.} 
   \item{nrPur}{the number of iterations in the item purification process. Returned only if \code{purify} is \code{TRUE}.}
@@ -70,6 +73,7 @@ A list of class "Logistic" with the following arguments:
   \item{convergence}{logical indicating whether the iterative item purification process stopped before the maximal number of \code{nrItem} allowed iterations. 
   Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
+ \item{anchor.names}{the value of the \code{anchor} argument.}
   \item{criterion}{the value of the \code{criterion} argument.}
   \item{save.output}{the value of the \code{save.output} argument.}
   \item{output}{the value of the \code{output} argument.}
@@ -78,23 +82,24 @@ A list of class "Logistic" with the following arguments:
 
 \details{
  The logistic regression method (Swaminathan and Rogers, 1990) allows for detecting both uniform and non-uniform differential item functioning 
- without requiring an item response model approach. It consists in fitting a logistic model with the test score,
+ without requiring an item response model approach. It consists in fitting a logistic model with the matching criterion,
  the group membership and an interaction between both as covariates. The statistical significance of the parameters
  related to group membership and the group-score interaction is then evaluated by means of either the likelihood-ratio
  test or the Wald test. The argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform
  DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). The argument \code{criterion} permits to select either
  the likelihood ratio test (\code{criterion=="LRT"}) or the Wald test (\code{criterion=="Wald"}). See \code{\link{Logistik}} for further details.
- 
- The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. In addition, \code{Data} can hold the vector of group membership.
+
+The group membership can be either a vector of two distinct values, one for the reference group and one for the focal group, or a continuous or discrete variable that acts as the "group" membership variable. In the former case, the \code{member.type} argument is set to \code{"group"} and the \code{focal.name} defines which value in the \code{group} variable stands for the focal group. In the latter case, \code{member.type} is set to \code{"cont"}, \code{focal.name} is ignored and each value of the \code{group} represents one "group" of data (that is, the DIF effects are investigated among participants relying on different values of some discrete or continuous trait). See \code{\link{Logistik}} for further details.
+
+ The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{Logistik} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix.
+
+  The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. In addition, \code{Data} can hold the vector of group membership.
  If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number.
  Otherwise, \code{group} must be a vector of same length as \code{nrow(Data)}.
  
  Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded from the fitting of the
  logistic models (see \code{\link{glm}} for further details).
 
- The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
- the value of the argument \code{focal.name}. 
- 
  The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
  probability of one minus \code{alpha} and with one (if \code{type="udif"} or \code{type="nudif"}) or two (if \code{type="both"}) degrees of freedom.
  
@@ -102,7 +107,9 @@ A list of class "Logistic" with the following arguments:
  differently at the first step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items
  (Clauser and Mazor, 1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case
- a warning message is printed. 
+ a warning message is printed. Note that purification is possible only if the test score is considered as the matching criterion. Thus, \code{purify} is ignored when \code{match} is not \code{"score"}.
+
+A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. By default it is \code{NULL} so that no anchor item is specified. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). Moreover, if the \code{match} argument is not set to \code{"score"}, anchor items will not be taken into account even if \code{anchor} is not \code{NULL}. 
 
  The measures of effect size are provided by the difference \eqn{\Delta R^2} between the \eqn{R^2} coefficients of the two nested models (Nagelkerke, 1991; 
  Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effect sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from
@@ -177,7 +184,7 @@ A list of class "Logistic" with the following arguments:
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -192,40 +199,49 @@ A list of class "Logistic" with the following arguments:
  data(verbal)
 
  # Excluding the "Anger" variable
- verbal<-verbal[colnames(verbal)!="Anger"]
+ anger <- verbal[,colnames(verbal)=="Anger"]
+ verbal <- verbal[,colnames(verbal)!="Anger"]
 
  # Testing both DIF effects simultaneously
  # Three equivalent settings of the data matrix and the group membership
- r <- difLogistic(verbal, group=25, focal.name=1)
- difLogistic(verbal, group="Gender", focal.name=1)
- difLogistic(verbal[,1:24], group=verbal[,25], focal.name=1)
+ r <- difLogistic(verbal, group=25, focal.name = 1)
+ difLogistic(verbal, group = "Gender", focal.name = 1)
+ difLogistic(verbal[,1:24], group = verbal[,25], focal.name = 1)
 
  # Testing both DIF effects with the Wald test
- r2 <- difLogistic(verbal, group=25, focal.name=1, 
-	             criterion="Wald")
+ r2 <- difLogistic(verbal, group = 25, focal.name = 1, criterion = "Wald")
 
  # Testing nonuniform DIF effect
- difLogistic(verbal, group=25, focal.name=1, type="nudif")
+ difLogistic(verbal, group = 25, focal.name = 1, type = "nudif")
 
  # Testing uniform DIF effect
- difLogistic(verbal, group=25, focal.name=1, type="udif")
+ difLogistic(verbal, group = 25, focal.name = 1, type = "udif")
 
  # With item purification
- difLogistic(verbal, group="Gender", focal.name=1, purify=TRUE)
- difLogistic(verbal, group="Gender", focal.name=1, purify=TRUE,
-             nrIter=5)
+ difLogistic(verbal, group = "Gender", focal.name = 1, purify = TRUE)
+ difLogistic(verbal, group = "Gender", focal.name = 1, purify = TRUE, nrIter = 5)
+
+ # With items 1 to 5 set as anchor items
+ difLogistic(verbal, group = 25, focal.name = 1, anchor = 1:5)
+
+ # Using anger trait score as the matching criterion
+ difLogistic(verbal,group = 25, focal.name = 1,match = anger)
+
+ # Using trait anger score as the group variable (i.e. testing
+ # for DIF with respect to trait anger score)
+ difLogistic(verbal[,1:24],group = anger,member.type = "cont")
 
  # Saving the output into the "Lresults.txt" file (and default path)
- r <- difLogistic(verbal, group=25, focal.name=1, 
-           save.output = TRUE, output = c("Lresults","default"))
+ r <- difLogistic(verbal, group = 25, focal.name = 1, save.output = TRUE, 
+           output = c("Lresults", "default"))
 
  # Graphical devices
  plot(r)
  plot(r2)
- plot(r, plot="itemCurve", item=1)
- plot(r, plot="itemCurve", item=1, itemFit="null")
- plot(r, plot="itemCurve", item=6)
- plot(r, plot="itemCurve", item=6, itemFit="null")
+ plot(r, plot = "itemCurve", item = 1)
+ plot(r, plot = "itemCurve", item = 1, itemFit = "null")
+ plot(r, plot = "itemCurve", item = 6)
+ plot(r, plot = "itemCurve", item = 6, itemFit = "null")
 
  # Plotting results and saving it in a PDF figure
  plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))

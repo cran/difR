@@ -1,12 +1,12 @@
 citHeader("To cite package 'difR' in publications use:")
 
 citEntry(entry = "Manual",
-title = "difR: Collection of methods to detect dichotomous differential item functioning (DIF) in psychometrics",
+title = "difR: Collection of methods to detect dichotomous differential item functioning (DIF)",
 author = personList(as.person("David Magis"),as.person("Sebastien Beland"),as.person("Gilles Raiche")),
-year = "2013",
-note = paste("R package version ",packageDescription("difR")$Version,".",sep=""),
-textVersion  = paste("David Magis, Sebastien Beland and Gilles Raiche (2013). ", 
-"difR: Collection of methods to detect dichotomous differential item functioning (DIF) in psychometrics. ",
-"R package version ",packageDescription("difR")$Version,".",sep="")
+year = "2015",
+note = "R package version 4.6",
+textVersion  = paste("David Magis, Sebastien Beland and Gilles Raiche (2015). ", 
+"difR: Collection of methods to detect dichotomous differential item functioning (DIF). ",
+"R package version 4.6",sep="")
 )
 

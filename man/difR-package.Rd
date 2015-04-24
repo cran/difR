@@ -6,9 +6,7 @@
 
 
 \description{
- The difR package contains several traditional methods to detect DIF in dichotomously scored items.
- Both uniform and non-uniform DIF effects can be detected, with methods relying upon item response
- models or not. Some methods deal with more than one focal group.
+ The difR package contains several traditional methods to detect DIF in dichotomously scored items. Both uniform and non-uniform DIF effects can be detected, with methods relying upon item response models or not. Some methods deal with more than one focal group.
 
  Methods currently available are:
   \enumerate{
@@ -32,8 +30,8 @@
  \tabular{ll}{
   Package: \tab difR \cr
   Type:    \tab Package \cr
-  Version: \tab 4.2 \cr
-  Date:    \tab 2012-03-29\cr
+  Version: \tab 4.6 \cr
+  Date:    \tab 2015-04-24\cr
   Depends: \tab R (>= 2.8.0), lme4, ltm \cr
   License: \tab see file LICENSE \cr
   }
@@ -84,7 +82,7 @@
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 

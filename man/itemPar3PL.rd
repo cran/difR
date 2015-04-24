@@ -59,7 +59,7 @@ itemPar3PL(data)
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
      
@@ -76,6 +76,6 @@ itemPar3PL(data)
  data(verbal)
 
  # Getting item parameter estimates
- # itemPar3PL(verbal[,1:24])
+ itemPar3PL(verbal[,1:24])
  }
  }

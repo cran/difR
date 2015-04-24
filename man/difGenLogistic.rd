@@ -11,20 +11,22 @@
  }
 
 \usage{
-difGenLogistic(Data, group, focal.names, type="both",
-  	criterion="LRT", alpha=0.05, purify=FALSE, nrIter=10,
-  	save.output=FALSE, output=c("out","default"))
+difGenLogistic(Data, group, focal.names, anchor = NULL, match = "score", 
+ 	type = "both", criterion = "LRT", alpha = 0.05, purify = FALSE, nrIter = 10,
+ 	save.output = FALSE, output = c("out", "default"))
 \method{print}{genLogistic}(x, ...)
-\method{plot}{genLogistic}(x, plot="lrStat", item=1, itemFit="best",pch=8, number=TRUE,
-  	col="red", colIC=rep("black",length(x$focal.names)+1),
-  	ltyIC=1:(length(x$focal.names)+1), title=NULL, save.plot=FALSE, 
-  	save.options=c("plot","default","pdf"), ref.name=NULL, ...)
+\method{plot}{genLogistic}(x, plot = "lrStat", item = 1, itemFit = "best",pch = 8, number = TRUE,
+  	col = "red", colIC = rep("black", length(x$focal.names)+1),
+  	ltyIC = 1:(length(x$focal.names)+1), title = NULL, save.plot = FALSE, 
+  	save.options = c("plot", "default", "pdf"), ref.name = NULL, ...)
  }
  
 \arguments{
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{data}) of group membership. See \bold{Details}.}
  \item{focal.names}{numeric or character vector indicating the levels of \code{group} which correspond to the focal groups.}
+\item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. Ignored if \code{match} is not \code{"score"}. See \bold{Details}.}
+ \item{match}{specifies the type of matching criterion. Can be either \code{"score"} (default) to compute the test score, or any continuous or discrete variable with the same length as the number of rows of \code{Data}. See \bold{Details}.}
  \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}.
             See \bold{Details}.}
  \item{criterion}{character: the type of test statistic used to detect DIF items. Possible values are \code{"LRT"} (default) and \code{"Wald"}. See \bold{Details}.}
@@ -74,6 +76,7 @@ A list of class "genLogistic" with the following arguments:
   \item{convergence}{logical indicating whether the iterative item purification process stopped before the maximal number of \code{nrItem} allowed iterations. 
   Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
+ \item{anchor.names}{the value of the \code{anchor} argument.}
   \item{focal.names}{the value of \code{focal.names} argument.}
   \item{criterion}{the value of the \code{criterion} argument.}
   \item{save.output}{the value of the \code{save.output} argument.}
@@ -83,7 +86,7 @@ A list of class "genLogistic" with the following arguments:
 
 \details{
  The generalized logistic regression method (Magis, Raiche, Beland and Gerard, 2010) allows for detecting both uniform and non-uniform differential item
- functioning among multiple groups without requiring an item response model approach. It consists in fitting a logistic model with the test score,
+ functioning among multiple groups without requiring an item response model approach. It consists in fitting a logistic model with the matching criterion,
  the group membership and an interaction between both as covariates. The statistical significance of the parameters
  related to group membership and the group-score interaction is then evaluated by means of the usual likelihood-ratio
  test. The argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform
@@ -91,6 +94,8 @@ A list of class "genLogistic" with the following arguments:
  either the Wald test or the likelihood  ratio test, by setting the \code{criterion} argument to \code{"Wald"} or \code{"LRT"} respectively.
  See \code{\link{genLogistik}} for further details.
  
+ The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{Logistik} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix.
+
  The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. In addition, \code{Data} can hold the vector of group membership.
  If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number.
  Otherwise, \code{group} must be a vector of same length as \code{nrow(Data)}.
@@ -108,8 +113,9 @@ A list of class "genLogistic" with the following arguments:
  Item purification can be performed by setting \code{purify} to \code{TRUE}. Purification works as follows: if at least one item is detected as functioning 
  differently at the first step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items
- (Clauser and Mazor, 1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case
- a warning message is printed. 
+ (Clauser and Mazor, 1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
+
+A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. By default it is \code{NULL} so that no anchor item is specified. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). Moreover, if the \code{match} argument is not set to \code{"score"}, anchor items will not be taken into account even if \code{anchor} is not \code{NULL}. 
 
  The measures of effect size are provided by the difference \eqn{\Delta R^2} between the \eqn{R^2} coefficients of the two nested models (Nagelkerke, 1991; 
  Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effect sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from
@@ -171,7 +177,7 @@ A list of class "genLogistic" with the following arguments:
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -188,47 +194,54 @@ A list of class "genLogistic" with the following arguments:
 
  # Creating four groups according to gender ("Man" or "Woman") and
  # trait anger score ("Low" or "High")
- group<-rep("WomanLow",nrow(verbal))
- group[Anger>20 & Gender==0]<-"WomanHigh"
- group[Anger<=20 & Gender==1]<-"ManLow"
- group[Anger>20 & Gender==1]<-"ManHigh"
+ group <- rep("WomanLow", nrow(verbal))
+ group[Anger>20 & Gender==0] <- "WomanHigh"
+ group[Anger<=20 & Gender==1] <- "ManLow"
+ group[Anger>20 & Gender==1] <- "ManHigh"
 
  # New data set
- Verbal<-cbind(verbal[,1:24],group)
+ Verbal <- cbind(verbal[,1:24], group)
 
  # Reference group: "WomanLow"
- names<-c("WomanHigh","ManLow","ManHigh")
+ names <- c("WomanHigh", "ManLow", "ManHigh")
 
  # Testing both types of DIF effects
  # Three equivalent settings of the data matrix and the group membership
- r<-difGenLogistic(Verbal, group=25, focal.names=names)
- difGenLogistic(Verbal, group="group", focal.name=names)
- difGenLogistic(Verbal[,1:24], group=Verbal[,25], focal.names=names)
+ r <- difGenLogistic(Verbal, group = 25, focal.names = names)
+ difGenLogistic(Verbal, group = "group", focal.name = names)
+ difGenLogistic(Verbal[,1:24], group = Verbal[,25], focal.names = names)
 
  # Using the Wald test
- difGenLogistic(Verbal, group=25, focal.names=names, criterion="Wald")
+ difGenLogistic(Verbal, group = 25, focal.names = names, criterion = "Wald")
 
  # With item purification
- difGenLogistic(Verbal, group=25, focal.names=names, purify=TRUE)
- difGenLogistic(Verbal, group=25, focal.names=names, purify=TRUE,
-   nrIter=5)
+ difGenLogistic(Verbal, group = 25, focal.names = names, purify = TRUE)
+ difGenLogistic(Verbal, group = 25, focal.names = names, purify = TRUE,
+   nrIter = 5)
+
+ # With items 1 to 5 set as anchor items
+ difGenLogistic(Verbal, group = 25, focal.name = names, anchor = 1:5)
 
  # Testing for nonuniform DIF effect
- difGenLogistic(Verbal, group=25, focal.names=names, type="nudif")
+ difGenLogistic(Verbal, group = 25, focal.names = names, type = "nudif")
 
  # Testing for uniform DIF effect
- difGenLogistic(Verbal, group=25, focal.names=names, type="udif")
+ difGenLogistic(Verbal, group = 25, focal.names = names, type = "udif")
+
+ # User anger trait score as matching criterion
+ anger <- verbal[,25]
+ difGenLogistic(Verbal, group = 25, focal.names = names, match = anger)
 
  # Saving the output into the "GLresults.txt" file (and default path)
- r <- difGenLogistic(Verbal, group=25, focal.name=names, 
+ r <- difGenLogistic(Verbal, group = 25, focal.name = names, 
                 save.output = TRUE, output = c("GLresults","default"))
 
  # Graphical devices
  plot(r)
- plot(r, plot="itemCurve", item=1)
- plot(r, plot="itemCurve", item=1, itemFit="best")
- plot(r, plot="itemCurve", item=6)
- plot(r, plot="itemCurve", item=6, itemFit="best")
+ plot(r, plot = "itemCurve", item = 1)
+ plot(r, plot = "itemCurve", item = 1, itemFit = "best")
+ plot(r, plot = "itemCurve", item = 6)
+ plot(r, plot = "itemCurve", item = 6, itemFit = "best")
 
  # Plotting results and saving it in a PDF figure
  plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))

@@ -10,16 +10,16 @@
  }
 
 \usage{
-difGenLord(Data, group, focal.names, model, c=NULL, engine="ltm", 
-  	discr=1, irtParam=NULL, nrFocal=2, same.scale=TRUE,
-  	alpha=0.05, purify=FALSE, nrIter=10, save.output=FALSE, 
-  	output=c("out","default")) 
+difGenLord(Data, group, focal.names, model, c = NULL, engine = "ltm", 
+ 	discr = 1, irtParam = NULL, nrFocal = 2, same.scale = TRUE, anchor = NULL,
+ 	alpha = 0.05, purify = FALSE, nrIter = 10, save.output = FALSE, 
+  	output = c("out", "default")) 
 \method{print}{GenLord}(x, ...)
 \method{plot}{GenLord}(x, plot = "lordStat", item = 1, pch = 8,
   	number = TRUE, col = "red", colIC = rep("black",
   	length(x$focal.names)+1), ltyIC = 1:(length(x$focal.names)
-  	+ 1), save.plot=FALSE, save.options=c("plot","default","pdf"),
-      ref.name=NULL, ...)
+  	+ 1), save.plot = FALSE, save.options = c("plot", "default", "pdf"),
+      ref.name = NULL, ...)
  }
 
 \arguments{
@@ -34,6 +34,7 @@ difGenLord(Data, group, focal.names, model, c=NULL, engine="ltm",
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{nrFocal}{numeric: the number of focal groups (default is 2).}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is \code{TRUE}). See \bold{Details}.}
+\item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
@@ -46,8 +47,7 @@ difGenLord(Data, group, focal.names, model, c=NULL, engine="ltm",
  \item{number}{logical: should the item number identification be printed (default is \code{TRUE}).}
  \item{colIC, ltyIC}{vectors of elements of the usual \code{col} and \code{lty} arguments for ICC curves. Used only when \code{plot="itemCurve"}.}
  \item{save.plot}{logical: should the plot be saved into a separate file? (default is \code{FALSE}).}
- \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value),
-                     and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
+ \item{save.options}{character: a vector of three components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value), and the third component is the file extension, either \code{"pdf"} (default) or \code{"jpeg"}. See \bold{Details}.}
  \item{ref.name}{either \code{NULL}(default) or a character string for the name of the reference group (to be used instead of "Reference" in the legend). Ignored if \code{plot} is \code{"lordStat"}.}
  \item{...}{other generic parameters for the \code{plot} or the \code{print} functions.}
  }
@@ -70,12 +70,12 @@ A list of class "GenLord" with the following arguments:
   \item{c}{The value of the \code{c} argument.}
   \item{engine}{The value of the \code{engine} argument.}
   \item{discr}{the value of the \code{discr} argument.}
-  \item{itemParInit}{the matrix of initial parameter estimates, with the same format as \code{irtParam} either provided by the user (through \code{irtParam}) or estimated from the data
-   (and displayed after rescaling).}
+  \item{itemParInit}{the matrix of initial parameter estimates, with the same format as \code{irtParam} either provided by the user (through \code{irtParam}) or estimated from the data (and displayed after rescaling).}
   \item{itemParFinal}{the matrix of final parameter estimates, with the same format as \code{irtParam}, obtained after item purification. Returned 
    only if \code{purify} is \code{TRUE}.}
   \item{estPar}{a logical value indicating whether the item parameters were estimated (\code{TRUE}) or provided by the user (\code{FALSE}).}
   \item{names}{the names of the items.}
+ \item{anchor.names}{the value of the \code{anchor} argument.}
   \item{focal.names}{the value of the \code{focal.names} argument.}
   \item{save.output}{the value of the \code{save.output} argument.}
   \item{output}{the value of the \code{output} argument.}
@@ -129,6 +129,8 @@ A list of class "GenLord" with the following arguments:
  are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
  See Candell and Drasgow (1988) for further details.
 
+A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to rescale the item parameters on a common metric. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified. If item parameters are provided thorugh the \code{irtParam} argument and if they are on the same scale (i.e. if \code{same.scale} is \code{TRUE}), then anchor items are not used (even if they are specified).
+
  The output of the \code{difGenLord}, as displayed by the \code{print.GenLord} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
  (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
  of the \code{output} argument (default name is \code{"out"}), and the path for saving the text file can be given through the second component of \code{output}. The
@@ -150,7 +152,6 @@ A list of class "GenLord" with the following arguments:
  the components of \code{save.options}. The first two components perform similarly as those of the \code{output} argument. The third component is the figure format, with 
  allowed values \code{"pdf"} (default) for PDF file and \code{"jpeg"} for JPEG file.
 }
-
 
 
 \references{
@@ -181,7 +182,7 @@ A list of class "GenLord" with the following arguments:
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -198,38 +199,39 @@ A list of class "GenLord" with the following arguments:
 
  # Creating four groups according to gender ("Man" or "Woman") and trait
  # anger score ("Low" or "High")
- group<-rep("WomanLow",nrow(verbal))
- group[Anger>20 & Gender==0]<-"WomanHigh"
- group[Anger<=20 & Gender==1]<-"ManLow"
- group[Anger>20 & Gender==1]<-"ManHigh"
+ group <- rep("WomanLow",nrow(verbal))
+ group[Anger>20 & Gender==0] <- "WomanHigh"
+ group[Anger<=20 & Gender==1] <- "ManLow"
+ group[Anger>20 & Gender==1] <- "ManHigh"
 
  # New data set
- Verbal<-cbind(verbal[,1:24],group)
+ Verbal <- cbind(verbal[,1:24], group)
 
  # Reference group: "WomanLow"
- names<-c("WomanHigh","ManLow","ManHigh")
+ names <- c("WomanHigh", "ManLow", "ManHigh")
 
  # Three equivalent settings of the data matrix and the group membership
  # 1PL model, "ltm" engine 
- r <- difGenLord(Verbal, group=25, focal.names=names, model="1PL")
- difGenLord(Verbal, group="group", focal.name=names, model="1PL")
- difGenLord(Verbal[,1:24], group=Verbal[,25], focal.names=names,
- model="1PL")
+ r <- difGenLord(Verbal, group = 25, focal.names = names, model = "1PL")
+ difGenLord(Verbal, group = "group", focal.name = names, model = "1PL")
+ difGenLord(Verbal[,1:24], group = Verbal[,25], focal.names = names, model = "1PL")
 
  # 1PL model, "ltm" engine, estimated common discrimination 
- r <- difGenLord(Verbal, group=25, focal.names=names, discr=NULL)
+ r <- difGenLord(Verbal, group = 25, focal.names = names, discr = NULL)
 
  # 1PL model, "lme4" engine 
- difGenLord(Verbal, group="group", focal.name=names, model="1PL",
- engine="lme4")
+ difGenLord(Verbal, group = "group", focal.name = names, model = "1PL", engine = "lme4")
+
+ # With items 1 to 5 set as anchor items
+ difGenLord(Verbal, group = 25, focal.names = names, model = "1PL", anchor = 1:5)
+
 
  # With item purification
- difGenLord(Verbal, group=25, focal.names=names, model="1PL", 
-    purify=TRUE)
+ difGenLord(Verbal, group = 25, focal.names = names, model = "1PL", purify = TRUE)
 
  # Saving the output into the "GLresults.txt" file (and default path)
- r <- difGenLord(Verbal, group=25, focal.names=names, model="1PL", 
-         save.output = TRUE, output = c("GLresults","default"))
+ r <- difGenLord(Verbal, group = 25, focal.names = names, model = "1PL", 
+         save.output = TRUE, output = c("GLresults", "default"))
 
  # Splitting the data into the four subsets according to "group"
  data0<-data1<-data2<-data3<-NULL
@@ -241,10 +243,10 @@ A list of class "GenLord" with the following arguments:
   }
 
  # Estimation of the item parameters (1PL model)
- m0.1PL<-itemParEst(data0, model="1PL")
- m1.1PL<-itemParEst(data1, model="1PL")
- m2.1PL<-itemParEst(data2, model="1PL")
- m3.1PL<-itemParEst(data3, model="1PL")
+ m0.1PL<-itemParEst(data0, model = "1PL")
+ m1.1PL<-itemParEst(data1, model = "1PL")
+ m2.1PL<-itemParEst(data2, model = "1PL")
+ m3.1PL<-itemParEst(data3, model = "1PL")
 
  # Merging the item parameters WITHOUT rescaling
  irt.noscale<-rbind(m0.1PL,m1.1PL,m2.1PL,m3.1PL)
@@ -256,18 +258,17 @@ A list of class "GenLord" with the following arguments:
  rownames(irt.scale)<-rep(colnames(verbal[,1:24]),4)
 
  # Equivalent calculations
- difGenLord(irtParam=irt.noscale, nrFocal=3, same.scale=FALSE)
- difGenLord(irtParam=irt.scale, nrFocal=3, same.scale=TRUE)
+ difGenLord(irtParam = irt.noscale, nrFocal = 3, same.scale = FALSE)
+ difGenLord(irtParam = irt.scale, nrFocal = 3, same.scale = TRUE)
 
  # With item purification
- difGenLord(irtParam=irt.noscale, nrFocal=3, same.scale=FALSE, 
-   purify=TRUE)
+ difGenLord(irtParam = irt.noscale, nrFocal = 3, same.scale = FALSE, purify = TRUE)
 
  # Graphical devices
  plot(r)
- plot(r, plot="itemCurve", item=1)
- plot(r, plot="itemCurve", item=6)
- plot(r, plot="itemCurve", item=6, ref.name="WomanHigh")
+ plot(r, plot = "itemCurve", item = 1)
+ plot(r, plot = "itemCurve", item = 6)
+ plot(r, plot = "itemCurve", item = 6, ref.name = "WomanHigh")
 
  # Plotting results and saving it in a PDF figure
  plot(r, save.plot = TRUE, save.options = c("plot", "default", "pdf"))

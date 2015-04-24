@@ -7,7 +7,7 @@
  Rescale the item parameters from one data set to the scale of the parameters from another data set, using equal means anchoring.}
 
 \usage{
-itemRescale(mR, mF, items=1:nrow(mR))
+itemRescale(mR, mF, items = 1:nrow(mR))
  }
 
 \arguments{
@@ -54,7 +54,7 @@ itemRescale(mR, mF, items=1:nrow(mR))
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -72,25 +72,24 @@ itemRescale(mR, mF, items=1:nrow(mR))
  attach(verbal)
 
  # Splitting the data set into reference and focal groups
- nF<-sum(Gender)
- nR<-nrow(verbal)-nF
- data.ref<-verbal[,1:24][order(Gender),][1:nR,]
- data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
+ nF <- sum(Gender)
+ nR <- nrow(verbal)-nF
+ data.ref <- verbal[,1:24][order(Gender),][1:nR,]
+ data.focal <- verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
 
  # Estimating item parameters in each data set with 1PL model
- mR<-itemPar1PL(data.ref)
- mF<-itemPar1PL(data.focal)
+ mR <- itemPar1PL(data.ref)
+ mF <- itemPar1PL(data.focal)
 
  # Rescaling focal group item parameters, using all items for anchoring
  itemRescale(mR, mF)
 
- # Rescaling focal group item parameters, using the first 10 items for
- # anchoring
- itemRescale(mR, mF, items=1:10)
+ # Rescaling focal group item parameters, using the first 10 items for anchoring
+ itemRescale(mR, mF, items = 1:10)
 
  # Estimating item parameters in each data set with 2PL model
- mR<-itemPar2PL(data.ref)
- mF<-itemPar2PL(data.focal)
+ mR <- itemPar2PL(data.ref)
+ mF <- itemPar2PL(data.focal)
 
  # Rescaling focal group item parameters, using all items for anchoring
  itemRescale(mR, mF)

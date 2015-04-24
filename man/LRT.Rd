@@ -58,7 +58,7 @@ A vector with the values of the LRT DIF statistics.
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -74,15 +74,15 @@ A vector with the values of the LRT DIF statistics.
  attach(verbal)
 
  # Excluding the "Anger" variable
- verbal<-verbal[colnames(verbal)!="Anger"]
+ verbal <- verbal[colnames(verbal)!="Anger"]
 
  # Keeping the first 5 items and the first 50 subjects
  # (this is an artificial simplification to reduce the computational time)
  # Sixth column holds the group membership
- verbal<-verbal[1:50,c(1:5,25)]
+ verbal <- verbal[1:50, c(1:5, 25)]
 
  # Likelihood-ratio statistics
- LRT(verbal[,1:5],verbal[,6])
+ LRT(verbal[,1:5], verbal[,6])
  }
  }
 

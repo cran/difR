@@ -8,7 +8,7 @@
 }
 
 \usage{
-genMantelHaenszel(data, member, anchor=1:ncol(data))
+genMantelHaenszel(data, member, anchor = 1:ncol(data))
 }
 
 \arguments{
@@ -59,7 +59,7 @@ A vector with the values of the generalized Mantel-Haenszel DIF statistics.
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -77,16 +77,16 @@ A vector with the values of the generalized Mantel-Haenszel DIF statistics.
  # Creating four groups according to gender (0 or 1) and trait anger
  # score ("Low" or "High")
  # Reference group: women with low trait anger score (<=20)
- group<-rep(0,nrow(verbal))
- group[Anger>20 & Gender==0]<-1
- group[Anger<=20 & Gender==1]<-2
- group[Anger>20 & Gender==1]<-3
+ group <- rep(0, nrow(verbal))
+ group[Anger>20 & Gender==0] <- 1
+ group[Anger<=20 & Gender==1] <- 2
+ group[Anger>20 & Gender==1] <- 3
 
  # Without continuity correction
  genMantelHaenszel(verbal[,1:24], group)
 
  # Removing item 6 from the set of anchor items
- genMantelHaenszel(verbal[,1:24], group, anchor=c(1:5,7:24))
+ genMantelHaenszel(verbal[,1:24], group, anchor = c(1:5, 7:24))
  }
  }
 

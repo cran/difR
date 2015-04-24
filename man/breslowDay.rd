@@ -9,7 +9,7 @@
  }
 
 \usage{
-breslowDay(data, member, anchor=1:ncol(data), BDstat="BD")
+breslowDay(data, member, anchor = 1:ncol(data), BDstat = "BD")
  }
 
 \arguments{
@@ -73,7 +73,7 @@ Educational Research, 49}, 231-243.
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 \seealso{
@@ -94,7 +94,7 @@ Educational Research, 49}, 231-243.
  breslowDay(verbal[,1:24], verbal[,26], BDstat = "trend")
 
  # Removing item 3 from the set of anchor items
- breslowDay(verbal[,1:24], verbal[,26], anchor=c(1:5,7:24))
+ breslowDay(verbal[,1:24], verbal[,26], anchor = c(1:5, 7:24))
 }
 }
 

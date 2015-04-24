@@ -10,18 +10,19 @@
  }
 
 \usage{
-difBD(Data, group, focal.name, BDstat="BD", alpha=0.05,
-  	purify=FALSE, nrIter=10, save.output=FALSE, 
-  	output=c("out","default"))
+difBD(Data, group, focal.name, anchor = NULL, BDstat = "BD", alpha = 0.05,
+  	purify = FALSE, nrIter = 10, save.output = FALSE, 
+  	output = c("out", "default"))
 \method{print}{BD}(x, ...)
-\method{plot}{BD}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
-  	save.options=c("plot","default","pdf"), ...)
+\method{plot}{BD}(x, pch = 8, number = TRUE, col = "red", save.plot = FALSE, 
+  	save.options = c("plot", "default", "pdf"), ...)
  }
 
 \arguments{
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{Data}) of group membership. See \bold{Details}.}
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
+\item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. See \bold{Details}.}
  \item{BDstat}{character specifying the DIF statistic to be used. Possible values are \code{"BD"} (default) and \code{"trend"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is \code{FALSE}).}
@@ -54,6 +55,7 @@ A list of class "BD" with the following arguments:
   \item{convergence}{logical indicating whether the iterative item purification process stopped before the maximal number \code{nrIter} of allowed iterations. 
    Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
+ \item{anchor.names}{the value of the \code{anchor} argument.}
   \item{save.output}{the value of the \code{save.output} argument.}
   \item{output}{the value of the \code{output} argument.}
  }
@@ -83,6 +85,8 @@ A list of class "BD" with the following arguments:
  differently at the first step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor,
  1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
+
+A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified.
 
  The output of the \code{difBD}, as displayed by the \code{print.BD} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
  (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
@@ -128,7 +132,7 @@ A list of class "BD" with the following arguments:
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 \seealso{
@@ -142,22 +146,26 @@ A list of class "BD" with the following arguments:
  data(verbal)
 
  # Excluding the "Anger" variable
- verbal<-verbal[colnames(verbal)!="Anger"]
+ verbal<-verbal[colnames(verbal) != "Anger"]
 
  # Three equivalent settings of the data matrix and the group membership
- difBD(verbal, group=25, focal.name=1)
- difBD(verbal, group="Gender", focal.name=1)
- difBD(verbal[,1:24], group=verbal[,25], focal.name=1)
+ difBD(verbal, group = 25, focal.name = 1)
+ difBD(verbal, group = "Gender", focal.name = 1)
+ difBD(verbal[,1:24], group = verbal[,25], focal.name = 1)
 
  # With the BD trend test statistic
- difBD(verbal, group=25, focal.name=1, BDstat="trend")
+ difBD(verbal, group = 25, focal.name = 1, BDstat = "trend")
 
  # With item purification  
- difBD(verbal, group="Gender", focal.name=1, purify=TRUE)
- difBD(verbal, group="Gender", focal.name=1, purify=TRUE, nrIter=5)
+ difBD(verbal, group = "Gender", focal.name = 1, purify = TRUE)
+ difBD(verbal, group = "Gender", focal.name = 1, purify = TRUE, nrIter = 5)
+
+ # With items 1 to 5 set as anchor items
+ difBD(verbal, group = "Gender", focal.name = 1, anchor = 1:5)
+ difBD(verbal, group = "Gender", focal.name = 1, anchor = 1:5, purify = TRUE)
 
  # Saving the output into the "BDresults.txt" file (and default path)
- r <- difBD(verbal, group=25, focal.name=1, save.output = TRUE, 
+ r <- difBD(verbal, group = 25, focal.name = 1, save.output = TRUE, 
             output = c("BDresults","default"))
 
  # Graphical devices

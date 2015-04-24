@@ -1,9 +1,8 @@
 # DIF: COMPARING DIF STATISTICS
 
-
-
-dichoDif<-function(Data,group,focal.name,method,props=NULL,thrTID=1.5,alpha=0.05,MHstat="MHChisq",correct=TRUE,exact=FALSE,stdWeight="focal",thrSTD=0.1,BDstat="BD",type="both",
-criterion="LRT",model="2PL",c=NULL,engine="ltm",discr=1,irtParam=NULL,same.scale=TRUE,signed=FALSE,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
+dichoDif<-function(Data,group,focal.name,method,anchor=NULL,props=NULL,thrTID=1.5,alpha=0.05,MHstat="MHChisq",correct=TRUE,exact=FALSE,stdWeight="focal",thrSTD=0.1,BDstat="BD",
+member.type="group", match="score",type="both",criterion="LRT",model="2PL",c=NULL,engine="ltm",discr=1,irtParam=NULL,same.scale=TRUE,signed=FALSE,purify=FALSE,
+nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
 internalDicho<-function(){
 mets<-c("TID","MH","Std","Logistic","BD","Lord","Raju","LRT")
@@ -18,20 +17,21 @@ class(RES)<-"dichoDif"
 return(RES)
 }
 else{
-if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,props=props,thrTID=thrTID,alpha=alpha,MHstat=MHstat,
-correct=correct,exact=exact,stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,
+if (length(method)==1) return(selectDif(Data=Data,group=group,focal.name=focal.name,method=method,anchor=anchor,props=props,thrTID=thrTID,alpha=alpha,MHstat=MHstat,
+correct=correct,exact=exact,stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,member.type=member.type, match=match,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,
 same.scale=same.scale,signed=signed,purify=purify,nrIter=nrIter, save.output=save.output,output=output))
 else{
-mat<-iters<-conv<-NULL
+mat<-iters<-conv<-anchor.names<-NULL
 for (met in 1:length(method)){
-prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],props=props,thrTID=thrTID,alpha=alpha,MHstat=MHstat,correct=correct,exact=exact,
-stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,same.scale=same.scale,
+prov<-selectDif(Data=Data,group=group,focal.name=focal.name,method=method[met],anchor=anchor,props=props,thrTID=thrTID,alpha=alpha,MHstat=MHstat,correct=correct,exact=exact,
+stdWeight=stdWeight,thrSTD=thrSTD,BDstat=BDstat,member.type=member.type, match=match,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,same.scale=same.scale,
 signed=signed,purify=purify,nrIter=nrIter)
+if (method[met]!="LRT") anchor.names<-prov$anchor.names
 if (method[met]=="BD") mat<-cbind(mat,rep("NoDIF",nrow(prov[[1]])))
 else mat<-cbind(mat,rep("NoDIF",length(prov[[1]])))
-if (is.character(prov$DIFitems)==FALSE) mat[prov$DIFitems,met]<-"DIF"
+if (!is.character(prov$DIFitems)) mat[prov$DIFitems,met]<-"DIF"
 rname<-prov$names
-if (purify==TRUE){
+if (purify){
 iters<-c(iters,prov$nrPur)
 conv<-c(conv,prov$convergence)
 } 
@@ -41,21 +41,21 @@ method2[method=="TID"]<-"T.I.D."
 method2[method=="MH"]<-"M-H"
 method2[method=="Std"]<-"Stand."
 colnames(mat)<-method2
-if (is.null(rname)==FALSE) rownames(mat)<-rname
+if (!is.null(rname)) rownames(mat)<-rname
 else{
 rname<-NULL
 for (i in 1:nrow(mat)) rname<-c(rname,paste("Item",i,sep=""))
 rownames(mat)<-rname
 }
 RES<-list(DIF=mat,props=props,thrTID=thrTID,correct=correct,exact=exact,alpha=alpha,MHstat=MHstat,stdWeight=stdWeight,thrSTD=thrSTD,
-BDstat=BDstat,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,same.scale=same.scale,
-signed=signed,purification=purify,nrPur=iters,convergence=conv, save.output=save.output,output=output)
+BDstat=BDstat,member.type=member.type, match=match,type=type,criterion=criterion,model=model,c=c,engine=engine,discr=discr,irtParam=irtParam,same.scale=same.scale,
+signed=signed,purification=purify,nrPur=iters,convergence=conv, anchor.names=anchor.names,save.output=save.output,output=output)
 class(RES)<-"dichoDif"
 return(RES)}
 }
 }
 resToReturn<-internalDicho()
-if (save.output==TRUE){
+if (save.output){
 if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
 else wd<-output[2]
 fileName<-paste(wd,output[1],".txt",sep="")
@@ -70,7 +70,7 @@ return(resToReturn)
 print.dichoDif<-function (x, ...) 
 {
     res <- x
-    if (is.null(res[[1]]) == TRUE) 
+    if (is.null(res[[1]])) 
         cat("Error: '", res[[2]], "' is not a correct method!", 
             "\n", "\n", sep = "")
     else {
@@ -89,6 +89,27 @@ print.dichoDif<-function (x, ...)
         cat("Methods used:", "\n")
         for (i in 1:length(methods2)) cat(" ",methods2[i],"\n",sep="")     
         cat("\n")
+if (is.null(res$anchor.names)) {
+itk<-1:nrow(res$DIF)
+cat("No set of anchor items was provided", "\n", "\n")
+}
+else {
+if (is.numeric(res$anchor.names)) {
+itk<-res$anchor.names
+itk.names<-rownames(res$DIF)[itk]
+}
+else{
+itk<-NULL
+for (tt in 1:length(res$anchor.names)) itk[tt]<-(1:nrow(res$DIF))[rownames(res$DIF)==res$anchor.names[tt]]
+itk.names<-res$anchor.names
+}
+cat("Anchor items (provided by the user):", "\n")
+mm <- cbind(itk.names)
+rownames(mm) <- rep("", nrow(mm))
+colnames(mm) <- ""
+print(mm, quote = FALSE)
+cat("\n", "\n")
+}
         cat("Parameters:", "\n")
         cat(" Significance level: ", res$alpha, "\n", sep = "")
         if (sum(methods == "T.I.D.") == 1) 
@@ -143,7 +164,7 @@ print.dichoDif<-function (x, ...)
                 else cat(" Common discrimination parameter: fixed to ", 
                   res$discr, "\n", sep = "")
             }
-            if (is.null(res$c) == FALSE) {
+            if (!is.null(res$c)) {
                 if (length(res$c) == 1) 
                   cat(" Common pseudo-guessing value: ", res$c, 
                     "\n", sep = "")
@@ -161,11 +182,11 @@ print.dichoDif<-function (x, ...)
             if (res$signed) cat(" Type of Raju's Z statistic: signed area", "\n")
             else cat(" Type of Raju's Z statistic: unsigned area", "\n")
 }
-        if (res$purification == TRUE) {
+        if (res$purification & is.null(res$anchor.names)) {
             cat(" Item purification: Yes", "\n", "\n")
             cat(" Item purification results:", "\n", "\n")
             co <- rep("Yes", length(res$convergence))
-            co[res$convergence == FALSE] <- "No"
+            co[!res$convergence] <- "No"
             resConv <- data.frame(rbind(co, res$nrPur))
             colnames(resConv) <- colnames(res$DIF)
             rownames(resConv) <- c("Convergence", "Iterations")
@@ -181,7 +202,7 @@ print.dichoDif<-function (x, ...)
         colnames(MAT)[ncol(MAT)] <- "#DIF"
         print(format(MAT, justify = "centre"), quote = FALSE)
     }
-    if (x$save.output == FALSE) 
+    if (!x$save.output) 
         cat("\n", "Output was not captured!", "\n")
     else {
         if (x$output[2] == "default") 

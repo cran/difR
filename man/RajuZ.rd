@@ -8,7 +8,7 @@
  }
 
 \usage{
-RajuZ(mR, mF, signed=FALSE)
+RajuZ(mR, mF, signed = FALSE)
  }
 
 \arguments{
@@ -64,7 +64,7 @@ RajuZ(mR, mF, signed=FALSE)
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -80,36 +80,36 @@ RajuZ(mR, mF, signed=FALSE)
  attach(verbal)
 
  # Splitting the data into reference and focal groups
- nF<-sum(Gender)
- nR<-nrow(verbal)-nF
- data.ref<-verbal[,1:24][order(Gender),][1:nR,]
- data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
+ nF <- sum(Gender)
+ nR <- nrow(verbal)-nF
+ data.ref <- verbal[,1:24][order(Gender),][1:nR,]
+ data.focal <- verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
 
  # Pre-estimation of the item parameters (1PL model)
- mR<-itemParEst(data.ref,model="1PL")
- mF<-itemParEst(data.focal,model="1PL")
- mF<-itemRescale(mR, mF)
+ mR <- itemParEst(data.ref,model = "1PL")
+ mF <- itemParEst(data.focal,model = "1PL")
+ mF <- itemRescale(mR, mF)
 
  # Signed and unsigned Raju statistics
  RajuZ(mR, mF)
- RajuZ(mR, mF, signed=TRUE)
+ RajuZ(mR, mF, signed = TRUE)
 
  # Pre-estimation of the item parameters (2PL model)
- mR<-itemParEst(data.ref,model="2PL")
- mF<-itemParEst(data.focal,model="2PL")
- mF<-itemRescale(mR, mF)
+ mR <- itemParEst(data.ref, model = "2PL")
+ mF <- itemParEst(data.focal, model = "2PL")
+ mF <- itemRescale(mR, mF)
 
  # Signed and unsigned Raju statistics
  RajuZ(mR, mF)
- RajuZ(mR, mF, signed=TRUE)
+ RajuZ(mR, mF, signed = TRUE)
  
  # Pre-estimation of the item parameters (constrained 3PL model)
- mR<-itemParEst(data.ref,model="3PL",c=0.05)
- mF<-itemParEst(data.focal,model="3PL",c=0.05)
- mF<-itemRescale(mR, mF)
+ mR <- itemParEst(data.ref, model = "3PL", c = 0.05)
+ mF <- itemParEst(data.focal, model = "3PL", c =0 .05)
+ mF <- itemRescale(mR, mF)
  
  # Signed and unsigned Raju statistics
  RajuZ(mR, mF)
- RajuZ(mR, mF, signed=TRUE)
+ RajuZ(mR, mF, signed = TRUE)
  }
  }

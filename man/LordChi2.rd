@@ -32,7 +32,7 @@ LordChi2(mR, mF)
 
 \note{
  WARNING: the previous versions of \code{LordChi2} were holding an error: under the 3PL model, the covariance matrices \eqn{Sig_1} and \eqn{Sig_2} were wrongly 
- computed as the variance of the pseudo-guessing parameters were replaced by the parameter estimates. This has been fixed from since version 4.0 of \code{difR}.
+ computed as the variance of the pseudo-guessing parameters were replaced by the parameter estimates. This has been fixed from version 4.0 of \code{difR}.
  Many thanks to J. Patrick Meyer (Curry School of Education, University of Virginia) for having discovered this mistake.
 }
 
@@ -57,7 +57,7 @@ LordChi2(mR, mF)
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -73,27 +73,27 @@ LordChi2(mR, mF)
  attach(verbal)
 
  # Splitting the data into reference and focal groups
- nF<-sum(Gender)
- nR<-nrow(verbal)-nF
- data.ref<-verbal[,1:24][order(Gender),][1:nR,]
- data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
+ nF <- sum(Gender)
+ nR <- nrow(verbal)-nF
+ data.ref <- verbal[, 1:24][order(Gender),][1:nR,]
+ data.focal <- verbal[, 1:24][order(Gender),][(nR+1):(nR+nF),]
 
  # Pre-estimation of the item parameters (1PL model)
- mR<-itemParEst(data.ref,model="1PL")
- mF<-itemParEst(data.focal,model="1PL")
- mF<-itemRescale(mR, mF)
+ mR <- itemParEst(data.ref, model = "1PL")
+ mF <- itemParEst(data.focal, model = "1PL")
+ mF <- itemRescale(mR, mF)
  LordChi2(mR, mF)
 
  # Pre-estimation of the item parameters (2PL model)
- mR<-itemParEst(data.ref,model="2PL")
- mF<-itemParEst(data.focal,model="2PL")
- mF<-itemRescale(mR, mF)
+ mR <- itemParEst(data.ref, model = "2PL")
+ mF <- itemParEst(data.focal, model = "2PL")
+ mF <- itemRescale(mR, mF)
  LordChi2(mR, mF)
 
  # Pre-estimation of the item parameters (constrained 3PL model)
- mR<-itemParEst(data.ref,model="3PL",c=0.05)
- mF<-itemParEst(data.focal,model="3PL",c=0.05)
- mF<-itemRescale(mR, mF)
+ mR <- itemParEst(data.ref, model = "3PL", c = 0.05)
+ mF <- itemParEst(data.focal, model = "3PL", c = 0.05)
+ mF <- itemRescale(mR, mF)
  LordChi2(mR, mF)
  }
  }

@@ -63,7 +63,7 @@ itemPar3PLconst(data, c=rep(0,ncol(data)))
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
    
@@ -80,10 +80,10 @@ itemPar3PLconst(data, c=rep(0,ncol(data)))
  data(verbal)
 
  # Constraining all pseudo-guessing parameters to be equal to 0.05
- itemPar3PLconst(verbal[,1:24], c=0.05)
+ itemPar3PLconst(verbal[,1:24], c = 0.05)
 
  # Constraining pseudo-guessing values to  0.1 for the first 10 items,
  # and to 0.05 for the remaining ones
- itemPar3PLconst(verbal[,1:24], c=c(rep(0.1,10),rep(0.05,14)))
+ itemPar3PLconst(verbal[,1:24], c = c(rep(0.1, 10), rep(0.05, 14)))
  }
  }

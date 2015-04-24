@@ -2,7 +2,7 @@ difLRT<-function(Data, group, focal.name, alpha=0.05, purify=FALSE, nrIter=10,sa
 {
 internalLRT<-function(){
      if (length(group) == 1) {
-           if (is.numeric(group)==TRUE) {
+           if (is.numeric(group)) {
               gr <- Data[, group]
               DATA <- Data[,(1:ncol(Data))!= group]
               colnames(DATA) <- colnames(Data)[(1:ncol(Data))!= group]
@@ -19,7 +19,7 @@ internalLRT<-function(){
     }
     Group <- rep(0, nrow(DATA))
     Group[gr == focal.name] <- 1
-if (purify==FALSE) {
+if (!purify) {
 STATS<-LRT(DATA,Group)
 if (max(STATS)<=qchisq(1-alpha,1)) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:ncol(DATA))[STATS>qchisq(1-alpha,1)]
@@ -66,7 +66,7 @@ class(RES)<-"LRT"
 return(RES)
 }
 resToReturn<-internalLRT()
-if (save.output==TRUE){
+if (save.output){
 if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
 else wd<-output[2]
 fileName<-paste(wd,output[1],".txt",sep="")
@@ -82,23 +82,23 @@ plot.LRT<-function(x,pch=8,number=TRUE,col="red",  save.plot=FALSE,save.options=
 {
 internalLRT<-function(){
 res <- x
-if (number==FALSE) {
+if (!number) {
 plot(res$LRT,xlab="Item",ylab="Likelihood Ratio statistic",ylim=c(0,max(c(res$LRT,res$thr)+1)),pch=pch,main="Likelihood Ratio Test")
 points(res$DIFitems,res$MH[res$DIFitems],pch=pch,col=col)
 }
 else {
 plot(res$LRT,xlab="Item",ylab="Likelihood Ratio statistic",ylim=c(0,max(c(res$LRT,res$thr)+1)),col="white",main="Likelihood Ratio Test")
 text(1:length(res$LRT),res$LRT,1:length(res$LRT))
-if (is.character(res$DIFitems)==FALSE) text(res$DIFitems,res$LRT[res$DIFitems],res$DIFitems,col=col)
+if (!is.character(res$DIFitems)) text(res$DIFitems,res$LRT[res$DIFitems],res$DIFitems,col=col)
 }
 abline(h=res$thr)
 }
 internalLRT()
-if (save.plot==TRUE){
+if (save.plot){
 plotype<-NULL
 if (save.options[3]=="pdf") plotype<-1
 if (save.options[3]=="jpeg") plotype<-2
-if (is.null(plotype)==TRUE) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
+if (is.null(plotype)) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
 else {
 if (save.options[2]=="default") wd<-paste(getwd(),"/",sep="")
 else wd<-save.options[2]
@@ -129,13 +129,13 @@ print.LRT<-function(x, ...){
 res <- x
 cat("\n")
 cat("Detection of Differential Item Functioning using Likelihood Ratio Test","\n")
-if (res$purification==TRUE) pur<-"with "
+if (res$purification) pur<-"with "
 else pur<-"without "
 cat(pur, "item purification","\n","\n",sep="")
-if (res$purification==TRUE){
+if (res$purification){
 if (res$nrPur<=1) word<-" iteration"
 else word<-" iterations"
-if (res$convergence==FALSE) {
+if (!res$convergence) {
 cat("WARNING: no item purification convergence after ",res$nrPur,word,"\n",sep="")
 cat("WARNING: following results based on the last iteration of the purification","\n","\n")
 }
@@ -146,7 +146,7 @@ pval<-round(1-pchisq(res$LRT,1),4)
 symb<-symnum(pval,c(0,0.001,0.01,0.05,0.1,1),symbols=c("***","**","*",".",""))
 m1<-cbind(round(res$LRT,4),pval)
 m1<-noquote(cbind(format(m1,justify="right"),symb))
-if (is.null(res$names)==FALSE) rownames(m1)<-res$names
+if (!is.null(res$names)) rownames(m1)<-res$names
 else{
 rn<-NULL
 for (i in 1:nrow(m1)) rn[i]<-paste("Item",i,sep="")
@@ -166,7 +166,7 @@ colnames(m2)<-""
 print(m2,quote=FALSE)
 cat("\n")
 }
-    if (x$save.output==FALSE) cat("Output was not captured!","\n")
+    if (!x$save.output) cat("Output was not captured!","\n")
     else {
 if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
 else wd<-x$output[2]

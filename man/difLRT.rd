@@ -10,11 +10,11 @@
 }
 
 \usage{
-difLRT(Data, group, focal.name, alpha=0.05, purify=FALSE, 
-  	nrIter=10, save.output=FALSE, output=c("out","default")) 
+difLRT(Data, group, focal.name, alpha = 0.05, purify = FALSE, nrIter = 10, 
+ 	save.output = FALSE, output = c("out", "default")) 
 \method{print}{LRT}(x, ...)
-\method{plot}{LRT}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
-  	save.options=c("plot","default","pdf"), ...)
+\method{plot}{LRT}(x, pch = 8, number = TRUE, col = "red", save.plot = FALSE, 
+ 	save.options = c("plot", "default", "pdf"), ...)
 
 }
 
@@ -123,7 +123,7 @@ A list of class "LRT" with the following arguments:
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -139,23 +139,23 @@ A list of class "LRT" with the following arguments:
  attach(verbal)
 
  # Excluding the "Anger" variable
- verbal<-verbal[colnames(verbal)!="Anger"]
+ verbal <- verbal[colnames(verbal)!="Anger"]
 
  # Keeping the first 5 items and the first 50 subjects
  # (this is an artificial simplification to reduce the computational time)
- verbal<-verbal[1:50,c(1:5,25)]
+ verbal < -verbal[1:50, c(1:5, 25)]
 
  # Three equivalent settings of the data matrix and the group membership
- r <- difLRT(verbal, group=6, focal.name=1)
- difLRT(verbal, group="Gender", focal.name=1)
- difLRT(verbal[,1:5], group=verbal[,6], focal.name=1)
+ r <- difLRT(verbal, group = 6, focal.name = 1)
+ difLRT(verbal, group = "Gender", focal.name = 1)
+ difLRT(verbal[,1:5], group = verbal[,6], focal.name = 1)
 
  # With item purification
- difLRT(verbal, group=6, focal.name=1, purify=TRUE)
+ difLRT(verbal, group = 6, focal.name = 1, purify = TRUE)
 
  # Saving the output into the "LRTresults.txt" file (and default path)
- r <- difLRT(verbal, group=6, focal.name=1, save.output = TRUE, 
-            output = c("LRTresults","default"))
+ r <- difLRT(verbal, group = 6, focal.name = 1, save.output = TRUE, 
+            output = c("LRTresults", "default"))
 
  # Graphical devices
  plot(r)
@@ -167,7 +167,7 @@ A list of class "LRT" with the following arguments:
  path <- "c:/Program Files/"
  plot(r, save.plot = TRUE, save.options = c("plot", path, "jpeg"))
 
- # WARNING: do not trust the results above since they are based on
- # a selected subset of the verbal data set!
+ # WARNING: do not trust the results above since they are based on a selected 
+ # subset of the verbal data set!
  }
  }

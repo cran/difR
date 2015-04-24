@@ -10,12 +10,13 @@
  }
 
 \usage{
-difRaju(Data, group, focal.name, model, c=NULL, engine="ltm", discr=1, 
-  	irtParam=NULL,  same.scale=TRUE, alpha=0.05, signed=FALSE, purify=FALSE, 
-  	nrIter=10, save.output=FALSE, output=c("out","default"))   	
+difRaju(Data, group, focal.name, model, c = NULL, engine = "ltm", discr = 1, 
+ 	irtParam = NULL,  same.scale = TRUE, anchor = NULL, alpha = 0.05, 
+ 	signed = FALSE, purify = FALSE, nrIter = 10, save.output = FALSE, 
+ 	output = c("out","default"))   	
 \method{print}{Raj}(x, ...)
-\method{plot}{Raj}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
-  	save.options=c("plot","default","pdf"), ...)
+\method{plot}{Raj}(x, pch = 8, number = TRUE, col = "red", save.plot = FALSE, 
+ 	save.options = c("plot","default","pdf"), ...)
  }
 
 \arguments{
@@ -29,6 +30,7 @@ difRaju(Data, group, focal.name, model, c=NULL, engine="ltm", discr=1,
              \code{engine} is \code{"ltm"}. See \bold{Details}.}
  \item{irtParam}{matrix with \emph{2J} rows (where \emph{J} is the number of items) and at most 9 columns containing item parameters estimates. See \bold{Details}.}
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
+\item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{signed}{logical: should the Raju's statistics be computed using the signed (\code{TRUE}) or unsigned (\code{FALSE}, default)
                area? See \bold{Details}.}
@@ -69,6 +71,7 @@ A list of class "Raj" with the following arguments:
    only if \code{purify} is \code{TRUE}.}
   \item{estPar}{a logical value indicating whether the item parameters were estimated (\code{TRUE}) or provided by the user (\code{FALSE}).}
   \item{names}{the names of the items.}
+ \item{anchor.names}{the value of the \code{anchor} argument.}
   \item{save.output}{the value of the \code{save.output} argument.}
   \item{output}{the value of the \code{output} argument.}
 }
@@ -121,6 +124,8 @@ A list of class "Raj" with the following arguments:
  detected as DIF are iteratively removed from the set of items used for equal means anchoring, and the procedure is repeated until either the same items
  are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
  See Candell and Drasgow (1988) for further details.
+
+A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to rescale the item parameters on a common metric. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified. If item parameters are provided thorugh the \code{irtParam} argument and if they are on the same scale (i.e. if \code{same.scale} is \code{TRUE}), then anchor items are not used (even if they are specified).
 
  Under the 1PL model, the displayed output also proposes an effect size measure, which is -2.35 times the difference between item difficulties of the reference group
  and the focal group (Penfield and Camilli, 2007, p. 138). This effect size is similar Mantel-Haenszel's \eqn{\Delta_{MH}} effect size, and the ETS delta scale is used 
@@ -176,7 +181,7 @@ A list of class "Raj" with the following arguments:
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -196,40 +201,43 @@ A list of class "Raj" with the following arguments:
 
  # Three equivalent settings of the data matrix and the group membership
  # (1PL model, "ltm" engine) 
- difRaju(verbal, group=25, focal.name=1, model="1PL")
- difRaju(verbal, group="Gender", focal.name=1, model="1PL")
- difRaju(verbal[,1:24], group=verbal[,25], focal.name=1, model="1PL")
+ difRaju(verbal, group = 25, focal.name = 1, model = "1PL")
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "1PL")
+ difRaju(verbal[,1:24], group = verbal[,25], focal.name = 1, model = "1PL")
 
  # With signed areas
- difRaju(verbal, group=25, focal.name=1, model="1PL", signed=TRUE)
+ difRaju(verbal, group = 25, focal.name = 1, model = "1PL", signed = TRUE)
+
+ # With items 1 to 5 set as anchor items
+ difRaju(verbal, group = 25, focal.name = 1, model = "1PL", anchor = 1:5)
 
  # (1PL model, "lme4" engine) 
- difRaju(verbal, group="Gender", focal.name=1, model="1PL",
- engine="lme4")
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "1PL",
+ engine = "lme4")
 
  # 2PL model, signed and unsigned areas
- difRaju(verbal, group="Gender", focal.name=1, model="2PL")
- difRaju(verbal, group="Gender", focal.name=1, model="2PL", signed=TRUE)
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "2PL")
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "2PL", signed = TRUE)
 
  # 3PL model with all pseudo-guessing parameters constrained to 0.05
  # Signed and unsigned areas
- difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05)
- difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05,
-   signed=TRUE)
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "3PL", c = 0.05)
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "3PL", c = 0.05,
+   signed = TRUE)
  
  # Same models, with item purification
- difRaju(verbal, group="Gender", focal.name=1, model="1PL", purify=TRUE)
- difRaju(verbal, group="Gender", focal.name=1, model="2PL", purify=TRUE)
- difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05,
- purify=TRUE)
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "1PL", purify = TRUE)
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "2PL", purify = TRUE)
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "3PL", c = 0.05,
+ purify = TRUE)
 
  # With signed areas
- difRaju(verbal, group="Gender", focal.name=1, model="1PL", purify=TRUE,
-   signed=TRUE)
- difRaju(verbal, group="Gender", focal.name=1, model="2PL", purify=TRUE,
-   signed=TRUE)
- difRaju(verbal, group="Gender", focal.name=1, model="3PL", c=0.05,
- purify=TRUE, signed=TRUE)
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "1PL", purify = TRUE,
+   signed = TRUE)
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "2PL", purify = TRUE,
+   signed = TRUE)
+ difRaju(verbal, group = "Gender", focal.name = 1, model = "3PL", c = 0.05,
+ purify = TRUE, signed = TRUE)
 
  ## Splitting the data into reference and focal groups
  nF<-sum(Gender)
@@ -238,27 +246,27 @@ A list of class "Raj" with the following arguments:
  data.focal<-verbal[,1:24][order(Gender),][(nR+1):(nR+nF),]
 
  ## Pre-estimation of the item parameters (1PL model, "ltm" engine)
- item.1PL<-rbind(itemParEst(data.ref,model="1PL"),
- itemParEst(data.focal,model="1PL"))
- difRaju(irtParam=item.1PL,same.scale=FALSE)
+ item.1PL<-rbind(itemParEst(data.ref,model = "1PL"),
+ itemParEst(data.focal,model = "1PL"))
+ difRaju(irtParam = item.1PL,same.scale = FALSE)
 
  ## Pre-estimation of the item parameters (1PL model, "lme4" engine)
- item.1PL<-rbind(itemParEst(data.ref, model="1PL", engine="lme4"),
- itemParEst(data.focal, model="1PL", engine="lme4"))
- difRaju(irtParam=item.1PL, same.scale=FALSE)
+ item.1PL<-rbind(itemParEst(data.ref, model = "1PL", engine = "lme4"),
+ itemParEst(data.focal, model = "1PL", engine = "lme4"))
+ difRaju(irtParam = item.1PL, same.scale = FALSE)
 
  ## Pre-estimation of the item parameters (2PL model)
- item.2PL<-rbind(itemParEst(data.ref, model="2PL"),
- itemParEst(data.focal, model="2PL"))
- difRaju(irtParam=item.2PL, same.scale=FALSE)
+ item.2PL<-rbind(itemParEst(data.ref, model = "2PL"),
+ itemParEst(data.focal, model = "2PL"))
+ difRaju(irtParam = item.2PL, same.scale = FALSE)
 
  ## Pre-estimation of the item parameters (constrained 3PL model)
- item.3PL<-rbind(itemParEst(data.ref, model="3PL", c=0.05),
- itemParEst(data.focal, model="3PL", c=0.05))
- difRaju(irtParam=item.3PL, same.scale=FALSE)
+ item.3PL<-rbind(itemParEst(data.ref, model = "3PL", c = 0.05),
+ itemParEst(data.focal, model = "3PL", c = 0.05))
+ difRaju(irtParam = item.3PL, same.scale = FALSE)
 
  # Saving the output into the "RAJUresults.txt" file (and default path)
- r <- difRaju(verbal, group=25, focal.name=1, model="1PL",
+ r <- difRaju(verbal, group = 25, focal.name = 1, model = "1PL",
           save.output = TRUE, output = c("RAJUresults","default"))
 
  # Graphical devices

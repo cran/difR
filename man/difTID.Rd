@@ -10,18 +10,19 @@
  }
 
 \usage{
-difTID(Data, group, focal.name, props = NULL, 
-  	thrTID = 1.5, purify = FALSE, nrIter = 10, 
-  	save.output=FALSE, output=c("out","default")) 
+difTID(Data, group, focal.name, anchor = NULL, props = NULL, thrTID = 1.5, 
+  	purify = FALSE, nrIter = 10, save.output = FALSE, 
+  	output = c("out", "default")) 
 \method{print}{TID}(x, ...)
-\method{plot}{TID}(x, plot="dist", pch=8, number=TRUE, col="red", 
-  	save.plot=FALSE, save.options=c("plot","default","pdf"), ...)
+\method{plot}{TID}(x, plot = "dist", pch = 8, number = TRUE, col = "red", 
+  	save.plot = FALSE, save.options = c("plot", "default", "pdf"), ...)
  }
 
 \arguments{
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{data}) of group membership. See \bold{Details}.}
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
+\item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. See \bold{Details}.}
  \item{props}{either \code{NULL} (default) or a two-column matrix with proportions of success in the reference group and the focal group. See \bold{Details }.}
  \item{thrTID}{numeric: the threshold for detecting DIF items (default is 1.5).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
@@ -56,6 +57,7 @@ A list of class "TID" with the following arguments:
   \item{convergence}{logical indicating whether the iterative item purification process stopped before the maximal number \code{nrIter} of allowed iterations. 
   Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
+ \item{anchor.names}{the value of the \code{anchor} argument.}
   \item{save.output}{the value of the \code{save.output} argument.}
   \item{output}{the value of the \code{output} argument.}
  }
@@ -86,6 +88,8 @@ A list of class "TID" with the following arguments:
  DIF. All perpendicular distances are then re-computed for all items. The process stops when either two successive applications of the method yield the same
  classifications of the items, or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning
  message is printed. 
+
+A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the intercept and slope parameters of the major axis. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified.
 
  The output of the \code{difTID}, as displayed by the \code{print.TID} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
  (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
@@ -137,28 +141,33 @@ A list of class "TID" with the following arguments:
  data(verbal)
 
  # Excluding the "Anger" variable
- verbal <- verbal[colnames(verbal)!="Anger"]
+ verbal <- verbal[colnames(verbal) != "Anger"]
 
  # Three equivalent settings of the data matrix and the group membership
- r <- difTID(verbal, group=25, focal.name=1)
- difTID(verbal, group="Gender", focal.name=1)
- difTID(verbal[,1:24], group=verbal[,25], focal.name=1)
+ r <- difTID(verbal, group = 25, focal.name = 1)
+ difTID(verbal, group = "Gender", focal.name = 1)
+ difTID(verbal[,1:24], group = verbal[,25], focal.name = 1)
 
  # With item purification and threshold 1
- r2 <- difTID(verbal, group="Gender", focal.name=1, purify=TRUE, thrTID=1)
+ r2 <- difTID(verbal, group = "Gender", focal.name = 1, purify = TRUE, thrTID = 1)
+
+ # With items 1 to 5 set as anchor items
+ difTID(verbal, group = "Gender", focal.name = 1, anchor = 1:5)
+ difTID(verbal, group = "Gender", focal.name = 1, anchor = 1:5, purify = TRUE)
+
 
  # Saving the output into the "TIDresults.txt" file (and default path)
- difTID(verbal, group=25, focal.name=1, save.output = TRUE, 
-   output = c("TIDresults","default"))
+ difTID(verbal, group = 25, focal.name = 1, save.output = TRUE, 
+   output = c("TIDresults", "default"))
 
  # Providing the proportions of success only
  props <- cbind(colMeans(verbal[verbal[,25]==0,1:24]),
    colMeans(verbal[verbal[,25]==1,1:24]) )
- difTID(prop=props)
+ difTID(prop = props)
 
  # Graphical devices
  plot(r2)
- plot(r2, plot="delta")
+ plot(r2, plot = "delta")
 
  # Plotting results and saving it in a PDF figure
  plot(r2, save.plot = TRUE, save.options = c("plot", "default", "pdf"))

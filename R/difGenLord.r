@@ -1,13 +1,26 @@
-difGenLord<-function(Data, group, focal.names, model, c=NULL, engine="ltm", discr=1, irtParam=NULL, nrFocal=2, same.scale=TRUE, alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default")) 
+difGenLord<-function(Data, group, focal.names, model, c=NULL, engine="ltm", discr=1, irtParam=NULL, nrFocal=2, same.scale=TRUE, anchor=NULL,alpha=0.05, purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default")) 
 {
 internalGLord<-function(){
-if (is.null(irtParam)==FALSE){
+if (!is.null(irtParam)){
 nrItems<-nrow(irtParam)/(nrFocal+1)
-if (same.scale==FALSE){
+dataName<-rownames(irtParam[1:nrItems,])
+if (!is.null(anchor) & !same.scale){
+dif.anchor<-anchor
+if (is.numeric(anchor)) ANCHOR<-anchor
+else{
+ANCHOR<-NULL
+for (i in 1:length(anchor)) ANCHOR[i]<-(1:length(dataName))[dataName==anchor[i]]
+}
+}
+else {
+ANCHOR<-1:nrItems
+dif.anchor<-NULL
+}
+if (!same.scale){
 prov<-vector("list",nrFocal+1)
 for (i in 1:(nrFocal+1)) prov[[i]]<-irtParam[((i-1)*nrItems+1):(i*nrItems),]
 irtParam<-prov[[1]]
-for (gr in 1:nrFocal) irtParam<-rbind(irtParam,itemRescale(prov[[1]],prov[[gr+1]]))
+for (gr in 1:nrFocal) irtParam<-rbind(irtParam,itemRescale(prov[[1]],prov[[gr+1]],items=ANCHOR))
 }
 mod<-as.character(ncol(irtParam))
 model<-switch(mod,"2"="1PL","5"="2PL","6"="3PL","9"="3PL")
@@ -18,13 +31,12 @@ Guess<-irtParam[1:nrItems,6]
 if (length(unique(round(Guess,4)))==1) Guess<-unique(round(Guess,4))
 }
 Q<-qchisq(1-alpha,nPar*nrFocal)
-dataName<-rownames(irtParam[1:nrItems,])
 itemParInit<-irtParam
 estPar<-FALSE
 }
 else{
      if (length(group) == 1) {
-           if (is.numeric(group)==TRUE) {
+           if (is.numeric(group)) {
               gr <- Data[, group]
               DATA <- Data[,(1:ncol(Data))!= group]
               colnames(DATA) <- colnames(Data)[(1:ncol(Data))!= group]
@@ -43,6 +55,19 @@ Group <- rep(0, nrow(DATA))
 nrFocal<-length(focal.names)
 for (i in 1:nrFocal) Group[gr == focal.names[i]] <- i
 nrItems<-ncol(DATA)
+dataName<-colnames(DATA)
+if (!is.null(anchor)){
+dif.anchor<-anchor
+if (is.numeric(anchor)) ANCHOR<-anchor
+else{
+ANCHOR<-NULL
+for (i in 1:length(anchor)) ANCHOR[i]<-(1:ncol(DATA))[colnames(DATA)==anchor[i]]
+}
+}
+else {
+ANCHOR<-1:nrItems
+dif.anchor<-NULL
+}
 irtParam<-NULL
 GROUP<-0:nrFocal
 for (indic in 1:length(GROUP)){
@@ -56,23 +81,29 @@ d0[c0,]<-as.numeric(DATA[i,])
 }
 }
 Guess<-c
-if (is.null(Guess)==TRUE) m0<-switch(model,"1PL"=itemParEst(d0,model="1PL",engine=engine,discr=discr),"2PL"=itemParEst(d0,model="2PL"),"3PL"=itemParEst(d0,model="3PL"))
+if (is.null(Guess)) m0<-switch(model,"1PL"=itemParEst(d0,model="1PL",engine=engine,discr=discr),"2PL"=itemParEst(d0,model="2PL"),"3PL"=itemParEst(d0,model="3PL"))
 else m0<-itemParEst(d0,model="3PL",c=Guess)
 if (indic==1) irtParam<-m0
-else irtParam<-rbind(irtParam,itemRescale(irtParam[1:nrItems,],m0))
+else irtParam<-rbind(irtParam,itemRescale(irtParam[1:nrItems,],m0,items=ANCHOR))
 }
-if (is.null(Guess)==TRUE) nPar<-switch(model,"1PL"=1,"2PL"=2,"3PL"=3)
+if (is.null(Guess)) nPar<-switch(model,"1PL"=1,"2PL"=2,"3PL"=3)
 else nPar<-2
 Q<-qchisq(1-alpha,nPar*nrFocal)
-dataName<-colnames(DATA)
 itemParInit<-irtParam
 estPar<-TRUE
 }
-if (purify==FALSE) {
+if (!purify | !is.null(anchor)) {
 STATS<-genLordChi2(irtParam,nrFocal)
 if ((max(STATS))<=Q) DIFitems<-"No DIF item detected"
 else DIFitems<-(1:nrItems)[STATS>Q]
-RES<-list(genLordChi=STATS,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
+RES<-list(genLordChi=STATS,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,estPar=estPar,names=dataName,anchor.names=dif.anchor,focal.names=focal.names,save.output=save.output,output=output)
+if (!is.null(anchor) & (RES$estPar | (!RES$estPar & !same.scale))) {
+RES$genLordChi[ANCHOR]<-NA
+for (i in 1:length(RES$DIFitems)){
+if (sum(RES$DIFitems[i]==ANCHOR)==1) RES$DIFitems[i]<-NA
+}
+RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
+}
 }
 else{
 nrPur<-0
@@ -83,7 +114,7 @@ if (max(stats1)<=Q){
 DIFitems<-"No DIF item detected"
 noLoop<-TRUE
 itemParFinal=irtParam
-RES<-list(genLordChi=stats1,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
+RES<-list(genLordChi=stats1,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,anchor.names=NULL,focal.names=focal.names,save.output=save.output,output=output)
 }
 else{
 dif<-(1:nrItems)[stats1>Q]
@@ -97,7 +128,7 @@ break
 else{
 nrPur<-nrPur+1
 nodif<-NULL
-if (is.null(dif)==TRUE) nodif<-1:nrItems
+if (is.null(dif)) nodif<-1:nrItems
 else{
 for (i in 1:nrItems){
 if (sum(i==dif)==0) nodif<-c(nodif,i)
@@ -125,21 +156,21 @@ else dif<-dif2
 }
 }
 }
-if (is.null(difPur)==FALSE){
+if (!is.null(difPur)){
 ro<-co<-NULL
 for (ir in 1:nrow(difPur)) ro[ir]<-paste("Step",ir-1,sep="")
 for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(genLordChi=stats2,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,focal.names=focal.names,save.output=save.output,output=output)
+RES<-list(genLordChi=stats2,alpha=alpha,thr=Q,df=nPar*nrFocal,DIFitems=dif2,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,model=model,c=Guess,engine=engine,discr=discr,itemParInit=itemParInit,itemParFinal=itemParFinal,estPar=estPar,names=dataName,anchor.names=NULL,focal.names=focal.names,save.output=save.output,output=output)
 }
 }
 class(RES)<-"GenLord"
 return(RES)
 }
 resToReturn<-internalGLord()
-if (save.output==TRUE){
+if (save.output){
 if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
 else wd<-output[2]
 fileName<-paste(wd,output[1],".txt",sep="")
@@ -160,24 +191,24 @@ internalGLord<-function(){
     res <- x
     title <- expression(paste("Generalized Lord's ", chi^2))
     plotType <- switch(plot, lordStat = 1, itemCurve = 2)
-    if (is.null(plotType) == TRUE) 
+    if (is.null(plotType)) 
         return("Error: misspecified 'type' argument")
     else {
         if (plotType == 1) {
-    		if (number == FALSE) {
+    		if (!number) {
      			plot(res$genLordChi, xlab = "Item", ylab = expression(paste("Generalized Lord's ", 
           	 	chi^2, " statistic")), ylim = c(0, max(c(res$genLordChi, 
-           		res$thr) + 1)), pch = pch, main = title)
-       	if (is.character(res$DIFitems) == FALSE) 
+           		res$thr) + 1,na.rm=TRUE)), pch = pch, main = title)
+       	if (!is.character(res$DIFitems)) 
            		points(res$DIFitems, res$genLordChi[res$DIFitems], 
                 	pch = pch, col = col)
    	 	}
     	  	else {
        		 plot(res$genLordChi, xlab = "Item", ylab = expression(paste("Generalized Lord's ", 
           		 chi^2, " statistic")), ylim = c(0, max(c(res$genLordChi, 
-          		 res$thr) + 1)), col = "white", main = title)
+          		 res$thr) + 1,na.rm=TRUE)), col = "white", main = title)
        		 text(1:length(res$genLordChi), res$genLordChi, 1:length(res$genLordChi))
-       		 if (is.character(res$DIFitems) == FALSE) 
+       		 if (!is.character(res$DIFitems)) 
          	 	  text(res$DIFitems, res$genLordChi[res$DIFitems], 
               	  res$DIFitems, col = col)
     		}
@@ -186,8 +217,9 @@ internalGLord<-function(){
 	  else {
             it <- ifelse(is.character(item) | is.factor(item), 
                 (1:length(res$names))[res$names == item], item)
+if (is.na(res$genLordChi[it])) stop("Selected item is an anchor item!",call.=FALSE)
             J <- length(res$genLordChi)
-		if (res$purification == TRUE) matPar <- res$itemParFinal
+		if (res$purification) matPar <- res$itemParFinal
             else matPar <- res$itemParInit
 		nrFocal<-nrow(matPar)/J-1
 		parItems<-matPar[it,]
@@ -209,8 +241,7 @@ internalGLord<-function(){
 			 col = colIC[gr+1], lty = ltyIC[gr+1])
             if (is.null(ref.name)) legnames <- "Reference"
             else legnames<-ref.name
-                if (is.character(res$focal.names) == TRUE | is.factor(res$focal.names) == 
-                  TRUE) 
+                if (is.character(res$focal.names) | is.factor(res$focal.names)) 
                   legnames <- c(legnames, res$focal.names)
                 else {
                   for (t in 1:length(res$focal.names)) legnames <- c(legnames, 
@@ -222,11 +253,11 @@ internalGLord<-function(){
      }
 }
 internalGLord()
-if (save.plot==TRUE){
+if (save.plot){
 plotype<-NULL
 if (save.options[3]=="pdf") plotype<-1
 if (save.options[3]=="jpeg") plotype<-2
-if (is.null(plotype)==TRUE) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
+if (is.null(plotype)) cat("Invalid plot type (should be either 'pdf' or 'jpeg').","\n","The plot was not captured!","\n")
 else {
 if (save.options[2]=="default") wd<-paste(getwd(),"/",sep="")
 else wd<-save.options[2]
@@ -256,9 +287,9 @@ print.GenLord<-function(x,...){
 res<-x
 cat("\n")
 cat("Detection of Differential Item Functioning using generalized Lord's method","\n")
-if (res$purification==TRUE) pur<-"with "
+if (res$purification & is.null(res$anchor.names)) pur<-"with "
 else pur<-"without "
-if (is.null(res$c)==TRUE) {
+if (is.null(res$c)) {
 mod<-res$model
 nrFocal<-res$df/switch(res$model,"1PL"=1,"2PL"=2,"3PL"=3)
 }
@@ -267,7 +298,7 @@ mod<-"constrained 3PL"
 nrFocal<-res$df/2
 }
 cat("(",nrFocal," focal groups), with ",mod," model and ",pur, "item purification","\n","\n",sep="")
-if (res$estPar==TRUE){
+if (res$estPar){
 if (res$model!="1PL" | res$engine=="ltm") cat("Engine 'ltm' for item parameter estimation","\n","\n")
 else cat("Engine 'lme4' for item parameter estimation","\n","\n")
 }
@@ -275,7 +306,7 @@ if (res$model=="1PL" & res$engine=="ltm") {
 if (is.null(res$discr)) cat("Common discrimination parameter: estimated from 'ltm'","\n","\n")
 else cat("Common discrimination parameter: fixed to ",res$discr,"\n","\n",sep="")
 }
-if (is.null(res$c)==FALSE){
+if (!is.null(res$c)){
 if (length(res$c)==1) cat("Common pseudo-guessing value: ",res$c,"\n","\n",sep="")
 else {
 pg<-cbind(res$c)
@@ -286,10 +317,10 @@ print(pg)
 cat("\n")
 }
 }
-if (res$purification==TRUE){
+if (res$purification & is.null(res$anchor.names)){
 if (res$nrPur<=1) word<-" iteration"
 else word<-" iterations"
-if (res$convergence==FALSE) {
+if (!res$convergence) {
 cat("WARNING: no item purification convergence after ",res$nrPur,word,"\n",sep="")
 loop<-NULL
 for (i in 1:res$nrPur) loop[i]<-sum(res$difPur[1,]==res$difPur[i+1,])
@@ -299,32 +330,53 @@ cat("WARNING: following results based on the last iteration of the purification"
 }
 else cat("Convergence reached after ",res$nrPur,word,"\n","\n",sep="")
 }
+if (is.null(res$anchor.names)) {
+itk<-1:length(res$genLordChi)
+cat("No set of anchor items was provided", "\n", "\n")
+}
+else {
+itk<-(1:length(res$genLordChi))[!is.na(res$genLordChi)]
+cat("Anchor items (provided by the user):", "\n")
+if (is.numeric(res$anchor.names)) mm<-res$names[res$anchor.names]
+else mm<-res$anchor.names
+mm <- cbind(mm)
+rownames(mm) <- rep("", nrow(mm))
+colnames(mm) <- ""
+print(mm, quote = FALSE)
+cat("\n", "\n")
+}
 cat("Generalized Lord's chi-square statistic:","\n","\n")
 it<-rep("",length(res$genLordChi))
 pval<-round(1-pchisq(res$genLordChi,res$df),4)
 symb<-symnum(pval,c(0,0.001,0.01,0.05,0.1,1),symbols=c("***","**","*",".",""))
-m1<-cbind(round(res$genLordChi,4),pval)
-m1<-noquote(cbind(format(m1,justify="right"),symb))
-if (is.null(res$names)==FALSE) rownames(m1)<-res$names
+m1<-cbind(round(res$genLordChi[itk],4),pval[itk])
+m1<-noquote(cbind(format(m1,justify="right"),symb[itk]))
+if (!is.null(res$names)) rownames(m1)<-res$names[itk]
 else{
 rn<-NULL
 for (i in 1:nrow(m1)) rn[i]<-paste("Item",i,sep="")
-rownames(m1)<-rn
+rownames(m1)<-rn[itk]
 }
 colnames(m1)<-c("Stat.","P-value","")
 print(m1)
 cat("\n")
 cat("Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 ","\n")
 cat("\n","Detection threshold: ",round(res$thr,4)," (significance level: ",res$alpha,")","\n","\n",sep="")
-if (is.character(res$DIFitems)==TRUE) cat("Items detected as DIF items:",res$DIFitems,"\n","\n")
+if (is.character(res$DIFitems)) cat("Items detected as DIF items:",res$DIFitems,"\n","\n")
 else {
 cat("Items detected as DIF items:","\n")
-m2<-cbind(rownames(m1)[res$DIFitems])
+   if (!is.null(res$names)) m2 <- res$names
+    else {
+        rn <- NULL
+        for (i in 1:length(res$genLordChi)) rn[i] <- paste("Item", i, sep = "")
+        m2 <- rn
+    }
+        m2 <- cbind(m2[res$DIFitems])
 rownames(m2)<-rep("",nrow(m2))
 colnames(m2)<-""
 print(m2,quote=FALSE)
 cat("\n")
-if (x$save.output==FALSE) cat("Output was not captured!","\n")
+if (!x$save.output) cat("Output was not captured!","\n")
 else {
 if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
 else wd<-x$output[2]

@@ -8,7 +8,7 @@
  }
 
 \usage{
-trItemDiff(prop, anchor=1:nrow(prop))
+trItemDiff(prop, anchor = 1:nrow(prop))
  }
 
 \arguments{
@@ -77,6 +77,6 @@ trItemDiff(prop, anchor=1:nrow(prop))
  trItemDiff(props)
 
  # Removing item 6 from the set of anchor items
- trItemDiff(props, anchor=c(1:5,7:24))
+ trItemDiff(props, anchor = c(1:5,7:24))
  }
  }

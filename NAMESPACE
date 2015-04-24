@@ -1,6 +1,32 @@
 # Default NAMESPACE created by R
 # Remove the previous line if you edit this file
 
+S3method(plot,BD)
+S3method(plot,GMH)
+S3method(plot,GenLord)
+S3method(plot,LRT)
+S3method(plot,Logistic)
+S3method(plot,Lord)
+S3method(plot,MH)
+S3method(plot,PDIF)
+S3method(plot,Raj)
+S3method(plot,TID)
+S3method(plot,genLogistic)
+S3method(print,BD)
+S3method(print,GMH)
+S3method(print,GenLord)
+S3method(print,LRT)
+S3method(print,Logistic)
+S3method(print,Lord)
+S3method(print,MH)
+S3method(print,PDIF)
+S3method(print,Raj)
+S3method(print,TID)
+S3method(print,dichoDif)
+S3method(print,genDichoDif)
+S3method(print,genLogistic)
+S3method(print,subLogistic)
+
 # Export all names
 exportPattern(".")
 

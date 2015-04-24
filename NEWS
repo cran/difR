@@ -6,6 +6,66 @@
 
 
 ------------------------------------
+- Changes in difR 4.6 (2015-04-24) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  The 'Logistik' function was rewritten. It now allows
+     to specify a matching criterion that is not the test
+     score (through the 'match' argument). It also permits
+     to specify a continuous group membership variable 
+     instead of a binary group membership. This is done by
+     the 'member.type' argument. Finally, the item 
+     responses are directly modeled in the logistic 
+     regression, not as a two-way table anymore. This is 
+     to fix an issue related to the computation of
+     Nagelkerke's R^2 coefficients (which are now returned 
+     separately for the two fitted models). Many thanks to
+     Bruno Facon (Department of Psychology, Universite 
+     Lille-Nord de France, France) for noticing this issue.
+
+  o  Similarly, the 'genLogistik' function was rewritten.
+     It now allows to specify a matching criterion that is
+     not the test score (through the 'match' argument). 
+     Also, the item responses are directly modeled in the  
+     logistic regression, not as a two-way table anymore. 
+     Nagelkerke's R^2 coefficients are also now returned 
+     separately for the two fitted models. 
+
+  o  The 'difLogReg' function was created as a meta-function
+     for logistic regression DIF analysis. It encompasses 
+     all options from 'difLogistic' and 'difGenLogistic'
+     and returns the corresponding output for simplicity of
+     use.
+
+  o  The 'difLogistic', 'difGenlogistic', 'selectDif',
+     'selectGenDif', 'dichoDif' and 'genDichoDif' functions 
+     were updated according to the previous modifications.
+
+  o  The 'difMH', 'difStd', 'difBD', 'difTID', 'difLogistic', 
+     'difGMH', 'difGenLogistic', 'difLogReg', 'difLord',
+     'difRaju' and 'difGenLord' methods now allow specifying
+     a set of anchor items (that are assumed to be DIF-free 
+     by the user). The 'anchor' argument was added. If 
+     supplied, anchor items are used to compute the test 
+     score together with the tested item) and anchor items 
+     are not tested for DIF. Item purification is disabled if 
+     anchor items are provided.
+
+ o   The functions 'selectDif', 'selectGenDif', 'dichoDif' 
+     and 'genDichoDif' have been updated with the 'anchor' 
+     argument.
+
+
+MINOR UPDATES
+
+  o  The DESCRIPTION file was updated to meet CRAN policy.
+
+  o  Several typos were fixed.
+
+
+------------------------------------
 - Changes in difR 4.5 (2013-04-07) -
 ------------------------------------
 

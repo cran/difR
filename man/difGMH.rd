@@ -10,17 +10,18 @@
 }
 
 \usage{
-difGMH(Data, group, focal.names, alpha=0.05, purify=FALSE, 
-  	nrIter=10, save.output=FALSE, output=c("out","default"))
+difGMH(Data, group, focal.names, anchor = NULL, alpha = 0.05, purify = FALSE, 
+  	nrIter = 10, save.output = FALSE, output = c("out", "default"))
 \method{print}{GMH}(x, ...)
-\method{plot}{GMH}(x, pch=8, number=TRUE, col="red", save.plot=FALSE, 
-  	save.options=c("plot","default","pdf"), ...)
+\method{plot}{GMH}(x, pch = 8, number = TRUE, col = "red", save.plot = FALSE, 
+  	save.options = c("plot", "default", "pdf"), ...)
 }
 
 \arguments{
  \item{Data}{numeric: either the data matrix only, or the data matrix plus the vector of group membership. See \bold{Details}.}
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{Data}) of group membership. See \bold{Details}.}
  \item{focal.names}{numeric or character vector indicating the levels of \code{group} which correspond to the focal groups.}
+\item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
@@ -51,6 +52,7 @@ difGMH(Data, group, focal.names, alpha=0.05, purify=FALSE,
   \item{convergence}{logical indicating whether the iterative item purification process stopped before the maximal number \code{nrIter} of allowed iterations. 
    Returned only if \code{purify} is \code{TRUE}.}
   \item{names}{the names of the items.}
+ \item{anchor.names}{the value of the \code{anchor} argument.}
   \item{focal.names}{the value of \code{focal.names} argument.}
   \item{save.output}{the value of the \code{save.output} argument.}
   \item{output}{the value of the \code{output} argument.}
@@ -76,6 +78,8 @@ difGMH(Data, group, focal.names, alpha=0.05, purify=FALSE,
  differently at the first step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor,
  1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
+
+A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified.
 
  The output of the \code{difGMH}, as displayed by the \code{print.GMH} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
  (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
@@ -116,7 +120,7 @@ difGMH(Data, group, focal.names, alpha=0.05, purify=FALSE,
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -133,28 +137,33 @@ difGMH(Data, group, focal.names, alpha=0.05, purify=FALSE,
 
  # Creating four groups according to gender ("Man" or "Woman") and
  # trait anger score ("Low" or "High")
- group<-rep("WomanLow",nrow(verbal))
- group[Anger>20 & Gender==0]<-"WomanHigh"
- group[Anger<=20 & Gender==1]<-"ManLow"
- group[Anger>20 & Gender==1]<-"ManHigh"
+ group <- rep("WomanLow",nrow(verbal))
+ group[Anger>20 & Gender==0] <- "WomanHigh"
+ group[Anger<=20 & Gender==1] <- "ManLow"
+ group[Anger>20 & Gender==1] <- "ManHigh"
 
  # New data set
- Verbal<-cbind(verbal[,1:24],group)
+ Verbal <- cbind(verbal[,1:24], group)
 
  # Reference group: "WomanLow"
- names<-c("WomanHigh","ManLow","ManHigh")
+ names <- c("WomanHigh", "ManLow", "ManHigh")
 
  # Three equivalent settings of the data matrix and the group membership
- difGMH(Verbal, group=25, focal.names=names)
- difGMH(Verbal, group="group", focal.name=names)
- difGMH(Verbal[,1:24], group=Verbal[,25], focal.names=names)
+ difGMH(Verbal, group = 25, focal.names = names)
+ difGMH(Verbal, group = "group", focal.name = names)
+ difGMH(Verbal[,1:24], group = Verbal[,25], focal.names = names)
 
  # With item purification 
- difGMH(Verbal, group=25, focal.names=names, purify=TRUE)
- difGMH(Verbal, group=25, focal.names=names, purify=TRUE, nrIter=5)
+ difGMH(Verbal, group = 25, focal.names = names, purify = TRUE)
+ difGMH(Verbal, group = 25, focal.names = names, purify = TRUE, nrIter = 5)
+
+ # With items 1 to 5 set as anchor items
+ difMH(Verbal, group = 25, focal.name = names, anchor = 1:5)
+ difMH(Verbal, group = 25, focal.name = names, anchor = 1:5, purify = TRUE)
+
 
  # Saving the output into the "GMHresults.txt" file (and default path)
- r <- difGMH(Verbal, group=25, focal.name=names, save.output = TRUE, 
+ r <- difGMH(Verbal, group = 25, focal.name = names, save.output = TRUE, 
             output = c("GMHresults","default"))
 
  # Graphical devices

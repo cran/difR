@@ -9,13 +9,14 @@
  }
 
 \usage{
-genLogistik(data, member, anchor=1:ncol(data), type="both",
-  	criterion="LRT") 
+genLogistik(data, member, match = "score", anchor = 1:ncol(data), 
+ 	type = "both", criterion = "LRT") 
  }
  
 \arguments{
  \item{data}{numeric: the data matrix (one row per subject, one column per item).}
  \item{member}{numeric: the vector of group membership with zero and positive integer entries only. See \bold{Details}.}
+ \item{match}{specifies the type of matching criterion. Can be either \code{"score"} (default) to compute the test score, or any continuous or discrete variable with the same length as the number of rows of \code{Data}. See \bold{Details}.}
  \item{anchor}{a vector of integer values specifying which items (all by default) are currently considered as anchor (DIF free) items. See \bold{Details}.}
  \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. 
             See \bold{Details}.}
@@ -24,8 +25,10 @@ genLogistik(data, member, anchor=1:ncol(data), type="both",
 
 
 \value{ 
- A list with four components:
- \item{lrt}{the values of the generalized logistic regression DIF statistics (that is, the likelihood ratio test statistics).}
+ A list with nine components:
+ \item{stat}{the values of the generalized logistic regression DIF statistics (that is, the likelihood ratio test statistics).}
+ \item{R2M0}{the values of Nagelkerke's R^2 coefficients for the "full" model.}
+ \item{R2M1}{the values of Nagelkerke's R^2 coefficients for the "simpler" model.}
  \item{deltaR2}{the differences between Nagelkerke's \eqn{R^2} coefficients of the tested models. See \bold{Details}.}
  \item{parM0}{a matrix with one row per item and \eqn{2+J*2} columns (where \emph{J} is the number of focal groups), holding successively the fitted 
                parameters \eqn{\hat{\alpha}}, \eqn{\hat{\beta}}, \eqn{\hat{\gamma}_i} and \eqn{\hat{\delta}_i} (\eqn{i = 1, ..., J}) of the "full" 
@@ -35,6 +38,7 @@ genLogistik(data, member, anchor=1:ncol(data), type="both",
  \item{covMat}{a 3-dimensional matrix of size \emph{p} x \emph{p} x \emph{K}, where \emph{p} is the number of estimated parameters and \emph{K} is the number of
                items, holding the \emph{p} x \emph{p} covariance matrices of the estimated parameters (one matrix for each tested item).}
  \item{criterion}{the value of the \code{criterion} argument.}
+\item{match}{a character string, either \code{"score"} or \code{"matching variable"} depending on the \code{match} argument.}
  }
 
 
@@ -49,12 +53,14 @@ genLogistik(data, member, anchor=1:ncol(data), type="both",
  \deqn{M_1: logit (\pi_i) = \alpha + \beta X + \gamma_i}
  \deqn{M_2: logit (\pi_i) = \alpha + \beta X}
 
- where \eqn{\pi_i} is the probability of answering correctly the item in group \emph{i} (\eqn{i = 0, ..., J}) and \eqn{X} is the sum score. Parameters
+ where \eqn{\pi_i} is the probability of answering correctly the item in group \emph{i} (\eqn{i = 0, ..., J}) and \eqn{X} is the matching criterion. Parameters
  \eqn{\alpha} and \eqn{\beta} are the common intercept and the slope of the logistic curves, while \eqn{\gamma_i} and \eqn{\delta_i} are group-specific
  parameters. For identification reasons the parameters \eqn{\gamma_0} and \eqn{\delta_0} of the reference group are set to zero. The set of parameters
  \eqn{\{\gamma_i: i = 1, ..., J\}} of the focal groups (\eqn{g=i}) represents the uniform DIF effect across all groups, and the set of parameters 
  \eqn{\{\delta_i: i = 1, ..., n\}} is used to model nonuniform DIF effect across all groups.
  The models are fitted with the \code{\link{glm}} function.
+
+ The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{Logistik} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix.
 
  Two tests are available: the Wald test and the likelihood ratio test. With the likelihood ratio test, two nested models are fitted and compared by means
  of Wilks' Lambda (or likelihood ratio) statistic (Wilks, 1938). With the Wald test, the model parameters are statistically tested using an appropriate 
@@ -112,7 +118,7 @@ genLogistik(data, member, anchor=1:ncol(data), type="both",
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
-    \email{raiche.gilles@uqam.ca}, \url{http://www.er.uqam.ca/nobel/r17165/} \cr 
+    \email{raiche.gilles@uqam.ca}, \url{http://www.cdame.uqam.ca/} \cr 
  }
 
 
@@ -130,26 +136,29 @@ genLogistik(data, member, anchor=1:ncol(data), type="both",
  # Creating four groups according to gender (0 or 1) and trait anger score
  # ("Low" or "High")
  # Reference group: women with low trait anger score (<=20)
- group<-rep(0,nrow(verbal))
- group[Anger>20 & Gender==0]<-1
- group[Anger<=20 & Gender==1]<-2
- group[Anger>20 & Gender==1]<-3
+ group <- rep(0,nrow(verbal))
+ group[Anger>20 & Gender==0] <- 1
+ group[Anger<=20 & Gender==1] <- 2
+ group[Anger>20 & Gender==1] <- 3
 
  # Testing both types of DIF simultaneously
  # With all items
  genLogistik(verbal[,1:24], group)
- genLogistik(verbal[,1:24], group, criterion="Wald")
+ genLogistik(verbal[,1:24], group, criterion = "Wald")
 
  # Removing item 6 from the set of anchor items
- genLogistik(verbal[,1:24], group, anchor=c(1:5,7:24))
- genLogistik(verbal[,1:24], group, anchor=c(1:5,7:24), criterion="Wald")
+ genLogistik(verbal[,1:24], group, anchor = c(1:5, 7:24))
+ genLogistik(verbal[,1:24], group, anchor = c(1:5, 7:24), criterion = "Wald")
 
  # Testing nonuniform DIF effect
- genLogistik(verbal[,1:24], group, type="nudif")
- genLogistik(verbal[,1:24], group, type="nudif", criterion="Wald")
+ genLogistik(verbal[,1:24], group, type = "nudif")
+ genLogistik(verbal[,1:24], group, type = "nudif", criterion="Wald")
 
  # Testing uniform DIF effect
- genLogistik(verbal[,1:24], group, type="udif")
- genLogistik(verbal[,1:24], group, type="udif", criterion="Wald")
+ genLogistik(verbal[,1:24], group, type = "udif")
+ genLogistik(verbal[,1:24], group, type = "udif", criterion="Wald")
+
+ # Using trait anger score as matching criterion
+ genLogistik(verbal[,1:24], group, match = verbal[,25])
  }
  }
