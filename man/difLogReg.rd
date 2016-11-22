@@ -10,7 +10,7 @@
 \usage{
 difLogReg(Data, group, focal.name, anchor = NULL, group.type = "group", 
  	match = "score", type = "both", criterion = "LRT", alpha = 0.05, 
- 	purify = FALSE, nrIter = 10, save.output = FALSE, 
+ 	purify = FALSE, nrIter = 10, p.adjust.method = NULL, save.output = FALSE, 
  	output = c("out", "default"))
  }
  
@@ -26,7 +26,8 @@ difLogReg(Data, group, focal.name, anchor = NULL, group.type = "group",
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE). Ignored if \code{match} is not \code{"score"}.}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. (default is 10).}
- \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
+ \item{p.adjust.method}{either \code{NULL} (default) or the acronym of the method for p-value adjustment for multiple comparisons. See \bold{Details}.}
+\item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or 
                \code{"default"} (default value). See \bold{Details}.}
 }

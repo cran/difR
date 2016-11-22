@@ -15,7 +15,7 @@ dichoDif(Data, group, focal.name, method, anchor = NULL, props = NULL,
  	member.type = "group", match = "score", type = "both", criterion = "LRT", 
  	model = "2PL", c = NULL, engine = "ltm", discr = 1, irtParam = NULL, 
  	same.scale = TRUE, signed = FALSE, purify = FALSE, nrIter = 10, 
- 	save.output = FALSE, output = c("out", "default")) 
+ 	p.adjust.method = NULL, save.output = FALSE, output = c("out", "default")) 
 \method{print}{dichoDif}(x, ...)
  }
  
@@ -47,6 +47,7 @@ dichoDif(Data, group, focal.name, method, anchor = NULL, props = NULL,
  \item{signed}{logical: should the Raju's statistics be computed using the signed (\code{TRUE}) or unsigned (\code{FALSE}, default) area? See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
+\item{p.adjust.method}{either \code{NULL} (default) or the acronym of the method for p-value adjustment for multiple comparisons. See \bold{Details}.}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.}
  \item{x}{result from a \code{dichoDif} class object.}
@@ -75,7 +76,8 @@ Either the output of one of the DIF detection methods, or a list of class "dicho
   \item{discr}{the value of the \code{discr} argument.}
   \item{irtParam}{the value of \code{irtParam} argument.}
   \item{same.scale}{the value of \code{same.scale} argument.}
-  \item{purification}{the value of \code{purify} argument.} 
+  \item{p.adjust.method}{the value of the \code{p.adjust.method} argument.}
+\item{purification}{the value of \code{purify} argument.} 
   \item{nrPur}{an integer vector (of length equal to the number of methods) with the number of iterations in the purification process. 
    Returned only if \code{purify} is TRUE.}
   \item{convergence}{a logical vector (of length equal to the number of methods) indicating whether the iterative purification process converged. Returned only if \code{purify} is TRUE.}
@@ -118,6 +120,8 @@ specifies whether the continuity correction has to be applied to Mantel-Haenszel
  For Raju's method, the type of area (signed or unsigned) is fixed by the logical \code{signed} argument, with default value \code{FALSE} (i.e. unsigned areas). See \code{\link{RajuZ}} for further details.
 
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification process is slightly different for IRT and for non-IRT based methods. See the corresponding methods for further information.
+
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. See the corresponding methods for further information.
 
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. For non-IRT methods, anchor items are used to compute the test score (as matching criterion). For IRT methods, anchor items are used to rescale the item parameters on a common metric. See the corresponding methods for further information. Note that \code{anchor} argument is not working with \code{"LRT"} method.
 

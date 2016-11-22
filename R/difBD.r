@@ -1,116 +1,151 @@
-difBD<-function(Data,group,focal.name,anchor=NULL,BDstat="BD",alpha=0.05,purify=FALSE, nrIter=10,save.output=FALSE, output=c("out","default")) 
+difBD<-function (Data, group, focal.name, anchor = NULL, BDstat = "BD", 
+    alpha = 0.05, purify = FALSE, nrIter = 10, p.adjust.method =NULL,
+    save.output = FALSE, 
+    output = c("out", "default")) 
 {
-internalBD<-function(){
-     if (length(group) == 1) {
-           if (is.numeric(group)==TRUE) {
-              gr <- Data[, group]
-              DATA <- Data[,(1:ncol(Data))!= group]
-              colnames(DATA) <- colnames(Data)[(1:ncol(Data))!= group]
-           }
-           else {
-              gr <- Data[, colnames(Data)==group]
-              DATA <- Data[,colnames(Data)!= group]
-              colnames(DATA) <- colnames(Data)[colnames(Data)!= group]
-           }
+    internalBD <- function() {
+        if (length(group) == 1) {
+            if (is.numeric(group) == TRUE) {
+                gr <- Data[, group]
+                DATA <- Data[, (1:ncol(Data)) != group]
+                colnames(DATA) <- colnames(Data)[(1:ncol(Data)) != 
+                  group]
+            }
+            else {
+                gr <- Data[, colnames(Data) == group]
+                DATA <- Data[, colnames(Data) != group]
+                colnames(DATA) <- colnames(Data)[colnames(Data) != 
+                  group]
+            }
+        }
+        else {
+            gr <- group
+            DATA <- Data
+        }
+        Group <- rep(0, nrow(DATA))
+        Group[gr == focal.name] <- 1
+        if (!is.null(anchor)) {
+            dif.anchor <- anchor
+            if (is.numeric(anchor)) 
+                ANCHOR <- anchor
+            else {
+                ANCHOR <- NULL
+                for (i in 1:length(anchor)) ANCHOR[i] <- (1:ncol(DATA))[colnames(DATA) == 
+                  anchor[i]]
+            }
+        }
+        else {
+            ANCHOR <- 1:ncol(DATA)
+            dif.anchor <- NULL
+        }
+        if (!purify | !is.null(anchor)) {
+            STATS <- breslowDay(DATA, Group, BDstat = BDstat, 
+                anchor = ANCHOR)$res
+            if (min(STATS[, 3]) >= alpha) 
+                DIFitems <- "No DIF item detected"
+            else DIFitems <- (1:nrow(STATS))[STATS[, 3] < alpha]
+            RES <- list(BD = STATS, alpha = alpha, DIFitems = DIFitems, 
+                BDstat = BDstat, p.adjust.method = p.adjust.method, 
+                  adjusted.p = NULL, purification = purify, names = colnames(DATA), 
+                anchor.names = dif.anchor, save.output = save.output, 
+                output = output)
+            if (!is.null(anchor)) {
+                RES$BD[ANCHOR, ] <- NA
+                for (i in 1:length(RES$DIFitems)) {
+                  if (sum(RES$DIFitems[i] == ANCHOR) == 1) 
+                    RES$DIFitems[i] <- NA
+                }
+                RES$DIFitems <- RES$DIFitems[!is.na(RES$DIFitems)]
+            }
+        }
+        else {
+            nrPur <- 0
+            difPur <- NULL
+            noLoop <- FALSE
+            stats1 <- breslowDay(DATA, Group, BDstat = BDstat)$res
+            if (min(stats1[, 3]) >= alpha) {
+                DIFitems <- "No DIF item detected"
+                noLoop <- TRUE
+            }
+            else {
+                dif <- (1:nrow(stats1))[stats1[, 3] < alpha]
+                difPur <- rep(0, nrow(stats1))
+                difPur[dif] <- 1
+                repeat {
+                  if (nrPur >= nrIter) 
+                    break
+                  else {
+                    nrPur <- nrPur + 1
+                    nodif <- NULL
+                    if (is.null(dif) == TRUE) 
+                      nodif <- 1:ncol(DATA)
+                    else {
+                      for (i in 1:ncol(DATA)) {
+                        if (sum(i == dif) == 0) 
+                          nodif <- c(nodif, i)
+                      }
+                    }
+                    stats2 <- breslowDay(DATA, Group, anchor = nodif, 
+                      BDstat = BDstat)$res
+                    if (min(stats2[, 3]) >= alpha) 
+                      dif2 <- NULL
+                    else dif2 <- (1:ncol(DATA))[stats2[, 3] < 
+                      alpha]
+                    difPur <- rbind(difPur, rep(0, ncol(DATA)))
+                    difPur[nrPur + 1, dif2] <- 1
+                    if (length(dif) != length(dif2)) 
+                      dif <- dif2
+                    else {
+                      dif <- sort(dif)
+                      dif2 <- sort(dif2)
+                      if (sum(dif == dif2) == length(dif)) {
+                        noLoop <- TRUE
+                        break
+                      }
+                      else dif <- dif2
+                    }
+                  }
+                }
+                stats1 <- stats2
+                DIFitems <- (1:ncol(DATA))[stats1[, 3] < alpha]
+            }
+            if (!is.null(difPur)) {
+                ro <- co <- NULL
+                for (ir in 1:nrow(difPur)) ro[ir] <- paste("Step", 
+                  ir - 1, sep = "")
+                for (ic in 1:ncol(difPur)) co[ic] <- paste("Item", 
+                  ic, sep = "")
+                rownames(difPur) <- ro
+                colnames(difPur) <- co
+            }
+            RES <- list(BD = stats1, alpha = alpha, DIFitems = DIFitems, 
+                BDstat = BDstat, p.adjust.method = p.adjust.method, 
+                  adjusted.p = NULL, purification = purify, nrPur = nrPur, 
+                difPur = difPur, convergence = noLoop, names = colnames(DATA), 
+                anchor.names = NULL, save.output = save.output, 
+                output = output)
+        }
+        if (!is.null(p.adjust.method)) {
+           pval <- RES$BD[,3]
+           RES$adjusted.p <- p.adjust(pval, method = p.adjust.method)
+            if (min(RES$adjusted.p, na.rm = TRUE) > alpha) 
+                RES$DIFitems <- "No DIF item detected"
+            else RES$DIFitems <- which(RES$adjusted.p < alpha)
+        }
+        class(RES) <- "BD"
+        return(RES)
     }
-    else {
-        gr <- group
-        DATA <- Data
+    resToReturn <- internalBD()
+    if (save.output) {
+        if (output[2] == "default") 
+            wd <- paste(getwd(), "/", sep = "")
+        else wd <- output[2]
+        fileName <- paste(wd, output[1], ".txt", sep = "")
+        capture.output(resToReturn, file = fileName)
     }
-    Group <- rep(0, nrow(DATA))
-    Group[gr == focal.name] <- 1
-if (!is.null(anchor)){
-dif.anchor<-anchor
-if (is.numeric(anchor)) ANCHOR<-anchor
-else{
-ANCHOR<-NULL
-for (i in 1:length(anchor)) ANCHOR[i]<-(1:ncol(DATA))[colnames(DATA)==anchor[i]]
+    return(resToReturn)
 }
-}
-else {
-ANCHOR<-1:ncol(DATA)
-dif.anchor<-NULL
-}
-if (!purify | !is.null(anchor)) {
-STATS<-breslowDay(DATA,Group,BDstat=BDstat,anchor=ANCHOR)$res
-if (min(STATS[,3])>=alpha) DIFitems<-"No DIF item detected"
-else DIFitems<-(1:nrow(STATS))[STATS[,3]<alpha]
-RES<-list(BD=STATS,alpha=alpha,DIFitems=DIFitems,BDstat=BDstat,purification=purify,names=colnames(DATA),
-anchor.names=dif.anchor,save.output=save.output,output=output)
-if (!is.null(anchor)) {
-RES$BD[ANCHOR,]<-NA
-for (i in 1:length(RES$DIFitems)){
-if (sum(RES$DIFitems[i]==ANCHOR)==1) RES$DIFitems[i]<-NA
-}
-RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
-}
-}
-else{
-nrPur<-0
-difPur<-NULL
-noLoop<-FALSE
-stats1<-breslowDay(DATA,Group,BDstat=BDstat)$res
-if (min(stats1[,3])>=alpha) {
-DIFitems<-"No DIF item detected"
-noLoop<-TRUE
-}
-else{
-dif<-(1:nrow(stats1))[stats1[,3]<alpha]
-difPur<-rep(0,nrow(stats1))
-difPur[dif]<-1
-repeat{
-if (nrPur>=nrIter) break
-else{
-nrPur<-nrPur+1
-nodif<-NULL
-if (is.null(dif)==TRUE) nodif<-1:ncol(DATA)
-else{
-for (i in 1:ncol(DATA)){
-if (sum(i==dif)==0) nodif<-c(nodif,i)
-}
-}
-stats2<-breslowDay(DATA,Group,anchor=nodif,BDstat=BDstat)$res
-if (min(stats2[,3])>=alpha) dif2<-NULL
-else dif2<-(1:ncol(DATA))[stats2[,3]<alpha]
-difPur<-rbind(difPur,rep(0,ncol(DATA)))
-difPur[nrPur+1,dif2]<-1
-if (length(dif)!=length(dif2)) dif<-dif2
-else{
-dif<-sort(dif)
-dif2<-sort(dif2)
-if (sum(dif==dif2)==length(dif)){
-noLoop<-TRUE
-break
-}
-else dif<-dif2
-}
-}
-}
-stats1<-stats2
-DIFitems <-(1:ncol(DATA))[stats1[,3]<alpha]
-}
-if (!is.null(difPur)){
-ro<-co<-NULL
-for (ir in 1:nrow(difPur)) ro[ir]<-paste("Step",ir-1,sep="")
-for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
-rownames(difPur)<-ro
-colnames(difPur)<-co
-}
-RES<-list(BD=stats1,alpha=alpha,DIFitems=DIFitems,BDstat=BDstat,purification=purify,nrPur=nrPur,
-difPur=difPur,convergence=noLoop,names=colnames(DATA),anchor.names=NULL,save.output=save.output,output=output)
-}
-class(RES)<-"BD"
-return(RES)
-}
-resToReturn<-internalBD()
-if (save.output){
-if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
-else wd<-output[2]
-fileName<-paste(wd,output[1],".txt",sep="")
-capture.output(resToReturn,file=fileName)
-}
-return(resToReturn)
-}
+
 
 
 # METHODS
@@ -198,12 +233,25 @@ colnames(mm) <- ""
 print(mm, quote = FALSE)
 cat("\n", "\n")
 }
+    if (is.null(res$p.adjust.method)) 
+        cat("No p-value adjustment for multiple comparisons", 
+            "\n", "\n")
+    else {
+        pAdjMeth <- switch(res$p.adjust.method, bonferroni = "Bonferroni", 
+            holm = "Holm", hochberg = "Hochberg", hommel = "Hommel", 
+            BH = "Benjamini-Hochberg", BY = "Benjamini-Yekutieli")
+        cat("Multiple comparisons made with", pAdjMeth, "adjustement of p-values", 
+            "\n", "\n")
+    }
+
 if (res$BDstat=="BD") cat("Breslow-Day statistic:","\n","\n")
 else cat("Breslow-Day trend test statistic:","\n","\n")
 pval<-res$BD[,3]
-symb<-symnum(pval,c(0,0.001,0.01,0.05,0.1,1),symbols=c("***","**","*",".",""))
+if (!is.null(res$p.adjust.method)) symb<-symnum(res$adjusted.p,c(0,0.001,0.01,0.05,0.1,1),symbols=c("***","**","*",".",""))
+else symb<-symnum(pval,c(0,0.001,0.01,0.05,0.1,1),symbols=c("***","**","*",".",""))
 if (res$BDstat=="BD") m1<-cbind(round(res$BD[itk,1],4),res$BD[itk,2],pval[itk])
 else m1<-cbind(round(res$BD[itk,1],4),pval[itk])
+if (!is.null(res$p.adjust.method)) m1<-cbind(m1,round(res$adjusted.p[itk],4))
 m1<-noquote(cbind(format(m1,justify="right"),symb[itk]))
 if (!is.null(res$names)) rownames(m1)<-res$names[itk]
 else{
@@ -211,8 +259,11 @@ rn<-NULL
 for (i in 1:nrow(m1)) rn[i]<-paste("Item",i,sep="")
 rownames(m1)<-rn[itk]
 }
-if (res$BDstat=="BD") colnames(m1)<-c("Stat.","df","P-value","")
-else colnames(m1)<-c("Stat.","P-value","")
+if (res$BDstat=="BD") con<-c("Stat.","df","P-value")
+else con<-c("Stat.","P-value")
+if (!is.null(res$p.adjust.method)) con<-c(con,"Adj. P","")
+else con<-c(con,"")
+colnames(m1)<-con
 print(m1)
 cat("\n")
 cat("Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 ","\n")

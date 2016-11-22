@@ -89,7 +89,6 @@
 
 \seealso{
  Other useful packages can be found in the \emph{R} \emph{Psychometric} task view.
- See \url{http://cran.stat.sfu.ca/web/views/Psychometrics.html} for further details.
  }
 
 

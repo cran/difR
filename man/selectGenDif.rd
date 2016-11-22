@@ -12,7 +12,7 @@
 selectGenDif(Data, group, focal.names, method, anchor = NULL, match = "score", 
  	type = "both", criterion = "LRT", alpha = 0.05, model = "2PL", c = NULL, 
  	engine = "ltm", discr = 1, irtParam = NULL, nrFocal = 2, same.scale = TRUE, 
- 	purify = FALSE, nrIter = 10, save.output = FALSE, 
+ 	purify = FALSE, nrIter = 10, p.adjust.method = NULL, save.output = FALSE, 
  	output = c("out", "default"))	
  }
  
@@ -36,6 +36,7 @@ selectGenDif(Data, group, focal.names, method, anchor = NULL, match = "score",
  \item{same.scale}{logical: are the item parameters of the \code{irtParam} matrix on the same scale? (default is "TRUE"). See \bold{Details}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).} 
+\item{p.adjust.method}{either \code{NULL} (default) or the acronym of the method for p-value adjustment for multiple comparisons. See \bold{Details}.}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"} (default value). See \bold{Details}.} 
 }
@@ -63,6 +64,8 @@ selectGenDif(Data, group, focal.names, method, anchor = NULL, match = "score",
  The threshold for detecting DIF items depends on the method and is depending on the significance level set by \code{alpha}.
 
  Item purification can be requested by specifying \code{purify} option to \code{TRUE}. Recall that item purification is slightly different for IRT and for non-IRT based methods. See the corresponding methods for further information.
+
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. See the corresponding methods for further information.
 
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. For non-IRT methods, anchor items are used to compute the test score (as matching criterion). For IRT methods, anchor items are used to rescale the item parameters on a common metric. See the corresponding methods for further information. 
 

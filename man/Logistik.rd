@@ -10,18 +10,19 @@ for DIF detection.
 
 \usage{
 Logistik(data, member, member.type = "group", match = "score",
-	 anchor = 1:ncol(data), type = "both", criterion = "LRT")
+	 anchor = 1:ncol(data), type = "both", criterion = "LRT", all.cov = FALSE)
  }
  
 \arguments{
  \item{data}{numeric: the data matrix (one row per subject, one column per item).}
  \item{member}{numeric or factor: the vector of group membership. Can either take two distinct values (zero for the reference group and one for the focal group) or be a continuous vector. See \bold{Details}.}
- \item{member.type}{character: either \code{"group"} (default) to specify that group membership is made oftwo groups, or \code{"cont"} to indicate that group membership is based on a  continuous criterion. See \bold{Details}.}
+ \item{member.type}{character: either \code{"group"} (default) to specify that group membership is made of two groups, or \code{"cont"} to indicate that group membership is based on a  continuous criterion. See \bold{Details}.}
  \item{match}{specifies the type of matching criterion. Can be either \code{"score"} (default) to compute the test score, or any continuous or discrete variable with the same length as the number of rows of \code{Data}. See \bold{Details}.}
  \item{anchor}{a vector of integer values specifying which items (all by default) are currently considered as anchor (DIF free) items. Ignored if \code{match} is not \code{"score"}. See \bold{Details}.}
  \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. 
             See \bold{Details}.}
  \item{criterion}{a character string specifying which DIF statistic is computed. Possible values are \code{"LRT"} (default) or \code{"Wald"}. See \bold{Details}.}
+\item{all.cov}{logical: should \emph{all} covariance matrices of model parameter estimates be returned (as lists) for both nested models and all items? (default is \code{FALSE}.}
 }
 
 
@@ -35,7 +36,11 @@ Logistik(data, member, member.type = "group", match = "score",
                and \eqn{\hat{\delta}_1} of the "full" model (\eqn{M_0} if \code{type="both"} or \code{type="nudif"}, \eqn{M_1} if \code{type="udif"}).}
  \item{parM1}{the same matrix as \code{parM0} but with fitted parameters for the "simpler" model (\eqn{M_1} if \code{type="nudif"}, \eqn{M_2} if \code{type="both"}
  		   or \code{type="udif"}).}
- \item{criterion}{the value of the \code{criterion} argument.}
+ \item{seM0}{a matrix with the standard error values of the parameter estimates in matrix \code{parM0}.}
+ \item{seM1}{a matrix with the standard error values of the parameter estimates in matrix \code{parM1}.} 
+\item{cov.M0}{either \code{NULL} (if \code{all.cov} argument is \code{FALSE}) or a list of covariance matrices of parameter estimates of the "full" model (\eqn{M_0}) for each item (if \code{all.cov} argument is \code{TRUE}).}
+\item{cov.M1}{either \code{NULL} (if \code{all.cov} argument is \code{FALSE}) or a list of covariance matrices of parameter estimates of the "reduced" model (\eqn{M_1}) for each item (if \code{all.cov} argument is \code{TRUE}).}
+\item{criterion}{the value of the \code{criterion} argument.}
  \item{member.type}{the value of the \code{member.type} argument.}
 \item{match}{a character string, either \code{"score"} or \code{"matching variable"} depending on the \code{match} argument.}
  }
@@ -45,7 +50,7 @@ Logistik(data, member, member.type = "group", match = "score",
  This command computes the logistic regression statistic (Swaminathan and Rogers, 1990) in the specific framework of differential item functioning. 
  It forms the basic command of \code{\link{difLogistic}} and is specifically designed for this call.
  
- If the \code{member.type} argument is set to \code{"group"}, the \code{member} argument must be a vector with two distinct (numeric or factor) values, say 0 and 1 (for the reference and focal groups respectively). Those values are internally transformed onto factors to denote group memebership. The three possible models to be fitted are then:
+ If the \code{member.type} argument is set to \code{"group"}, the \code{member} argument must be a vector with two distinct (numeric or factor) values, say 0 and 1 (for the reference and focal groups respectively). Those values are internally transformed onto factors to denote group membership. The three possible models to be fitted are then:
 
  \deqn{M_0: logit (\pi_g) = \alpha + \beta X + \gamma_g + \delta_g X}
  \deqn{M_1: logit (\pi_g) = \alpha + \beta X + \gamma_g}
@@ -91,8 +96,8 @@ where \code{Y} is the group variable. Parameters \eqn{\gamma} and \eqn{\delta} a
 
  Option \code{anchor} sets the items which are considered as anchor items for computing the etst scores and related logistic regression DIF statistics. Items other than the anchor items and the tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is mainly designed to perform item purification. Note that this option is discarded when \code{match} is not \code{"score"}.
 
- The output contains: the selected DIF statistics (either the LRT or the Wald statistic) computed for each item, and two matrices with the parameter estimates of
- both models, for each item. In addition, Nagelkerke's \eqn{R^2} coefficients (Nagelkerke, 1991) are computed for each model and the output returns both, the vectors of \eqn{R^2} coefficients for each model and the differences in these coefficients. Such differences are used as measures of effect size by the \code{\link{difLogistic}} command; see Gomez-Benito, Dolores Hidalgo and Padilla
+ The output contains: the selected DIF statistics (either the LRT or the Wald statistic) computed for each item, two matrices with the parameter estimates of
+ both models (for each item) and two matrices of related standard error values. In addition, Nagelkerke's \eqn{R^2} coefficients (Nagelkerke, 1991) are computed for each model and the output returns both, the vectors of \eqn{R^2} coefficients for each model and the differences in these coefficients. Such differences are used as measures of effect size by the \code{\link{difLogistic}} command; see Gomez-Benito, Dolores Hidalgo and Padilla
  (2009), Jodoin and Gierl (2001) and Zumbo and Thomas (1997). The \code{criterion} and \code{member.type} arguments are also returned, as well as a character argument named \code{match} that specifies the type of matching criterion that was used.
 }
  
@@ -146,6 +151,9 @@ where \code{Y} is the group variable. Parameters \eqn{\gamma} and \eqn{\delta} a
  # Testing both types of DIF simultaneously
  # With all items, test score as matching criterion
  Logistik(verbal[,1:24], verbal[,26])
+
+ # Returning all covariance matrices of model parameters
+ Logistik(verbal[,1:24], verbal[,26], all.cov = TRUE)
 
  # Testing both types of DIF simultaneously
  # With all items and Wald test

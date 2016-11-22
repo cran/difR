@@ -11,7 +11,8 @@
 
 \usage{
 difGMH(Data, group, focal.names, anchor = NULL, alpha = 0.05, purify = FALSE, 
-  	nrIter = 10, save.output = FALSE, output = c("out", "default"))
+  	nrIter = 10, p.adjust.method = NULL, save.output = FALSE, 
+  	output = c("out", "default"))
 \method{print}{GMH}(x, ...)
 \method{plot}{GMH}(x, pch = 8, number = TRUE, col = "red", save.plot = FALSE, 
   	save.options = c("plot", "default", "pdf"), ...)
@@ -25,6 +26,7 @@ difGMH(Data, group, focal.names, anchor = NULL, alpha = 0.05, purify = FALSE,
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
+\item{p.adjust.method}{either \code{NULL} (default) or the acronym of the method for p-value adjustment for multiple comparisons. See \bold{Details}.}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or 
               \code{"default"} (default value). See \bold{Details}.}
@@ -44,6 +46,8 @@ difGMH(Data, group, focal.names, anchor = NULL, alpha = 0.05, purify = FALSE,
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{DIFitems}{either the items which were detected as DIF items, or "No DIF item detected".}
+\item{p.adjust.method}{the value of the \code{p.adjust.method} argument.}
+\item{adjusted.p}{either \code{NULL} or the vector of adjusted p-values for multiple comparisons.}
   \item{purification}{the value of \code{purify} option.} 
   \item{nrPur}{the number of iterations in the item purification process. Returned only if \code{purify} is \code{TRUE}.}
   \item{difPur}{a binary matrix with one row per iteration in the item purification process and one column per item. Zeros and ones in the \emph{i}-th 
@@ -79,6 +83,8 @@ difGMH(Data, group, focal.names, anchor = NULL, alpha = 0.05, purify = FALSE,
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor,
  1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
 
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF pruposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
+
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified.
 
  The output of the \code{difGMH}, as displayed by the \code{print.GMH} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
@@ -98,6 +104,8 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
 \references{
  Clauser, B. E. and Mazor, K. M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues
  and Practice, 17}, 31-44.
+
+Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. 
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
  of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
@@ -152,6 +160,9 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
  difGMH(Verbal, group = 25, focal.names = names)
  difGMH(Verbal, group = "group", focal.name = names)
  difGMH(Verbal[,1:24], group = Verbal[,25], focal.names = names)
+
+ # Multiple comparisons adjustment using Benjamini-Hochberg method
+ difGMH(Verbal, group = 25, focal.names = names, p.adjust.method = "BH")
 
  # With item purification 
  difGMH(Verbal, group = 25, focal.names = names, purify = TRUE)

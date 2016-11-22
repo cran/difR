@@ -12,8 +12,8 @@
 \usage{
 difLogistic(Data, group, focal.name, anchor = NULL, member.type = "group", 
  	match = "score", type = "both", criterion = "LRT", alpha = 0.05, 
- 	purify = FALSE, nrIter = 10, save.output = FALSE, 
- 	output = c("out", "default"))
+ 	all.cov = FALSE, purify = FALSE, nrIter = 10, p.adjust.method = NULL, 
+ 	save.output = FALSE, output = c("out", "default"))
 \method{print}{Logistic}(x, ...)
 \method{plot}{Logistic}(x, plot="lrStat", item = 1, itemFit = "best", pch = 8, number = TRUE,
  	col = "red", colIC = rep("black", 2), ltyIC = c(1, 2), save.plot = FALSE,
@@ -30,8 +30,10 @@ difLogistic(Data, group, focal.name, anchor = NULL, member.type = "group",
  \item{type}{a character string specifying which DIF effects must be tested. Possible values are \code{"both"} (default), \code{"udif"} and \code{"nudif"}. See \bold{Details}.}
  \item{criterion}{a character string specifying which DIF statistic is computed. Possible values are \code{"LRT"} (default) or \code{"Wald"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
+\item{all.cov}{logical: should \emph{all} covariance matrices of model parameter estimates be returned (as lists) for both nested models and all items? (default is \code{FALSE}.}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE). Ignored if \code{match} is not \code{"score"}.}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process. (default is 10).}
+\item{p.adjust.method}{either \code{NULL} (default) or the acronym of the method for p-value adjustment for multiple comparisons. See \bold{Details}.}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or 
                \code{"default"} (default value). See \bold{Details}.}
@@ -57,7 +59,11 @@ difLogistic(Data, group, focal.name, anchor = NULL, member.type = "group",
 A list of class "Logistic" with the following arguments:
   \item{Logistik}{the values of the logistic regression statistics.}
   \item{logitPar}{a matrix with one row per item and four columns, holding the fitted parameters of the best model (among the two tested models) for each item.}
+  \item{logitSe}{a matrix with one row per item and four columns, holding the standard errors of the fitted parameters of the best model (among the two tested models) for each item.}
   \item{parM0}{the matrix of fitted parameters of the null model \eqn{M_0}, as returned by the \code{\link{Logistik}} command.}
+  \item{seM0}{the matrix of standard error of fitted parameters of the null model \eqn{M_0}, as returned by the \code{\link{Logistik}} command.}
+\item{cov.M0}{either \code{NULL} (if \code{all.cov} argument is \code{FALSE}) or a list of covariance matrices of parameter estimates of the "full" model (\eqn{M_0}) for each item (if \code{all.cov} argument is \code{TRUE}).}
+\item{cov.M1}{either \code{NULL} (if \code{all.cov} argument is \code{FALSE}) or a list of covariance matrices of parameter estimates of the "reduced" model (\eqn{M_1}) for each item (if \code{all.cov} argument is \code{TRUE}).}
   \item{deltaR2}{the differences in Nagelkerke's \eqn{R^2} coefficients. See \bold{Details}.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
@@ -65,6 +71,8 @@ A list of class "Logistic" with the following arguments:
  \item{member.type}{the value of the \code{member.type} argument.}
 \item{match}{a character string, either \code{"score"} or \code{"matching variable"} depending on the \code{match} argument.}
   \item{type}{the value of \code{type} argument.}
+\item{p.adjust.method}{the value of the \code{p.adjust.method} argument.}
+\item{adjusted.p}{either \code{NULL} or the vector of adjusted p-values for multiple comparisons.}
   \item{purification}{the value of \code{purify} option.} 
   \item{nrPur}{the number of iterations in the item purification process. Returned only if \code{purify} is \code{TRUE}.}
   \item{difPur}{a binary matrix with one row per iteration in the item purification process and one column per item. Zeros and ones in the \emph{i}-th 
@@ -108,6 +116,8 @@ The group membership can be either a vector of two distinct values, one for the 
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items
  (Clauser and Mazor, 1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case
  a warning message is printed. Note that purification is possible only if the test score is considered as the matching criterion. Thus, \code{purify} is ignored when \code{match} is not \code{"score"}.
+
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF pruposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
 
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. By default it is \code{NULL} so that no anchor item is specified. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). Moreover, if the \code{match} argument is not set to \code{"score"}, anchor items will not be taken into account even if \code{anchor} is not \code{NULL}. 
 
@@ -155,6 +165,8 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
  
  Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
  \emph{Applied Measurement in Education, 14}, 329-349.
+
+Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. 
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection of dichotomous differential item functioning.
  \emph{Behavior Research Methods, 42}, 847-862.
@@ -208,6 +220,9 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
  difLogistic(verbal, group = "Gender", focal.name = 1)
  difLogistic(verbal[,1:24], group = verbal[,25], focal.name = 1)
 
+ # Returning all covariance matrices of model parameters
+ difLogistic(verbal, group=25, focal.name = 1, all.cov = TRUE)
+
  # Testing both DIF effects with the Wald test
  r2 <- difLogistic(verbal, group = 25, focal.name = 1, criterion = "Wald")
 
@@ -216,6 +231,9 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
 
  # Testing uniform DIF effect
  difLogistic(verbal, group = 25, focal.name = 1, type = "udif")
+
+ # Multiple comparisons adjustment using Benjamini-Hochberg method
+ difLogistic(verbal, group=25, focal.name = 1, p.adjust.method = "BH")
 
  # With item purification
  difLogistic(verbal, group = "Gender", focal.name = 1, purify = TRUE)

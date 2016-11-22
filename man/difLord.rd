@@ -12,7 +12,7 @@
 \usage{
 difLord(Data, group, focal.name, model, c = NULL, engine = "ltm", discr = 1,
  	irtParam = NULL, same.scale = TRUE, anchor = NULL, alpha = 0.05,
- 	purify = FALSE, nrIter = 10, save.output = FALSE, 
+ 	purify = FALSE, nrIter = 10, p.adjust.method = NULL, save.output = FALSE, 
  	output = c("out", "default"))  	
 \method{print}{Lord}(x, ...)
 \method{plot}{Lord}(x, plot = "lordStat", item = 1, pch = 8, number = TRUE, col = "red", 
@@ -35,6 +35,7 @@ difLord(Data, group, focal.name, model, c = NULL, engine = "ltm", discr = 1,
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).} 
+\item{p.adjust.method}{either \code{NULL} (default) or the acronym of the method for p-value adjustment for multiple comparisons. See \bold{Details}.}
  \item{save.output}{logical: should the output be saved into a text file? (Default is \code{FALSE}).}
  \item{output}{character: a vector of two components. The first component is the name of the output file, the second component is either the file path or \code{"default"}
               (default value). See \bold{Details}.}
@@ -69,6 +70,8 @@ A list of class "Lord" with the following arguments:
   \item{c}{The value of the \code{c} argument.}
   \item{engine}{The value of the \code{engine} argument.}
   \item{discr}{the value of the \code{discr} argument.}
+\item{p.adjust.method}{the value of the \code{p.adjust.method} argument.}
+\item{adjusted.p}{either \code{NULL} or the vector of adjusted p-values for multiple comparisons.}
   \item{itemParInit}{the matrix of initial parameter estimates,with the same format as \code{irtParam} either provided by the user (through \code{irtParam}) or estimated from the data
    (and displayed without rescaling).}
   \item{itemParFinal}{the matrix of final parameter estimates, with the same format as \code{irtParam}, obtained after item purification. Returned 
@@ -122,12 +125,14 @@ A list of class "Lord" with the following arguments:
  The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
  probability of one minus \code{alpha} and \emph{p} degrees of freedom (\emph{p=1} for the 1PL model, \emph{p=2} for the 2PL model or the 3PL model
  with constrained pseudo-guessing parameters, and \emph{p=3} for the unconstrained 3PL model).
- 
+
  Item purification can be performed by setting \code{purify} to \code{TRUE}. In this case, the purification occurs in the equal means anchoring process. Items 
  detected as DIF are iteratively removed from the set of items used for equal means anchoring, and the procedure is repeated until either the same items
  are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
- See Candell and Drasgow (1988) for further details.
+ See Candell and Drasgow (1988) for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
 
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF pruposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
+ 
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to rescale the item parameters on a common metric. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified. If item parameters are provided thorugh the \code{irtParam} argument and if they are on the same scale (i.e. if \code{same.scale} is \code{TRUE}), then anchor items are not used (even if they are specified).
 
  Under the 1PL model, the displayed output also proposes an effect size measure, which is -2.35 times the difference between item difficulties of the reference group
@@ -168,6 +173,8 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
  Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, New-Jersey:
  Educational Testing Service.
  
+Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. 
+
  Lord, F. (1980). \emph{Applications of item response theory to practical testing problems}. Hillsdale, NJ: Lawrence Erlbaum Associates. 
  
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
@@ -198,7 +205,7 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
 
 
 \seealso{
- \code{\link{itemParEst}},  \code{\link{dichoDif}}
+ \code{\link{itemParEst}},  \code{\link{dichoDif}}, \code{\link{p.adjust}}
  }
 
 \examples{
@@ -219,6 +226,10 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
 
  # With items 1 to 5 set as anchor items
  difLord(verbal, group = 25, focal.name = 1, model = "1PL", anchor = 1:5)
+
+ # Multiple comparisons adjustment of p-values with Benjamini-Hochberg method
+ difLord(verbal, group = 25, focal.name = 1, model = "1PL", anchor = 1:5, p.adjust.method = "BH")
+
 
  # 1PL model, "lme4" engine 
  difLord(verbal, group = 25, focal.name = 1, model = "1PL", engine = "lme4")

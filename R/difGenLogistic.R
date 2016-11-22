@@ -1,13 +1,17 @@
-difGenLogistic<-function (Data, group, focal.names, anchor=NULL, match="score",type = "both", criterion = "LRT", 
-    alpha = 0.05, purify = FALSE, nrIter = 10, save.output = FALSE, 
-    output = c("out", "default")) 
+difGenLogistic<-function (Data, group, focal.names, anchor = NULL, match = "score", 
+    type = "both", criterion = "LRT", alpha = 0.05, purify = FALSE, 
+    nrIter = 10, p.adjust.method=NULL,save.output = FALSE, output = c("out", "default")) 
 {
-if (purify & match[1]!="score") stop("purification not allowed when matching variable is not 'score'",call.=FALSE)
+    if (purify & match[1] != "score") 
+        stop("purification not allowed when matching variable is not 'score'", 
+            call. = FALSE)
     internalGenLog <- function() {
         if (length(focal.names) == 1) 
-            RES <- difLogistic(Data, group, focal.name = focal.names, member.type="group", match=match,
-                type = type, alpha = alpha, purify = purify, 
-                nrIter = nrIter, save.output = save.output, output = output)
+            RES <- difLogistic(Data, group, focal.name = focal.names, 
+                member.type = "group", match = match, type = type, 
+                alpha = alpha, p.adjust.method = p.adjust.method, 
+                purify = purify, nrIter = nrIter, 
+                save.output = save.output, output = output)
         else {
             if (length(group) == 1) {
                 if (is.numeric(group)) {
@@ -33,21 +37,23 @@ if (purify & match[1]!="score") stop("purification not allowed when matching var
             Q <- switch(type, both = qchisq(1 - alpha, 2 * DF), 
                 udif = qchisq(1 - alpha, DF), nudif = qchisq(1 - 
                   alpha, DF))
-if (!is.null(anchor)){
-dif.anchor<-anchor
-if (is.numeric(anchor)) ANCHOR<-anchor
-else{
-ANCHOR<-NULL
-for (i in 1:length(anchor)) ANCHOR[i]<-(1:ncol(DATA))[colnames(DATA)==anchor[i]]
-}
-}
-else {
-ANCHOR<-1:ncol(DATA)
-dif.anchor<-NULL
-}
-            if (!purify| match[1]!="score" | !is.null(anchor)) {
-                PROV <- genLogistik(DATA, Group, match=match,type = type, 
-                  criterion = criterion,anchor=ANCHOR)
+            if (!is.null(anchor)) {
+                dif.anchor <- anchor
+                if (is.numeric(anchor)) 
+                  ANCHOR <- anchor
+                else {
+                  ANCHOR <- NULL
+                  for (i in 1:length(anchor)) ANCHOR[i] <- (1:ncol(DATA))[colnames(DATA) == 
+                    anchor[i]]
+                }
+            }
+            else {
+                ANCHOR <- 1:ncol(DATA)
+                dif.anchor <- NULL
+            }
+            if (!purify | match[1] != "score" | !is.null(anchor)) {
+                PROV <- genLogistik(DATA, Group, match = match, 
+                  type = type, criterion = criterion, anchor = ANCHOR)
                 STATS <- PROV$stat
                 deltaR2 <- PROV$deltaR2
                 covMat <- PROV$covMat
@@ -63,28 +69,31 @@ dif.anchor<-NULL
                 }
                 RES <- list(genLogistik = STATS, logitPar = logitPar, 
                   parM0 = PROV$parM0, covMat = covMat, deltaR2 = deltaR2, 
-                  alpha = alpha, thr = Q, DIFitems = DIFitems, match=PROV$match,
-                  type = type, purification = purify, names = colnames(DATA), 
-                  anchor.names=dif.anchor,focal.names = focal.names, criterion = criterion, 
+                  alpha = alpha, thr = Q, DIFitems = DIFitems, 
+                  match = PROV$match, type = type, p.adjust.method = p.adjust.method, 
+                adjusted.p = NULL, purification = purify, 
+                  names = colnames(DATA), anchor.names = dif.anchor, 
+                  focal.names = focal.names, criterion = criterion, 
                   save.output = save.output, output = output)
-if (!is.null(anchor) & match[1]=="score") {
-RES$genLogistik[ANCHOR]<-NA
-RES$logitPar[ANCHOR,]<-NA
-RES$parM0[ANCHOR,]<-NA
-RES$covMat[,,ANCHOR]<-NA
-RES$deltaR2[ANCHOR]<-NA
-for (i in 1:length(RES$DIFitems)){
-if (sum(RES$DIFitems[i]==ANCHOR)==1) RES$DIFitems[i]<-NA
-}
-RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
-}
+                if (!is.null(anchor) & match[1] == "score") {
+                  RES$genLogistik[ANCHOR] <- NA
+                  RES$logitPar[ANCHOR, ] <- NA
+                  RES$parM0[ANCHOR, ] <- NA
+                  RES$covMat[, , ANCHOR] <- NA
+                  RES$deltaR2[ANCHOR] <- NA
+                  for (i in 1:length(RES$DIFitems)) {
+                    if (sum(RES$DIFitems[i] == ANCHOR) == 1) 
+                      RES$DIFitems[i] <- NA
+                  }
+                  RES$DIFitems <- RES$DIFitems[!is.na(RES$DIFitems)]
+                }
             }
             else {
                 nrPur <- 0
                 difPur <- NULL
                 noLoop <- FALSE
-                prov1 <- genLogistik(DATA, Group, match=match,type = type, 
-                  criterion = criterion)
+                prov1 <- genLogistik(DATA, Group, match = match, 
+                  type = type, criterion = criterion)
                 stats1 <- prov1$stat
                 deltaR2 <- prov1$deltaR2
                 covMat <- prov1$covMat
@@ -111,8 +120,8 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
                             nodif <- c(nodif, i)
                         }
                       }
-                      prov2 <- genLogistik(DATA, Group, anchor = nodif, match=match,
-                        type = type, criterion = criterion)
+                      prov2 <- genLogistik(DATA, Group, anchor = nodif, 
+                        match = match, type = type, criterion = criterion)
                       stats2 <- prov2$stat
                       deltaR2 <- prov2$deltaR2
                       covMat <- prov2$covMat
@@ -154,12 +163,24 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
                 }
                 RES <- list(genLogistik = stats1, logitPar = logitPar, 
                   parM0 = prov1$parM0, covMat = covMat, deltaR2 = deltaR2, 
-                  alpha = alpha, thr = Q, DIFitems = DIFitems, match=prov1$match,
-                  type = type, purification = purify, nrPur = nrPur, 
-                  difPur = difPur, convergence = noLoop, names = colnames(DATA), 
-                  anchor.names=NULL,focal.names = focal.names, criterion = criterion, 
+                  alpha = alpha, thr = Q, DIFitems = DIFitems, 
+                  match = prov1$match, type = type, p.adjust.method = p.adjust.method, 
+                adjusted.p = NULL, purification = purify, 
+                  nrPur = nrPur, difPur = difPur, convergence = noLoop, 
+                  names = colnames(DATA), anchor.names = NULL, 
+                  focal.names = focal.names, criterion = criterion, 
                   save.output = save.output, output = output)
             }
+        if (!is.null(p.adjust.method)) {
+             nGroups <- length(RES$focal.names)
+    df <- switch(RES$type, both = 2 * nGroups, udif = nGroups, 
+        nudif = nGroups)
+pval<-1-pchisq(RES$genLogistik,df)
+            RES$adjusted.p <- p.adjust(pval, method = p.adjust.method)
+            if (min(RES$adjusted.p, na.rm = TRUE) > alpha) 
+                RES$DIFitems <- "No DIF item detected"
+            else RES$DIFitems <- which(RES$adjusted.p < alpha)
+        }
             class(RES) <- "genLogistic"
         }
         return(RES)
@@ -174,6 +195,7 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
     }
     return(resToReturn)
 }
+
 
 
 
@@ -275,13 +297,14 @@ print.genLogistic<-function (x, ...)
     cat("Detection of", mess1, "Differential Item Functioning", 
         "\n", "using Generalized logistic regression method,", 
         "\n", sep = "")
-    if (res$purification & is.null(res$anchor.names) & res$match=="score") 
+    if (res$purification & is.null(res$anchor.names) & res$match == 
+        "score") 
         pur <- "with "
     else pur <- "without "
     cat(pur, "item purification ", sep = "")
     cat("and with ", length(res$focal.names), " focal groups", 
         "\n", "\n", sep = "")
-    if (is.character(res$focal.names)| is.factor(res$focal.names)) {
+    if (is.character(res$focal.names) | is.factor(res$focal.names)) {
         cat("Focal groups:", "\n")
         nagr <- cbind(res$focal.names)
         rownames(nagr) <- rep("", nrow(nagr))
@@ -291,7 +314,8 @@ print.genLogistic<-function (x, ...)
     }
     cat("DIF flagging criterion:", ifelse(res$criterion == "Wald", 
         "Wald test", "Likelihood ratio test"), "\n", "\n")
-    if (res$purification & is.null(res$anchor.names) & res$match=="score") {
+    if (res$purification & is.null(res$anchor.names) & res$match == 
+        "score") {
         if (res$nrPur <= 1) 
             word <- " iteration"
         else word <- " iterations"
@@ -313,39 +337,60 @@ print.genLogistic<-function (x, ...)
         else cat("Convergence reached after ", res$nrPur, word, 
             "\n", "\n", sep = "")
     }
-    if (res$match=="score") cat("Matching variable: test score","\n","\n") 
-    else cat("Matching variable: specified matching variable","\n","\n")
-if (is.null(res$anchor.names) | res$match!="score") {
-itk<-1:length(res$genLogistik)
-cat("No set of anchor items was provided", "\n", "\n")
-}
-else {
-itk<-(1:length(res$genLogistik))[!is.na(res$genLogistik)]
-cat("Anchor items (provided by the user):", "\n")
-if (is.numeric(res$anchor.names)) mm<-res$names[res$anchor.names]
-else mm<-res$anchor.names
-mm <- cbind(mm)
-rownames(mm) <- rep("", nrow(mm))
-colnames(mm) <- ""
-print(mm, quote = FALSE)
-cat("\n", "\n")
-}
+    if (res$match == "score") 
+        cat("Matching variable: test score", "\n", "\n")
+    else cat("Matching variable: specified matching variable", 
+        "\n", "\n")
+    if (is.null(res$anchor.names) | res$match != "score") {
+        itk <- 1:length(res$genLogistik)
+        cat("No set of anchor items was provided", "\n", "\n")
+    }
+    else {
+        itk <- (1:length(res$genLogistik))[!is.na(res$genLogistik)]
+        cat("Anchor items (provided by the user):", "\n")
+        if (is.numeric(res$anchor.names)) 
+            mm <- res$names[res$anchor.names]
+        else mm <- res$anchor.names
+        mm <- cbind(mm)
+        rownames(mm) <- rep("", nrow(mm))
+        colnames(mm) <- ""
+        print(mm, quote = FALSE)
+        cat("\n", "\n")
+    }
+    if (is.null(res$p.adjust.method)) 
+        cat("No p-value adjustment for multiple comparisons", 
+            "\n", "\n")
+    else {
+        pAdjMeth <- switch(res$p.adjust.method, bonferroni = "Bonferroni", 
+            holm = "Holm", hochberg = "Hochberg", hommel = "Hommel", 
+            BH = "Benjamini-Hochberg", BY = "Benjamini-Yekutieli")
+        cat("Multiple comparisons made with", pAdjMeth, "adjustement of p-values", 
+            "\n", "\n")
+    }
     cat("Generalized Logistic regression statistic:", "\n", "\n")
     nGroups <- length(res$focal.names)
     df <- switch(res$type, both = 2 * nGroups, udif = nGroups, 
         nudif = nGroups)
     pval <- round(1 - pchisq(res$genLogistik, df), 4)
-    symb <- symnum(pval, c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", 
+if (is.null(res$p.adjust.method)) symb <- symnum(pval, c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", 
+        "**", "*", ".", ""))
+else symb <- symnum(res$adjusted.p, c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", 
         "**", "*", ".", ""))
     m1 <- cbind(round(res$genLogistik[itk], 4), pval[itk])
+if (!is.null(res$p.adjust.method)) m1<-cbind(m1,round(res$adjusted.p[itk],4))
     m1 <- noquote(cbind(format(m1, justify = "right"), symb[itk]))
-    if (!is.null(res$names)) rownames(m1) <- res$names[itk]
+    if (!is.null(res$names)) 
+        rownames(m1) <- res$names[itk]
     else {
         rn <- NULL
         for (i in 1:nrow(m1)) rn[i] <- paste("Item", i, sep = "")
         rownames(m1) <- rn[itk]
     }
-    colnames(m1) <- c("Stat.", "P-value", "")
+con <- c("Stat.", "P-value")
+    if (!is.null(res$p.adjust.method)) 
+        con <- c(con, "Adj. P")
+    con <- c(con, "")
+    colnames(m1) <- con
     print(m1)
     cat("\n")
     cat("Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 ", 
@@ -359,12 +404,14 @@ cat("\n", "\n")
         mess2 <- switch(res$type, both = " ", nudif = " nonuniform ", 
             udif = " uniform ")
         cat("Items detected as", mess2, "DIF items:", "\n", sep = "")
-   if (!is.null(res$names)) m2 <- res$names
-    else {
-        rn <- NULL
-        for (i in 1:length(res$genLogistik)) rn[i] <- paste("Item", i, sep = "")
-        m2 <- rn
-    }
+        if (!is.null(res$names)) 
+            m2 <- res$names
+        else {
+            rn <- NULL
+            for (i in 1:length(res$genLogistik)) rn[i] <- paste("Item", 
+                i, sep = "")
+            m2 <- rn
+        }
         m2 <- cbind(m2[res$DIFitems])
         rownames(m2) <- rep("", nrow(m2))
         colnames(m2) <- ""
@@ -381,9 +428,10 @@ cat("\n", "\n")
         "B", "C"))
     symb2 <- symnum(r2, c(0, 0.035, 0.07, 1), symbols = c("A", 
         "B", "C"))
-    matR2 <- noquote(cbind(format(r2[itk], justify = "right"), symb1[itk], 
-        symb2[itk]))
-    if (!is.null(res$names)) rownames(matR2) <- res$names[itk]
+    matR2 <- noquote(cbind(format(r2[itk], justify = "right"), 
+        symb1[itk], symb2[itk]))
+    if (!is.null(res$names)) 
+        rownames(matR2) <- res$names[itk]
     else {
         rn <- NULL
         for (i in 1:nrow(matR2)) rn[i] <- paste("Item", i, sep = "")
@@ -394,8 +442,7 @@ cat("\n", "\n")
     cat("\n")
     cat("Effect size codes:", "\n")
     cat(" Zumbo & Thomas (ZT): 0 'A' 0.13 'B' 0.26 'C' 1", "\n")
-    cat(" Jodoin & Gierl (JG): 0 'A' 0.035 'B' 0.07 'C' 1", 
-        "\n")
+    cat(" Jodoin & Gierl (JG): 0 'A' 0.035 'B' 0.07 'C' 1", "\n")
     if (!x$save.output) 
         cat("\n", "Output was not captured!", "\n")
     else {
@@ -407,4 +454,3 @@ cat("\n", "\n")
             "\n", " '", fileName, "'", "\n", "\n", sep = "")
     }
 }
-

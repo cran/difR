@@ -1,12 +1,19 @@
 citHeader("To cite package 'difR' in publications use:")
 
-citEntry(entry = "Manual",
-title = "difR: Collection of methods to detect dichotomous differential item functioning (DIF)",
-author = personList(as.person("David Magis"),as.person("Sebastien Beland"),as.person("Gilles Raiche")),
-year = "2015",
-note = "R package version 4.6",
-textVersion  = paste("David Magis, Sebastien Beland and Gilles Raiche (2015). ", 
-"difR: Collection of methods to detect dichotomous differential item functioning (DIF). ",
-"R package version 4.6",sep="")
+citEntry(entry = "Article",
+  title        = "A general framework and an R package for the detection of dichotomous differential item functioning",
+  author       = personList(as.person("D. Magis"),
+                   as.person("S. Beland"), as.person("F. Tuerlinckx"), as.person("P. De Boeck")),
+  journal      = "Behavior Research Methods",
+  year         = "2010",
+  volume       = "42",
+  pages        = "847--862",
+
+  textVersion  =
+  paste("D. Magis, S. Beland, F. Tuerlinckx, P. De Boeck(2010).",
+        "A general framework and an R package for the detection
+ of dichotomous differential item functioning.",
+        "Behavior Research Methods, 42, 847-862.")
 )
+
 

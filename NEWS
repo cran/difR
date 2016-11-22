@@ -5,8 +5,82 @@
         **************************************************
 
 
+
 ------------------------------------
-- Changes in difR 4.6 (2015-04-24) -
+- Changes in difR 4.7 (2016-11-22) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  The license for 'difR' package was updated to a
+     GPL license.
+
+  o  Adjustement for multiple comparisons are now 
+     available for all DIF methods, except 'difStd()'
+     (standardized-P-DIF) and 'difTID()' (Transformed 
+     Item Difficulties). The argument 'p.adjust.method' 
+     was added to specify which adjustment to apply 
+     (e.g., "BH" for Benjamini-Hochberg). Adjusted 
+     p-values are then returned and DIF identification
+     is based on these adjusted p-values. Note that 
+     methods 'difStd()' and 'difTID()' do not return
+     p-values from null statistical distributions and
+     can therefore ot be updated for multiple 
+     comparisons. Many thanks to Patricia Martinkova
+     (Czech Academy of Sciences, Prague, Czech Republic; 
+     martinkova@cs.cas.cz) for suggesting this improvement.
+
+  o  The functions 'selectDif()', 'selectGenDif()',
+     'dichoDif()' and 'genDichoDif()' were updated
+     accordingly. 
+
+  o  The 'Logistik()' function returns now in addition 
+     the matrices 'seM0' and 'seM1' with the standard
+     error values of the parameter estimates in 'parM0'
+     and 'parM1' matrices (with the same format). 
+
+  o  The 'difLogistic()' function returns now in addition 
+     the matrices 'logitSe', wth the standard error values
+     of the parameters hold in matrix 'logitPar', as well
+     as matrix 'seM0' from the output of 'Logistik()' 
+     function. 
+
+  o  The functions 'Logistik()' and 'difLogistic()' have
+     a new argument 'all.cov' to specify whether all 
+     covariance matrices of model parameters should be 
+     returned (as lists), for both nested models and all 
+     items. Returned arguments are called 'cov.M0' and
+     'cov.M1'. Default is FALSE so these lists are 
+     returned as NULL values.
+     
+
+
+MINOR UPDATES
+
+  o  A minor bug was fixed in the 'print.Lord' method. 
+     When the 3PL was used with fixed guessing parameter,
+     the 'print.Lord' function was reporting p-values 
+     computed with 3 degrees of freedom, while in this
+     case it should be 2 degrees of freedom. Many thanks
+     to Patricia Martinkova (Czech Academy of Sciences,
+     Prague, Czech Republic; martinkova@cs.cas.cz) for
+     noticing this issue.
+
+  o  A minor bug was fixed in the 'difMH' method. In case
+     of item purification with asymptotic (not exact)
+     statistics, the DIF detection threshold returned by
+     the function was always the one from the chi-square
+     distrib ution, even when the 'logOR' statistic was
+     used (the computations were however correct).
+
+  o  The CITATION file was updated.
+
+  o  Several typos were fixed.
+
+
+
+------------------------------------
+- Changes in difR 4.6 (2015-04-29) -
 ------------------------------------
 
 MAJOR UPDATES

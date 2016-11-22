@@ -35,3 +35,12 @@ import(
   lme4,
   ltm
 )
+
+
+importFrom("grDevices", "dev.off", "jpeg", "pdf")
+  importFrom("graphics", "abline", "legend", "lines", "plot", "points",
+             "text")
+  importFrom("stats", "binomial", "coefficients", "cov", "deviance",
+             "glm", "mantelhaen.test", "pchisq", "pnorm", "qchisq",
+             "qnorm", "sd", "symnum", "vcov","p.adjust")
+  importFrom("utils", "capture.output")

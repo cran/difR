@@ -1,7 +1,7 @@
 # DIF MANTEL-HAENZEL
 
 difMH<-function (Data, group, focal.name, anchor=NULL, MHstat = "MHChisq", correct = TRUE, exact=FALSE,
-    alpha = 0.05, purify = FALSE, nrIter = 10, save.output = FALSE, 
+    alpha = 0.05, purify = FALSE, nrIter = 10, p.adjust.method=NULL, save.output = FALSE, 
     output = c("out", "default")) 
 {
     internalMH <- function() {
@@ -47,7 +47,7 @@ if (exact){
             if (min(PROV$Pval) >=alpha) DIFitems <- "No DIF item detected"
             else DIFitems <- (1:ncol(DATA))[PROV$Pval < alpha]
             RES <- list(MH = STATS, Pval=PROV$Pval, alpha = alpha, DIFitems = DIFitems, 
-                correct = correct, exact=exact, purification = purify, names = colnames(DATA), 
+                correct = correct, exact=exact, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, names = colnames(DATA), 
                 anchor.names=dif.anchor,save.output = save.output, output = output)
 if (!is.null(anchor)) {
 RES$MH[ANCHOR]<-NA
@@ -120,7 +120,7 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
                 colnames(difPur) <- co
             }
             RES <- list(MH = stats1, Pval=prov1$Pval, alpha = alpha, DIFitems = DIFitems, 
-                correct = correct, exact=exact, purification = purify, nrPur = nrPur, 
+                correct = correct, exact=exact, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, nrPur = nrPur, 
                 difPur = difPur, convergence = noLoop, names = colnames(DATA), 
                 anchor.names=NULL, save.output = save.output, output = output)
         }
@@ -137,7 +137,7 @@ else{
             RES <- list(MH = STATS, alphaMH = PROV$resAlpha, 
                 varLambda = PROV$varLambda, MHstat = MHstat, 
                 alpha = alpha, thr = Q, DIFitems = DIFitems, 
-                correct = correct, exact=exact, purification = purify, names = colnames(DATA), 
+                correct = correct, exact=exact, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, names = colnames(DATA), 
                 anchor.names=dif.anchor, save.output = save.output, output = output)
 if (!is.null(anchor)) {
 RES$MH[ANCHOR]<-NA
@@ -218,12 +218,24 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
             }
             RES <- list(MH = stats1, alphaMH = prov1$resAlpha, 
                 varLambda = prov1$varLambda, MHstat = MHstat, 
-                alpha = alpha, thr = qchisq(1 - alpha, 1), DIFitems = DIFitems, 
-                correct = correct, exact=exact,purification = purify, nrPur = nrPur, 
+                alpha = alpha, thr = Q, DIFitems = DIFitems, 
+                correct = correct, exact=exact,p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, nrPur = nrPur, 
                 difPur = difPur, convergence = noLoop, names = colnames(DATA), 
                 anchor.names=NULL, save.output = save.output, output = output)
         }
 }
+
+if (!is.null(p.adjust.method)){
+    if (exact) pval<-RES$Pval
+else {
+if (RES$MHstat=="MHChisq") pval<-1-pchisq(RES$MH,1)
+else pval<-2 * (1 - pnorm(abs(RES$MH)))
+}
+   RES$adjusted.p<-p.adjust(pval,method=p.adjust.method)
+if (min(RES$adjusted.p,na.rm=TRUE)>alpha) RES$DIFitems<-"No DIF item detected"
+else RES$DIFitems<-which(RES$adjusted.p<alpha)
+}
+
         class(RES) <- "MH"
         return(RES)
     }
@@ -317,16 +329,19 @@ print.MH<-function (x, ...)
     else pur <- "without "
     cat(corr, "continuity correction and ", pur, "item purification", 
         "\n", "\n", sep = "")
-    if (res$exact) cat("Results based on exact inference","\n","\n")
-    else cat("Results based on asymptotic inference","\n","\n")
+    if (res$exact) 
+        cat("Results based on exact inference", "\n", "\n")
+    else cat("Results based on asymptotic inference", "\n", "\n")
     if (res$purification & is.null(res$anchor.names)) {
         if (res$nrPur <= 1) 
             word <- " iteration"
         else word <- " iterations"
         if (!res$convergence) {
-            cat("WARNING: no item purification convergence after ",res$nrPur, word, "\n", sep = "")
+            cat("WARNING: no item purification convergence after ", 
+                res$nrPur, word, "\n", sep = "")
             loop <- NULL
-            for (i in 1:res$nrPur) loop[i] <- sum(res$difPur[1,] == res$difPur[i + 1, ])
+            for (i in 1:res$nrPur) loop[i] <- sum(res$difPur[1, 
+                ] == res$difPur[i + 1, ])
             if (max(loop) != length(res$MH)) 
                 cat("(Note: no loop detected in less than ", 
                   res$nrPur, word, ")", "\n", sep = "")
@@ -339,95 +354,131 @@ print.MH<-function (x, ...)
         else cat("Convergence reached after ", res$nrPur, word, 
             "\n", "\n", sep = "")
     }
-if (is.null(res$anchor.names)) {
-itk<-1:length(res$MH)
-cat("No set of anchor items was provided", "\n", "\n")
-}
-else {
-itk<-(1:length(res$MH))[!is.na(res$MH)]
-cat("Anchor items (provided by the user):", "\n")
-if (is.numeric(res$anchor.names)) mm<-res$names[res$anchor.names]
-else mm<-res$anchor.names
-mm <- cbind(mm)
-rownames(mm) <- rep("", nrow(mm))
-colnames(mm) <- ""
-print(mm, quote = FALSE)
-cat("\n", "\n")
-}
-if (res$exact) met<-"Exact statistic:"
-else    met <- switch(res$MHstat, MHChisq = "Mantel-Haenszel Chi-square statistic:", 
+    if (is.null(res$anchor.names)) {
+        itk <- 1:length(res$MH)
+        cat("No set of anchor items was provided", "\n", "\n")
+    }
+    else {
+        itk <- (1:length(res$MH))[!is.na(res$MH)]
+        cat("Anchor items (provided by the user):", "\n")
+        if (is.numeric(res$anchor.names)) 
+            mm <- res$names[res$anchor.names]
+        else mm <- res$anchor.names
+        mm <- cbind(mm)
+        rownames(mm) <- rep("", nrow(mm))
+        colnames(mm) <- ""
+        print(mm, quote = FALSE)
+        cat("\n", "\n")
+    }
+    if (is.null(res$p.adjust.method)) 
+        cat("No p-value adjustment for multiple comparisons", 
+            "\n", "\n")
+    else {
+        pAdjMeth <- switch(res$p.adjust.method, bonferroni = "Bonferroni", 
+            holm = "Holm", hochberg = "Hochberg", hommel = "Hommel", 
+            BH = "Benjamini-Hochberg", BY = "Benjamini-Yekutieli")
+        cat("Multiple comparisons made with", pAdjMeth, "adjustement of p-values", 
+            "\n", "\n")
+    }
+    if (res$exact) 
+        met <- "Exact statistic:"
+    else met <- switch(res$MHstat, MHChisq = "Mantel-Haenszel Chi-square statistic:", 
         logOR = "Log odds-ratio statistic:")
     cat(met, "\n", "\n")
-if (res$exact)  pval<-round(res$Pval,4)
-else{
-    if (res$MHstat == "MHChisq") pval <- round(1 - pchisq(res$MH, 1), 4)
-    else pval <- round(2 * (1 - pnorm(abs(res$MH))), 4)
-}
-    symb <- symnum(pval, c(0, 0.001, 0.01, 0.05, 0.1, 1), symbols = c("***", 
-        "**", "*", ".", ""))
-    if (!res$exact) m1 <- cbind(round(res$MH[itk], 4), pval[itk])
-else m1 <- cbind(round(res$MH[itk]), pval[itk])
+        if (res$exact) 
+            pval <- round(res$Pval, 4)
+        else {
+            if (res$MHstat == "MHChisq") 
+                pval <- round(1 - pchisq(res$MH, 1), 4)
+            else pval <- round(2 * (1 - pnorm(abs(res$MH))), 
+                4)
+        }
+    if (is.null(res$p.adjust.method)) 
+        symb <- symnum(pval, c(0, 0.001, 0.01, 0.05, 0.1, 1), 
+            symbols = c("***", "**", "*", ".", ""))
+    else symb <- symnum(round(res$adjusted.p, 4), c(0, 0.001, 
+        0.01, 0.05, 0.1, 1), symbols = c("***", "**", "*", ".", 
+        ""))
+    if (!res$exact) 
+        m1 <- cbind(round(res$MH[itk], 4), pval[itk])
+    else m1 <- cbind(round(res$MH[itk]), pval[itk])
+    if (!is.null(res$p.adjust.method)) 
+        m1 <- cbind(m1, round(res$adjusted.p[itk], 4))
+    m1 <- round(m1, 4)
     m1 <- noquote(cbind(format(m1, justify = "right"), symb[itk]))
-    if (!is.null(res$names)) rownames(m1) <- res$names[itk]
+    if (!is.null(res$names)) 
+        rownames(m1) <- res$names[itk]
     else {
         rn <- NULL
         for (i in 1:nrow(m1)) rn[i] <- paste("Item", i, sep = "")
         rownames(m1) <- rn[itk]
     }
-    colnames(m1) <- c("Stat.", "P-value", "")
+    if (is.null(res$p.adjust.method)) 
+        colnames(m1) <- c("Stat.", "P-value", "")
+    else colnames(m1) <- c("Stat.", "P-value", "Adj. P", "")
     print(m1)
     cat("\n")
     cat("Signif. codes: 0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1 ", 
         "\n")
-if (res$exact) cat("\n","Significance level: ",res$alpha, "\n", "\n", sep = "")
-else cat("\n", "Detection threshold: ", round(res$thr, 4), " (significance level: ", 
-        res$alpha, ")", "\n", "\n", sep = "")
-    if (is.character(res$DIFitems)) cat("Items detected as DIF items:", res$DIFitems, "\n", "\n")
+    if (res$exact) 
+        cat("\n", "Significance level: ", res$alpha, "\n", "\n", 
+            sep = "")
+    else cat("\n", "Detection threshold: ", round(res$thr, 4), 
+        " (significance level: ", res$alpha, ")", "\n", "\n", 
+        sep = "")
+    if (is.character(res$DIFitems)) 
+        cat("Items detected as DIF items:", res$DIFitems, "\n", 
+            "\n")
     else {
         cat("Items detected as DIF items:", "\n")
-   if (!is.null(res$names)) m2 <- res$names
-    else {
-        rn <- NULL
-        for (i in 1:length(res$MH)) rn[i] <- paste("Item", i, sep = "")
-        m2 <- rn
-    }
+        if (!is.null(res$names)) 
+            m2 <- res$names
+        else {
+            rn <- NULL
+            for (i in 1:length(res$MH)) rn[i] <- paste("Item", 
+                i, sep = "")
+            m2 <- rn
+        }
         m2 <- cbind(m2[res$DIFitems])
         rownames(m2) <- rep("", nrow(m2))
         colnames(m2) <- ""
         print(m2, quote = FALSE)
         cat("\n", "\n")
     }
-if (!res$exact){
-    cat("Effect size (ETS Delta scale):", "\n", "\n")
-    cat("Effect size code:", "\n")
-    cat(" 'A': negligible effect", "\n")
-    cat(" 'B': moderate effect", "\n")
-    cat(" 'C': large effect", "\n", "\n")
-    r2 <- round(-2.35 * log(res$alphaMH), 4)
-    symb1 <- symnum(abs(r2), c(0, 1, 1.5, Inf), symbols = c("A", 
-        "B", "C"))
-    matR2 <- cbind(round(res$alphaMH[itk], 4), r2[itk])
-    matR2 <- noquote(cbind(format(matR2, justify = "right"), 
-        symb1[itk]))
-    if (!is.null(res$names)) rownames(matR2) <- res$names[itk]
-    else {
-        rn <- NULL
-        for (i in 1:nrow(matR2)) rn[i] <- paste("Item", i, sep = "")
-        rownames(matR2) <- rn[itk]
+    if (!res$exact) {
+        cat("Effect size (ETS Delta scale):", "\n", "\n")
+        cat("Effect size code:", "\n")
+        cat(" 'A': negligible effect", "\n")
+        cat(" 'B': moderate effect", "\n")
+        cat(" 'C': large effect", "\n", "\n")
+        r2 <- round(-2.35 * log(res$alphaMH), 4)
+        symb1 <- symnum(abs(r2), c(0, 1, 1.5, Inf), symbols = c("A", 
+            "B", "C"))
+        matR2 <- cbind(round(res$alphaMH[itk], 4), r2[itk])
+        matR2 <- noquote(cbind(format(matR2, justify = "right"), 
+            symb1[itk]))
+        if (!is.null(res$names)) 
+            rownames(matR2) <- res$names[itk]
+        else {
+            rn <- NULL
+            for (i in 1:nrow(matR2)) rn[i] <- paste("Item", i, 
+                sep = "")
+            rownames(matR2) <- rn[itk]
+        }
+        colnames(matR2) <- c("alphaMH", "deltaMH", "")
+        print(matR2)
+        cat("\n")
+        cat("Effect size codes: 0 'A' 1.0 'B' 1.5 'C'", "\n")
+        cat(" (for absolute values of 'deltaMH')", "\n", "\n")
     }
-    colnames(matR2) <- c("alphaMH", "deltaMH", "")
-    print(matR2)
-    cat("\n")
-    cat("Effect size codes: 0 'A' 1.0 'B' 1.5 'C'", "\n")
-    cat(" (for absolute values of 'deltaMH')", "\n", "\n")
-}
-    if (!x$save.output) cat("Output was not captured!","\n")
+    if (!x$save.output) 
+        cat("Output was not captured!", "\n")
     else {
-if (x$output[2]=="default") wd<-paste(getwd(),"/",sep="")
-else wd<-x$output[2]
-fileName<-paste(wd,x$output[1],".txt",sep="")
-cat("Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
+        if (x$output[2] == "default") 
+            wd <- paste(getwd(), "/", sep = "")
+        else wd <- x$output[2]
+        fileName <- paste(wd, x$output[1], ".txt", sep = "")
+        cat("Output was captured and saved into file", "\n", 
+            " '", fileName, "'", "\n", "\n", sep = "")
+    }
 }
-}
-
-

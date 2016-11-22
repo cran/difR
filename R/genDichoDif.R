@@ -1,75 +1,88 @@
 # DIF: COMPARING DIF STATISTICS
 
-genDichoDif <- function (Data, group, focal.names, method, anchor=NULL,match="score",type= "both", criterion="LRT",
-    alpha = 0.05, model = "2PL", c = NULL, engine="ltm", discr=1,irtParam = NULL, 
-    nrFocal = 2, same.scale = TRUE, purify = FALSE, nrIter = 10, save.output=FALSE, output=c("out","default"))  
+genDichoDif<-function (Data, group, focal.names, method, anchor = NULL, match = "score", 
+    type = "both", criterion = "LRT", alpha = 0.05, model = "2PL", 
+    c = NULL, engine = "ltm", discr = 1, irtParam = NULL, nrFocal = 2, 
+    same.scale = TRUE, purify = FALSE, nrIter = 10, p.adjust.method = NULL, save.output = FALSE, 
+    output = c("out", "default")) 
 {
-internalGenDicho<-function(){
-    mets <- c("GMH", "genLogistic", "genLord")
-    prov.met <- rep(0, length(method))
-    for (i in 1:length(method)) {
-        if (sum(method[i] == mets) == 1) 
-            prov.met[i] <- 1
-    }
-    if (min(prov.met) == 0) {
-        ind <- min((1:length(method))[prov.met == 0])
-        RES <- list(NULL, method[ind])
-        class(RES) <- "genDichoDif"
-        return(RES)
-    }
-    else {
-        if (length(method) == 1) 
-            return(selectGenDif(Data = Data, group = group, focal.names = focal.names, match=match,type=type, criterion=criterion,
-                method = method, anchor=anchor,alpha = alpha, model = model, c = c, engine=engine,discr=discr,irtParam = irtParam, 
-                same.scale = same.scale, purify = purify, nrIter = nrIter,save.output=save.output,output=output))
-        else {
-            mat <- iters <- conv <- anchor.names<-NULL
-            for (met in 1:length(method)) {
-                prov <- selectGenDif(Data = Data, group = group, 
-                  focal.names = focal.names, match=match,type=type,criterion=criterion, method = method[met], 
-                  anchor=anchor,alpha = alpha, model = model, c = c, engine=engine,discr=discr, irtParam = irtParam, 
-                  same.scale = same.scale, purify = purify, nrIter = nrIter)
-anchor.names<-prov$anchor.names
-                mat <- cbind(mat, rep("NoDIF", length(prov[[1]])))
-                if (!is.character(prov$DIFitems)) 
-                  mat[prov$DIFitems, met] <- "DIF"
-                rname <- prov$names
-                if (purify) {
-                  iters <- c(iters, prov$nrPur)
-                  conv <- c(conv, prov$convergence)
-                }
-            }
-            method2 <- method
-            method2[method == "GMH"] <- "M.-H."
-            method2[method == "genLogistic"] <- "Logistic"
-            method2[method == "genLord"] <- "Lord"
-            colnames(mat) <- method2
-            if (!is.null(rname)) rownames(mat) <- rname
-            else {
-                rname <- NULL
-                for (i in 1:nrow(mat)) rname <- c(rname, paste("Item", 
-                  i, sep = ""))
-                rownames(mat) <- rname
-            }
-            RES <- list(DIF = mat, alpha = alpha, method = method,
-                type = type, criterion=criterion, model = model, c = c, engine=engine,discr=discr,irtParam = irtParam, 
-		    same.scale = same.scale, purification = purify, nrPur = iters, 
-                convergence = conv, anchor.names=anchor.names,save.output=save.output,output=output)
+    internalGenDicho <- function() {
+        mets <- c("GMH", "genLogistic", "genLord")
+        prov.met <- rep(0, length(method))
+        for (i in 1:length(method)) {
+            if (sum(method[i] == mets) == 1) 
+                prov.met[i] <- 1
+        }
+        if (min(prov.met) == 0) {
+            ind <- min((1:length(method))[prov.met == 0])
+            RES <- list(NULL, method[ind])
             class(RES) <- "genDichoDif"
             return(RES)
         }
+        else {
+            if (length(method) == 1) 
+                return(selectGenDif(Data = Data, group = group, 
+                  focal.names = focal.names, match = match, type = type, 
+                  criterion = criterion, method = method, anchor = anchor, 
+                  alpha = alpha, model = model, c = c, engine = engine, 
+                  discr = discr, irtParam = irtParam, same.scale = same.scale, 
+                  purify = purify, nrIter = nrIter, p.adjust.method = p.adjust.method, save.output = save.output, 
+                  output = output))
+            else {
+                mat <- iters <- conv <- anchor.names <- NULL
+                for (met in 1:length(method)) {
+                  prov <- selectGenDif(Data = Data, group = group, 
+                    focal.names = focal.names, match = match, 
+                    type = type, criterion = criterion, method = method[met], 
+                    anchor = anchor, alpha = alpha, model = model, 
+                    c = c, engine = engine, discr = discr, irtParam = irtParam, 
+                    same.scale = same.scale, purify = purify, 
+                    nrIter = nrIter, p.adjust.method = p.adjust.method)
+                  anchor.names <- prov$anchor.names
+                  mat <- cbind(mat, rep("NoDIF", length(prov[[1]])))
+                  if (!is.character(prov$DIFitems)) 
+                    mat[prov$DIFitems, met] <- "DIF"
+                  rname <- prov$names
+                  if (purify) {
+                    iters <- c(iters, prov$nrPur)
+                    conv <- c(conv, prov$convergence)
+                  }
+                }
+                method2 <- method
+                method2[method == "GMH"] <- "M.-H."
+                method2[method == "genLogistic"] <- "Logistic"
+                method2[method == "genLord"] <- "Lord"
+                colnames(mat) <- method2
+                if (!is.null(rname)) 
+                  rownames(mat) <- rname
+                else {
+                  rname <- NULL
+                  for (i in 1:nrow(mat)) rname <- c(rname, paste("Item", 
+                    i, sep = ""))
+                  rownames(mat) <- rname
+                }
+                RES <- list(DIF = mat, alpha = alpha, method = method, 
+                  type = type, criterion = criterion, model = model, 
+                  c = c, engine = engine, discr = discr, irtParam = irtParam, 
+                  same.scale = same.scale, purification = purify, 
+                  nrPur = iters, convergence = conv, anchor.names = anchor.names, 
+                  p.adjust.method = p.adjust.method, save.output = save.output, output = output)
+                class(RES) <- "genDichoDif"
+                return(RES)
+            }
+        }
     }
+    resToReturn <- internalGenDicho()
+    if (save.output) {
+        if (output[2] == "default") 
+            wd <- paste(getwd(), "/", sep = "")
+        else wd <- output[2]
+        fileName <- paste(wd, output[1], ".txt", sep = "")
+        capture.output(resToReturn, file = fileName)
+    }
+    return(resToReturn)
 }
-resToReturn<-internalGenDicho()
-if (save.output){
-if (output[2]=="default") wd<-paste(getwd(),"/",sep="")
-else wd<-output[2]
-fileName<-paste(wd,output[1],".txt",sep="")
-capture.output(resToReturn,file=fileName)
-}
-return(resToReturn)
 
-}
 
 
 
@@ -158,6 +171,16 @@ print(format(resConv,justify="centre"))
 cat("\n")
 }
 else cat("Item purification: No","\n","\n")
+        if (is.null(res$p.adjust.method)) 
+            cat(" No p-value adjustment for multiple comparisons", 
+                "\n", "\n")
+        else {
+            pAdjMeth <- switch(res$p.adjust.method, bonferroni = "Bonferroni", 
+                holm = "Holm", hochberg = "Hochberg", hommel = "Hommel", 
+                BH = "Benjamini-Hochberg", BY = "Benjamini-Yekutieli")
+            cat(" Multiple comparisons made with", pAdjMeth, 
+                "adjustement of p-values", "\n", "\n")
+        }
 cat("Comparison of DIF detection results:","\n","\n")
 nr<-NULL
 for (i in 1:nrow(res$DIF)) nr[i]<-paste(length(res$DIF[i,][res$DIF[i,]=="DIF"]),"/",ncol(res$DIF),sep="")
