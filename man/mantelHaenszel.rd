@@ -8,13 +8,14 @@
  }
 
 \usage{
-mantelHaenszel(data, member, correct = TRUE, exact = FALSE,
+mantelHaenszel(data, member, match = "score", correct = TRUE, exact = FALSE,
   anchor = 1:ncol(data))
  }
 
 \arguments{
  \item{data}{numeric: the data matrix (one row per subject, one column per item).}
  \item{member}{numeric: the vector of group membership with zero and one entries only. See \bold{Details}.}
+ \item{match}{specifies the type of matching criterion. Can be either \code{"score"} (default) to compute the test score, or any continuous or discrete variable with the same length as the number of rows of \code{data}. See \bold{Details}.}
  \item{correct}{logical: should the continuity correction be used? (default is \code{TRUE}).}
  \item{exact}{logical: should an exact test be computed? (default is \code{FALSE}).}
  \item{anchor}{a vector of integer values specifying which items (all by default) are currently considered as anchor
@@ -27,8 +28,9 @@ mantelHaenszel(data, member, correct = TRUE, exact = FALSE,
  \item{resAlpha}{the vector of the (asymptotic) Mantel-Haenszel estimates of the common odds ratios. Returned only if
                  \code{exact} is \code{FALSE}.}
  \item{varLambda}{the (asymptotic) variance of the \eqn{\lambda_{MH}} statistic. Returned only if \code{exact} is 
-                 \code{FALSE}. See \bold{Details}.}
+                 \code{FALSE}.}
  \item{Pval}{the exact P-values of the MH test. Returned only if \code{exact} is \code{TRUE}.}
+\item{match}{a character string, either \code{"score"} or \code{"matching variable"} depending on the \code{match} argument.}
  }
  
 \details{
@@ -43,20 +45,18 @@ mantelHaenszel(data, member, correct = TRUE, exact = FALSE,
  The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero 
  corresponding to the reference group and a value of one to the focal group.
  
+ The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{mantelHaenszel} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{data} matrix.
+
  By default, the continuity correction factor -0.5 is used (Holland and Thayer, 1988). One can nevertheless remove it by 
  specifying \code{correct=FALSE}.
 
- By default, the asymptotic Mantel-Haenszel statistic is computed. However, the exact statistics and related P-values can
- be obtained by specifying the logical argument \code{exact} to \code{TRUE}. See Agresti (1990, 1992) for further 
- details about exact inference.
+ By default, the asymptotic Mantel-Haenszel statistic is computed. However, the exact statistics and related P-values can be obtained by specifying the logical argument \code{exact} to \code{TRUE}. See Agresti (1990, 1992) for further details about exact inference.
 
  Option \code{anchor} sets the items which are considered as anchor items for computing Mantel-Haenszel statistics. Items
- other than the anchor items and the tested item are discarded. \code{anchor} must hold integer values specifying the
- column numbers of the corresponding anchor items. It is primarily designed to perform item purification.
+ other than the anchor items and the tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is primarily designed to perform item purification.
  
  In addition to the Mantel-Haenszel statistics to identify DIF items, \code{mantelHaenszel} computes the estimates of the
- common odds ratio \eqn{\alpha_{MH}} which are used for measuring the effect size of the items (Holland and Thayer, 1985,
- 1988). They are returned in the \code{resAlpha} argument of the output list. Moreover, the logarithm of 
+ common odds ratio \eqn{\alpha_{MH}} which are used for measuring the effect size of the items (Holland and Thayer, 1985, 1988). They are returned in the \code{resAlpha} argument of the output list. Moreover, the logarithm of 
  \eqn{\alpha_{MH}}, say \eqn{\lambda_{MH}}, is asymptotically distributed and its variance is computed and returned into
  the \code{varLambda} argument. Note that this variance is the one proposed by Philips and Holland (1987), since it seems
  the most accurate expression for the variance of \eqn{\lambda_{MH}} (Penfield and Camilli, 2007).
@@ -93,9 +93,9 @@ mantelHaenszel(data, member, correct = TRUE, exact = FALSE,
     Universite du Quebec a Montreal \cr
     \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr

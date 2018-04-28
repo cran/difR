@@ -124,9 +124,9 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
 
 \author{
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
  }
 
 

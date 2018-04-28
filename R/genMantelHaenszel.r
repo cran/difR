@@ -2,12 +2,13 @@
 ## data: data matrix
 # member: vector of integer values, 0 for reference group, 1, 2, etc. for focal groups
 
-genMantelHaenszel<-function(data,member,anchor=1:ncol(data)){
+genMantelHaenszel<-function(data,member,match="score",anchor=1:ncol(data)){
 res<-NULL
-for(item in 1:ncol(data)){
+for (item in 1:ncol(data)){
 data2<-data[,anchor]
 if (sum(anchor==item)==0) data2<-cbind(data2,data[,item])
-xj<-rowSums(data2,na.rm=TRUE)
+if (match[1]=="score") xj<-rowSums(data2,na.rm=TRUE)
+else xj<-match
 scores<-sort(unique(xj))
 nrGroups<-length(unique(member))-1
 a<-e<-rep(0,nrGroups)

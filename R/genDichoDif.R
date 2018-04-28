@@ -61,7 +61,7 @@ genDichoDif<-function (Data, group, focal.names, method, anchor = NULL, match = 
                     i, sep = ""))
                   rownames(mat) <- rname
                 }
-                RES <- list(DIF = mat, alpha = alpha, method = method, 
+                RES <- list(DIF = mat, alpha = alpha, method = method, match=match,
                   type = type, criterion = criterion, model = model, 
                   c = c, engine = engine, discr = discr, irtParam = irtParam, 
                   same.scale = same.scale, purification = purify, 
@@ -109,6 +109,10 @@ for (i in 4:length(methods)) met2<-paste(met2,methods2[i],sep=", ")
 cat(met2,"\n")
 }
 cat("\n")
+    if (res$match[1] == "score") 
+        cat("Matching variable: test score", "\n", "\n")
+    else cat("Matching variable: specified matching variable", 
+        "\n", "\n")
 if (is.null(res$anchor.names)) {
 itk<-1:nrow(res$DIF)
 cat("No set of anchor items was provided", "\n", "\n")

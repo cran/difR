@@ -347,7 +347,7 @@ print.Logistic<-function (x, ...)
         else cat("Convergence reached after ", res$nrPur, word, 
             "\n", "\n", sep = "")
     }
-    if (res$match == "score") 
+    if (res$match[1] == "score") 
         cat("Matching variable: test score", "\n", "\n")
     else cat("Matching variable: specified matching variable", 
         "\n", "\n")

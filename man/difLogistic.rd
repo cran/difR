@@ -99,7 +99,7 @@ A list of class "Logistic" with the following arguments:
 
 The group membership can be either a vector of two distinct values, one for the reference group and one for the focal group, or a continuous or discrete variable that acts as the "group" membership variable. In the former case, the \code{member.type} argument is set to \code{"group"} and the \code{focal.name} defines which value in the \code{group} variable stands for the focal group. In the latter case, \code{member.type} is set to \code{"cont"}, \code{focal.name} is ignored and each value of the \code{group} represents one "group" of data (that is, the DIF effects are investigated among participants relying on different values of some discrete or continuous trait). See \code{\link{Logistik}} for further details.
 
- The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{Logistik} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix.
+ The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{\link{Logistik}} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix.
 
   The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items. In addition, \code{Data} can hold the vector of group membership.
  If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number.
@@ -190,9 +190,9 @@ Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in diff
     Universite du Quebec a Montreal \cr
     \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr

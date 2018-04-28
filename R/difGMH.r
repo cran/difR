@@ -1,7 +1,10 @@
-difGMH<-function (Data, group, focal.names, anchor = NULL, alpha = 0.05, 
+difGMH<-function (Data, group, focal.names, anchor = NULL,match="score", alpha = 0.05, 
     purify = FALSE, nrIter = 10, p.adjust.method=NULL,save.output = FALSE, output = c("out", 
         "default")) 
 {
+if (purify & match[1] != "score") 
+        stop("purification not allowed when matching variable is not 'score'", 
+            call. = FALSE)
     internalGMH <- function() {
         if (length(focal.names) == 1) 
             return(difMH(Data = Data, group = group, focal.name = focal.names, 
@@ -43,14 +46,15 @@ difGMH<-function (Data, group, focal.names, anchor = NULL, alpha = 0.05,
                 ANCHOR <- 1:ncol(DATA)
                 dif.anchor <- NULL
             }
-            if (!purify | !is.null(anchor)) {
-                STATS <- genMantelHaenszel(DATA, Group, anchor = ANCHOR)
+            if (!purify | match[1] != "score" | !is.null(anchor)) {
+                STATS <- genMantelHaenszel(DATA, Group, match=match,anchor = ANCHOR)
                 if (max(STATS) <= qchisq(1 - alpha, DF)) 
                   DIFitems <- "No DIF item detected"
                 else DIFitems <- (1:ncol(DATA))[STATS > qchisq(1 - 
                   alpha, DF)]
                 RES <- list(GMH = STATS, alpha = alpha, thr = qchisq(1 - 
-                  alpha, DF), DIFitems = DIFitems, p.adjust.method = p.adjust.method, 
+                  alpha, DF), DIFitems = DIFitems, 
+match=ifelse(match[1]=="score","score","matching variable"),p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, 
                   names = colnames(DATA), anchor.names = dif.anchor, 
                   focal.names = focal.names, save.output = save.output, 
@@ -68,7 +72,7 @@ difGMH<-function (Data, group, focal.names, anchor = NULL, alpha = 0.05,
                 nrPur <- 0
                 difPur <- NULL
                 noLoop <- FALSE
-                stats1 <- genMantelHaenszel(DATA, Group)
+                stats1 <- genMantelHaenszel(DATA, Group,match=match)
                 if (max(stats1) <= qchisq(1 - alpha, DF)) {
                   DIFitems <- "No DIF item detected"
                   noLoop <- TRUE
@@ -93,7 +97,7 @@ difGMH<-function (Data, group, focal.names, anchor = NULL, alpha = 0.05,
                         }
                       }
                       stats2 <- genMantelHaenszel(DATA, Group, 
-                        anchor = nodif)
+                        anchor = nodif,match=match)
                       if (max(stats2) <= qchisq(1 - alpha, DF)) 
                         dif2 <- NULL
                       else dif2 <- (1:ncol(DATA))[stats2 > qchisq(1 - 
@@ -127,7 +131,9 @@ difGMH<-function (Data, group, focal.names, anchor = NULL, alpha = 0.05,
                   colnames(difPur) <- co
                 }
                 RES <- list(GMH = stats1, alpha = alpha, thr = qchisq(1 - 
-                  alpha, DF), DIFitems = DIFitems, p.adjust.method = p.adjust.method, 
+                  alpha, DF), DIFitems = DIFitems, 
+match=ifelse(match[1]=="score","score","matching variable"),
+p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, 
                   nrPur = nrPur, difPur = difPur, convergence = noLoop, 
                   names = colnames(DATA), anchor.names = NULL, 
@@ -234,6 +240,10 @@ else word<-" iterations"
 }
  else cat("Convergence reached after ",res$nrPur,word,"\n","\n",sep="")
  }
+ if (res$match[1] == "score") 
+        cat("Matching variable: test score", "\n", "\n")
+    else cat("Matching variable: specified matching variable", 
+        "\n", "\n")
 if (is.null(res$anchor.names)) {
 itk<-1:length(res$GMH)
 cat("No set of anchor items was provided", "\n", "\n")

@@ -52,9 +52,9 @@ A vector with the values of the LRT DIF statistics.
     Universite du Quebec a Montreal \cr
     \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr

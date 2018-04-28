@@ -7,6 +7,31 @@
 
 
 ------------------------------------
+- Changes in difR 4.8 (2018-04-28) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  The functions 'mantelHaenszel()', 'breslowDay()',
+     'genMantelHaenszel()', 'stdPDIF()', 'difMH()', 
+     'difBD()', 'difGMH()', 'difStd()', 'selectDif()',
+     'selectGenDif()', 'dichoDif()' and 'genDichoDif()'
+     were updated to allow the definition of the 
+     matching criterion from an external variable 
+     instead of the test score. This is specified 
+     through the new 'match' argument.
+
+
+MINOR UPDATES
+
+  o  Affiliations and email addresses were updated.
+
+  o  Some typos were fixed.
+
+
+
+
+------------------------------------
 - Changes in difR 4.7 (2016-11-22) -
 ------------------------------------
 

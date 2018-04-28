@@ -128,6 +128,10 @@ print.dichoDif<-function (x, ...)
         for (i in 1:length(methods2)) cat(" ", methods2[i], "\n", 
             sep = "")
         cat("\n")
+    if (res$match[1] == "score") 
+        cat("Matching variable: test score", "\n", "\n")
+    else cat("Matching variable: specified matching variable", 
+        "\n", "\n")
         if (is.null(res$anchor.names)) {
             itk <- 1:nrow(res$DIF)
             cat("No set of anchor items was provided", "\n", 

@@ -99,6 +99,8 @@ differently (Note: this is just an informative summary, since the methods are ob
 
  The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by the value of the argument \code{focal.name}. 
 
+For \code{"MH"}, \code{"Std"}, \code{"Logistic"} and \code{"BD"} methods, the matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{Logistik} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix. 
+
  With the TID method, one can alternatively provide the matrix of proportions of success in for each item in each group. This matrix must have the same format as that provided to the \code{\link{trItemDiff}} function; see the corresponding help file for further details.
 
  For Lord and Raju methods, one can specify either the IRT model to be fitted (by means of \code{model}, \code{c}, \code{engine} and \code{discr} arguments), or the item parameter estimates with arguments \code{irtParam} and \code{same.scale}. See \code{\link{difLord}} and \code{\link{difRaju}} for further details. 
@@ -115,7 +117,7 @@ specifies whether the continuity correction has to be applied to Mantel-Haenszel
 
  For Breslow-Day method, two test statistics are available: the usual Breslow-Day statistic for testing homogeneous association (Aguerri, Galibert, Attorresi and Maranon, 2009) and the trend test statistic for assessing some monotonic trend in the odss ratios (Penfield, 2003). The DIF statistic is supplied by the \code{BDstat} argument, with values \code{"BD"} (default) for the usual statistic and \code{"trend"} for the trend test statistic.
 
- For logistic regression, the argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). The \code{criterion} argument specifies the DIF statistic to be computed, either the likelihood ratio test statistic (by setting \code{criterion="LRT"}) or the Wald test (by setting \code{criterion="Wald"}). Moreover, the group membership can be either a vector of two distinct values, one for the reference group and one for the focal group, or a continuous or discrete variable that acts as the "group" membership variable. In the former case, the \code{member.type} argument is set to \code{"group"} and the \code{focal.name} defines which value in the \code{group} variable stands for the focal group. In the latter case, \code{member.type} is set to \code{"cont"}, \code{focal.name} is ignored and each value of the \code{group} represents one "group" of data (that is, the DIF effects are investigated among participants relying on different values of some discrete or continuous trait). Finally, the matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{Logistik} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix. See \code{\link{Logistik}} for further details.
+ For logistic regression, the argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (\code{type="both"}), only uniform DIF effect (\code{type="udif"}) or only nonuniform DIF effect (\code{type="nudif"}). The \code{criterion} argument specifies the DIF statistic to be computed, either the likelihood ratio test statistic (by setting \code{criterion="LRT"}) or the Wald test (by setting \code{criterion="Wald"}). Moreover, the group membership can be either a vector of two distinct values, one for the reference group and one for the focal group, or a continuous or discrete variable that acts as the "group" membership variable. In the former case, the \code{member.type} argument is set to \code{"group"} and the \code{focal.name} defines which value in the \code{group} variable stands for the focal group. In the latter case, \code{member.type} is set to \code{"cont"}, \code{focal.name} is ignored and each value of the \code{group} represents one "group" of data (that is, the DIF effects are investigated among participants relying on different values of some discrete or continuous trait). See \code{\link{Logistik}} for further details.
 
  For Raju's method, the type of area (signed or unsigned) is fixed by the logical \code{signed} argument, with default value \code{FALSE} (i.e. unsigned areas). See \code{\link{RajuZ}} for further details.
 
@@ -168,9 +170,9 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
     Universite du Quebec a Montreal \cr
     \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr

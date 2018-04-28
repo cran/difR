@@ -1,12 +1,13 @@
 # BRESLOW-DAY
-breslowDay<-function(data,member,anchor=1:ncol(data),BDstat="BD")
+breslowDay<-function(data,member,match="score",anchor=1:ncol(data),BDstat="BD")
 {
       res<-NULL
       for (item in 1:ncol(data))
       {
       data2<-data[,anchor]
       if (sum(anchor==item)==0) data2<-cbind(data2,data[,item])
-      xj<-rowSums(data2,na.rm=TRUE)
+if (match[1]=="score") xj<-rowSums(data2,na.rm=TRUE)
+else xj<-match
       scores<-sort(unique(xj))
       ind<-1:nrow(data)
       prov<-NULL
@@ -49,7 +50,8 @@ if (is.null(df)==TRUE) stop("wrong value for 'BDstat' argument",call.=FALSE)
         res<-rbind(res,c(round(STAT,4),df,round(1-pchisq(STAT,df),4)))
            } 
         }
-return(list(res=res,BDstat=BDstat))
+return(list(res=res,BDstat=BDstat, match = ifelse(match[1] == 
+            "score", "score", "matching variable")))
 }
 
 

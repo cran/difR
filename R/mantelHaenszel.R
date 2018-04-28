@@ -1,4 +1,4 @@
-mantelHaenszel<-function (data, member, correct = TRUE, exact=FALSE,anchor = 1:ncol(data)) 
+mantelHaenszel<-function (data, member, match="score", correct = TRUE, exact=FALSE,anchor = 1:ncol(data)) 
 {
     res <- resAlpha <- varLambda <- RES<-NULL
     for (item in 1:ncol(data)) {
@@ -6,7 +6,8 @@ mantelHaenszel<-function (data, member, correct = TRUE, exact=FALSE,anchor = 1:n
         if (sum(anchor == item) == 0) 
             data2 <- cbind(data2, data[, item])
 if (!is.matrix(data2)) data2<-cbind(data2)
-        xj <- rowSums(data2, na.rm = TRUE)
+if (match[1]=="score") xj <- rowSums(data2, na.rm = TRUE)
+else xj<-match
         scores <- sort(unique(xj))
         prov <- NULL
         ind <- 1:nrow(data)
@@ -43,7 +44,7 @@ RES<-rbind(RES,c(item,pr$statistic,pr$p.value))
 
 }
 else{
-        if (correct == TRUE) 
+        if (correct) 
             res[item] <- (abs(sum(prov[, 1] - prov[, 2])) - 0.5)^2/sum(prov[, 
                 3])
         else res[item] <- (abs(sum(prov[, 1] - prov[, 2])))^2/sum(prov[, 
@@ -56,6 +57,8 @@ else{
             8]^2)/(2 * (sum(prov[, 1] * prov[, 7]/prov[, 8]))^2)
     }
 }
-if (exact) return(list(resMH=RES[,2],Pval=RES[,3]))
-else    return(list(resMH = res, resAlpha = resAlpha, varLambda = varLambda))
+if (match[1]!="score") mess<-"matching variable"
+else mess<-"score"
+if (exact) return(list(resMH=RES[,2],Pval=RES[,3],match=mess))
+else    return(list(resMH = res, resAlpha = resAlpha, varLambda = varLambda,match=mess))
 }

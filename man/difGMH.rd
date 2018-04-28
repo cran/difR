@@ -10,8 +10,8 @@
 }
 
 \usage{
-difGMH(Data, group, focal.names, anchor = NULL, alpha = 0.05, purify = FALSE, 
-  	nrIter = 10, p.adjust.method = NULL, save.output = FALSE, 
+difGMH(Data, group, focal.names, anchor = NULL, match = "score", alpha = 0.05, 
+  	purify = FALSE, nrIter = 10, p.adjust.method = NULL, save.output = FALSE, 
   	output = c("out", "default"))
 \method{print}{GMH}(x, ...)
 \method{plot}{GMH}(x, pch = 8, number = TRUE, col = "red", save.plot = FALSE, 
@@ -23,6 +23,7 @@ difGMH(Data, group, focal.names, anchor = NULL, alpha = 0.05, purify = FALSE,
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{Data}) of group membership. See \bold{Details}.}
  \item{focal.names}{numeric or character vector indicating the levels of \code{group} which correspond to the focal groups.}
 \item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. See \bold{Details}.}
+ \item{match}{specifies the type of matching criterion. Can be either \code{"score"} (default) to compute the test score, or any continuous or discrete variable with the same length as the number of rows of \code{Data}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is FALSE).}
  \item{nrIter}{numeric: the maximal number of iterations in the item purification process (default is 10).}
@@ -46,6 +47,7 @@ difGMH(Data, group, focal.names, anchor = NULL, alpha = 0.05, purify = FALSE,
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{DIFitems}{either the items which were detected as DIF items, or "No DIF item detected".}
+\item{match}{a character string, either \code{"score"} or \code{"matching variable"} depending on the \code{match} argument.}
 \item{p.adjust.method}{the value of the \code{p.adjust.method} argument.}
 \item{adjusted.p}{either \code{NULL} or the vector of adjusted p-values for multiple comparisons.}
   \item{purification}{the value of \code{purify} option.} 
@@ -78,6 +80,8 @@ difGMH(Data, group, focal.names, anchor = NULL, alpha = 0.05, purify = FALSE,
  The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
  probability of one minus \code{alpha} and with as many degrees of freedom as the number of focal groups.
  
+ The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{\link{genMantelHaenszel}} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix.
+
  Item purification can be performed by setting \code{purify} to \code{TRUE}. Purification works as follows: if at least one item detected as functioning 
  differently at the first step of the process, then the data set of the next step consists in all items that are currently anchor (DIF free) items, plus the 
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor,
@@ -122,9 +126,9 @@ Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in diff
     Universite du Quebec a Montreal \cr
     \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr

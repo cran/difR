@@ -9,21 +9,24 @@
  }
 
 \usage{
-breslowDay(data, member, anchor = 1:ncol(data), BDstat = "BD")
+breslowDay(data, member, match = "score", anchor = 1:ncol(data), 
+     BDstat = "BD")
  }
 
 \arguments{
  \item{data}{numeric: the data matrix (one row per subject, one column per item).}
  \item{member}{numeric: the vector of group membership with zero and one entries only. See \bold{Details}.}
+ \item{match}{specifies the type of matching criterion. Can be either \code{"score"} (default) to compute the test score, or any continuous or discrete variable with the same length as the number of rows of \code{data}. See \bold{Details}.}
  \item{anchor}{a vector of integer values specifying which items (all by default) are currently considered as anchor (DIF free) items. See \bold{Details}.}
  \item{BDstat}{character specifying the DIF statistic to be used. Possible values are \code{"BD"} (default) and \code{"trend"}. See \bold{Details}.}
  }
  
 \value{
- A list with two arguments:
+ A list with three arguments:
  \item{res}{A matrix with one row per item and three columns: the first one contains the Breslow-Day statistic values, the second column indicates 
  the degrees of freedom, and the last column displays the asymptotic \emph{p}-values.}
  \item{BDstat}{the value of the \code{BDstat} argument.}
+\item{match}{a character string, either \code{"score"} or \code{"matching variable"} depending on the \code{match} argument.}
 }
 
 
@@ -36,6 +39,8 @@ breslowDay(data, member, anchor = 1:ncol(data), BDstat = "BD")
   
  The vector of group membership, specified by the \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
+
+ The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{breslowDay} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{data} matrix.
 
  Option \code{anchor} sets the items which are considered as anchor items for computing Breslow-Day DIF statistics. Items other than the anchor items and
  the tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is 
@@ -67,9 +72,9 @@ Educational Research, 49}, 231-243.
     Universite du Quebec a Montreal \cr
     \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr

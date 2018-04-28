@@ -78,7 +78,9 @@ Either the output of one of the DIF detection methods, or a list of class "genDi
 
  The vector of group membership must hold at least three different values, either as numeric or character. The focal groups are defined by the values of the argument \code{focal.names}. 
 
- For the generalized logistic regression method, the argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (with \code{type="both"}), only uniform DIF effect (with \code{type="udif"}) or only nonuniform DIF effect (with \code{type="nudif"}). Furthermore, the argument \code{criterion} defines which test must be used, either the Wald test (\code{"Wald"}) or the likelihood ratio test (\code{"LRT"}). Moreover, the matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{Logistik} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix. See \code{\link{difGenLord}} for further details. 
+For generalized Mantel-Haenszel and generalized logistic methods, the matching criterion can be either the test score or any other continuous or discrete variable to be passed in the DIF function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix. 
+
+ For the generalized logistic regression method, the argument \code{type} permits to test either both uniform and nonuniform effects simultaneously (with \code{type="both"}), only uniform DIF effect (with \code{type="udif"}) or only nonuniform DIF effect (with \code{type="nudif"}). Furthermore, the argument \code{criterion} defines which test must be used, either the Wald test (\code{"Wald"}) or the likelihood ratio test (\code{"LRT"}). See \code{\link{difGenLord}} for further details. 
 
  For generalized Lord method, one can specify either the IRT model to be fitted (by means of \code{model}, \code{c}, \code{engine} and \code{discr} arguments), or the item parameter estimates with arguments \code{irtParam} and \code{same.scale}. See \code{\link{difGenLord}} for further details. 
 
@@ -114,9 +116,9 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
     Universite du Quebec a Montreal \cr
     \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr

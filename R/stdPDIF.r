@@ -1,12 +1,13 @@
 # DIF: STANDARDIZATION
-stdPDIF<-function (data, member, anchor = 1:ncol(data), stdWeight="focal") 
+stdPDIF<-function (data, member, match="score", anchor = 1:ncol(data), stdWeight="focal") 
 {
     resPDIF <- resAlpha<-NULL
     for (item in 1:ncol(data)) {
         data2 <- data[, anchor]
         if (sum(anchor == item) == 0) 
             data2 <- cbind(data2, data[, item])
-        xj <- rowSums(data2, na.rm=TRUE)
+if (match[1]!="score") xj<-match 
+        else xj <- rowSums(data2, na.rm=TRUE)
         scores <- sort(unique(xj))
         ind <- 1:nrow(data)
         prov <- NULL
@@ -41,5 +42,5 @@ stdPDIF<-function (data, member, anchor = 1:ncol(data), stdWeight="focal")
         resPDIF[item] <- stdNum/stdDen
 	  resAlpha[item] <- (Pr/(1-Pr))/(Pf/(1-Pf)) 
     }
-    return(list(resStd=resPDIF,resAlpha=resAlpha))
+    return(list(resStd=resPDIF,resAlpha=resAlpha,match=ifelse(match[1]=="score","score","matching variable")))
 }

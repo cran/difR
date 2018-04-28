@@ -5,7 +5,7 @@ selectGenDif<-function (Data, group, focal.names, method, anchor = NULL, match =
     output = c("out", "default")) 
 {
     res <- switch(method, GMH = difGMH(Data = Data, group = group, 
-        focal.names = focal.names, anchor = anchor, alpha = alpha, 
+        focal.names = focal.names, anchor = anchor, match=match,alpha = alpha, 
         purify = purify, nrIter = nrIter, p.adjust.method = p.adjust.method, save.output = save.output, 
         output = output), genLogistic = difGenLogistic(Data = Data, 
         group = group, focal.names = focal.names, anchor = anchor, 

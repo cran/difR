@@ -1,5 +1,10 @@
-difStd <-function(Data,group,focal.name,anchor=NULL,stdWeight="focal",thrSTD=0.1,purify=FALSE,nrIter=10,save.output=FALSE, output=c("out","default")) 
+difStd <-function(Data,group,focal.name,anchor=NULL,match="score",
+stdWeight="focal",thrSTD=0.1,purify=FALSE,nrIter=10,
+save.output=FALSE, output=c("out","default")) 
 {
+    if (purify & match[1] != "score") 
+        stop("purification not allowed when matching variable is not 'score'", 
+            call. = FALSE)
 internalSTD<-function(){
      if (length(group) == 1) {
            if (is.numeric(group)==TRUE) {
@@ -32,13 +37,14 @@ else {
 ANCHOR<-1:ncol(DATA)
 dif.anchor<-NULL
 }
- if (!purify | !is.null(anchor)) {
-resProv<-stdPDIF(DATA,Group,stdWeight=stdWeight,anchor=ANCHOR)
+ if (!purify | match[1] != "score" | !is.null(anchor)) {
+resProv<-stdPDIF(DATA,Group,stdWeight=stdWeight,anchor=ANCHOR,match=match)
 STATS <- resProv$resStd
 ALPHA <- resProv$resAlpha
  if (max(abs(STATS))<=thrSTD) DIFitems<-"No DIF item detected"
  else DIFitems <-(1:ncol(DATA))[abs(STATS)>thrSTD]
-RES <-list(PDIF=STATS,stdAlpha=ALPHA,thr=thrSTD,DIFitems=DIFitems,purification=purify,names=colnames(DATA),
+RES <-list(PDIF=STATS,stdAlpha=ALPHA,thr=thrSTD,DIFitems=DIFitems,
+match=resProv$match,purification=purify,names=colnames(DATA),
 anchor.names=dif.anchor,stdWeight=stdWeight,save.output=save.output,output=output)
 if (!is.null(anchor)) {
 RES$PDIF[ANCHOR]<-NA
@@ -53,7 +59,7 @@ else{
 nrPur<-0
 difPur<-NULL
 noLoop<-FALSE
-resProv<-stdPDIF(DATA,Group,stdWeight=stdWeight)
+resProv<-stdPDIF(DATA,Group,stdWeight=stdWeight,match=match)
 stats1 <-resProv$resStd
 alpha1<-resProv$resAlpha
 if (max(abs(stats1))<=thrSTD) {
@@ -75,7 +81,7 @@ for (i in 1:ncol(DATA)){
 if (sum(i==dif)==0) nodif<-c(nodif,i)
 }
 }
-resProv<-stdPDIF(DATA,Group,anchor=nodif,stdWeight=stdWeight)
+resProv<-stdPDIF(DATA,Group,anchor=nodif,stdWeight=stdWeight,match=match)
 stats2 <-resProv$resStd
 alpha2<-resProv$resAlpha
 if (max(abs(stats2))<=thrSTD) dif2<-NULL
@@ -105,7 +111,8 @@ for (ic in 1:ncol(difPur)) co[ic]<-paste("Item",ic,sep="")
 rownames(difPur)<-ro
 colnames(difPur)<-co
 }
-RES<-list(PDIF=stats1,stdAlpha=alpha1,thr=thrSTD,DIFitems=DIFitems,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,
+RES<-list(PDIF=stats1,stdAlpha=alpha1,thr=thrSTD,DIFitems=DIFitems,
+match=resProv$match,purification=purify,nrPur=nrPur,difPur=difPur,convergence=noLoop,
 names=colnames(DATA),anchor.names=NULL,stdWeight=stdWeight,save.output=save.output,output=output)
 }
 class(RES)<-"PDIF"
@@ -194,6 +201,10 @@ else word<-" iterations"
 }
  else cat("Convergence reached after ",res$nrPur,word,"\n","\n",sep="")
  }
+    if (res$match[1] == "score") 
+        cat("Matching variable: test score", "\n", "\n")
+    else cat("Matching variable: specified matching variable", 
+        "\n", "\n")
 if (is.null(res$anchor.names)) {
 itk<-1:length(res$PDIF)
 cat("No set of anchor items was provided", "\n", "\n")

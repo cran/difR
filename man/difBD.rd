@@ -10,8 +10,8 @@
  }
 
 \usage{
-difBD(Data, group, focal.name, anchor = NULL, BDstat = "BD", alpha = 0.05,
-  	purify = FALSE, nrIter = 10, p.adjust.method = NULL, 
+difBD(Data, group, focal.name, anchor = NULL, match = "score", BDstat = "BD", 
+  	alpha = 0.05, purify = FALSE, nrIter = 10, p.adjust.method = NULL, 
   	save.output = FALSE, output = c("out", "default"))
 \method{print}{BD}(x, ...)
 \method{plot}{BD}(x, pch = 8, number = TRUE, col = "red", save.plot = FALSE, 
@@ -23,6 +23,7 @@ difBD(Data, group, focal.name, anchor = NULL, BDstat = "BD", alpha = 0.05,
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{Data}) of group membership. See \bold{Details}.}
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
 \item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. See \bold{Details}.}
+ \item{match}{specifies the type of matching criterion. Can be either \code{"score"} (default) to compute the test score, or any continuous or discrete variable with the same length as the number of rows of \code{Data}. See \bold{Details}.}
  \item{BDstat}{character specifying the DIF statistic to be used. Possible values are \code{"BD"} (default) and \code{"trend"}. See \bold{Details}.}
  \item{alpha}{numeric: significance level (default is 0.05).}
  \item{purify}{logical: should the method be used iteratively to purify the set of anchor items? (default is \code{FALSE}).}
@@ -48,6 +49,7 @@ A list of class "BD" with the following arguments:
   \item{alpha}{the significance level for DIF detection.}
   \item{DIFitems}{either the column indicators of the items which were detected as DIF items, or "No DIF item detected".}
   \item{BDstat}{the value of the \code{BDstat} argument.}
+\item{match}{a character string, either \code{"score"} or \code{"matching variable"} depending on the \code{match} argument.}
 \item{p.adjust.method}{the value of the \code{p.adjust.method} argument.}
 \item{adjusted.p}{either \code{NULL} or the vector of adjusted p-values for multiple comparisons.}
   \item{purification}{the value of \code{purify} option.} 
@@ -72,16 +74,14 @@ A list of class "BD" with the following arguments:
  
  Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded from sum-score computation.
 
- The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
- the value of the argument \code{focal.name}. 
+ The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by the value of the argument \code{focal.name}. 
  
  Two test statistics are available: the usual Breslow-Day statistic for testing homogeneous association (Aguerri, Galibert, Attorresi and Maranon, 2009)
- and the trend test statistic for assessing some monotonic trend in the odds ratios (Penfield, 2003). The DIF statistic is supplied by the \code{BDstat} argument, 
- with values \code{"BD"} (default) for the usual statistic and \code{"trend"} for the trend test statistic.
+ and the trend test statistic for assessing some monotonic trend in the odds ratios (Penfield, 2003). The DIF statistic is supplied by the \code{BDstat} argument, with values \code{"BD"} (default) for the usual statistic and \code{"trend"} for the trend test statistic.
 
- The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
- probability of one minus \code{alpha}, and the degrees of freedom depend on the DIF statistic. With the usual Breslow-Day statistic
- (\code{BDstat=="BD"}), it is the number of partial tables taken into account (Aguerri \emph{et al.}, 2009). With the trend test statistic, the degrees
+ The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{\link{breslowDay}} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix.
+
+ The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail probability of one minus \code{alpha}, and the degrees of freedom depend on the DIF statistic. With the usual Breslow-Day statistic (\code{BDstat=="BD"}), it is the number of partial tables taken into account (Aguerri \emph{et al.}, 2009). With the trend test statistic, the degrees
  of freedom are always equal to one (Penfield, 2003).
  
  Item purification can be performed by setting \code{purify} to \code{TRUE}. Purification works as follows: if at least one item was detected as functioning 
@@ -133,9 +133,9 @@ Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in diff
     Universite du Quebec a Montreal \cr
     \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr

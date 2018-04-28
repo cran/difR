@@ -1,8 +1,11 @@
-difBD<-function (Data, group, focal.name, anchor = NULL, BDstat = "BD", 
+difBD<-function (Data, group, focal.name, anchor = NULL, match="score", BDstat = "BD", 
     alpha = 0.05, purify = FALSE, nrIter = 10, p.adjust.method =NULL,
     save.output = FALSE, 
     output = c("out", "default")) 
 {
+    if (purify & match[1] != "score") 
+        stop("purification not allowed when matching variable is not 'score'", 
+            call. = FALSE)
     internalBD <- function() {
         if (length(group) == 1) {
             if (is.numeric(group) == TRUE) {
@@ -38,14 +41,15 @@ difBD<-function (Data, group, focal.name, anchor = NULL, BDstat = "BD",
             ANCHOR <- 1:ncol(DATA)
             dif.anchor <- NULL
         }
-        if (!purify | !is.null(anchor)) {
-            STATS <- breslowDay(DATA, Group, BDstat = BDstat, 
+        if (!purify | match[1] != "score" | !is.null(anchor)) {
+            STATS <- breslowDay(DATA, Group, match=match, BDstat = BDstat, 
                 anchor = ANCHOR)$res
             if (min(STATS[, 3]) >= alpha) 
                 DIFitems <- "No DIF item detected"
             else DIFitems <- (1:nrow(STATS))[STATS[, 3] < alpha]
             RES <- list(BD = STATS, alpha = alpha, DIFitems = DIFitems, 
-                BDstat = BDstat, p.adjust.method = p.adjust.method, 
+                BDstat = BDstat, match=ifelse(match[1]=="score", "score",
+"matching variable"), p.adjust.method = p.adjust.method, 
                   adjusted.p = NULL, purification = purify, names = colnames(DATA), 
                 anchor.names = dif.anchor, save.output = save.output, 
                 output = output)
@@ -85,7 +89,7 @@ difBD<-function (Data, group, focal.name, anchor = NULL, BDstat = "BD",
                           nodif <- c(nodif, i)
                       }
                     }
-                    stats2 <- breslowDay(DATA, Group, anchor = nodif, 
+                    stats2 <- breslowDay(DATA, Group, match=match, anchor = nodif, 
                       BDstat = BDstat)$res
                     if (min(stats2[, 3]) >= alpha) 
                       dif2 <- NULL
@@ -119,7 +123,8 @@ difBD<-function (Data, group, focal.name, anchor = NULL, BDstat = "BD",
                 colnames(difPur) <- co
             }
             RES <- list(BD = stats1, alpha = alpha, DIFitems = DIFitems, 
-                BDstat = BDstat, p.adjust.method = p.adjust.method, 
+                BDstat = BDstat, match=ifelse(match[1]=="score", "score",
+"matching variable"), p.adjust.method = p.adjust.method, 
                   adjusted.p = NULL, purification = purify, nrPur = nrPur, 
                 difPur = difPur, convergence = noLoop, names = colnames(DATA), 
                 anchor.names = NULL, save.output = save.output, 
@@ -218,6 +223,10 @@ cat("WARNING: following results based on the last iteration of the purification"
 }
 else cat("Convergence reached after ",res$nrPur,word,"\n","\n",sep="")
 }
+    if (res$match[1] == "score") 
+        cat("Matching variable: test score", "\n", "\n")
+    else cat("Matching variable: specified matching variable", 
+        "\n", "\n")
 if (is.null(res$anchor.names)) {
 itk<-1:nrow(res$BD)
 cat("No set of anchor items was provided", "\n", "\n")

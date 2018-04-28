@@ -1,9 +1,12 @@
 # DIF MANTEL-HAENZEL
 
-difMH<-function (Data, group, focal.name, anchor=NULL, MHstat = "MHChisq", correct = TRUE, exact=FALSE,
+difMH<-function (Data, group, focal.name, anchor=NULL, match="score", MHstat = "MHChisq", correct = TRUE, exact=FALSE,
     alpha = 0.05, purify = FALSE, nrIter = 10, p.adjust.method=NULL, save.output = FALSE, 
     output = c("out", "default")) 
 {
+    if (purify & match[1] != "score") 
+        stop("purification not allowed when matching variable is not 'score'", 
+            call. = FALSE)
     internalMH <- function() {
         if (length(group) == 1) {
             if (is.numeric(group)) {
@@ -41,13 +44,13 @@ ANCHOR<-1:ncol(DATA)
 dif.anchor<-NULL
 }
 if (exact){
-        if (!purify | !is.null(anchor)) {
-            PROV <- mantelHaenszel(DATA, Group, correct = correct,exact=exact,anchor=ANCHOR)
+        if (!purify | match[1]!="score" | !is.null(anchor)) {
+            PROV <- mantelHaenszel(DATA, Group, match=match,correct = correct,exact=exact,anchor=ANCHOR)
                 STATS <- PROV$resMH
             if (min(PROV$Pval) >=alpha) DIFitems <- "No DIF item detected"
             else DIFitems <- (1:ncol(DATA))[PROV$Pval < alpha]
             RES <- list(MH = STATS, Pval=PROV$Pval, alpha = alpha, DIFitems = DIFitems, 
-                correct = correct, exact=exact, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, names = colnames(DATA), 
+                correct = correct, exact=exact, match=PROV$match, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, names = colnames(DATA), 
                 anchor.names=dif.anchor,save.output = save.output, output = output)
 if (!is.null(anchor)) {
 RES$MH[ANCHOR]<-NA
@@ -62,7 +65,7 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
             nrPur <- 0
             difPur <- NULL
             noLoop <- FALSE
-            prov1 <- mantelHaenszel(DATA, Group, correct = correct,exact=exact)
+            prov1 <- mantelHaenszel(DATA, Group, match=match,correct = correct,exact=exact)
             stats1 <- prov1$resMH
             if (min(prov1$Pval)>=alpha) {
                 DIFitems <- "No DIF item detected"
@@ -87,7 +90,7 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
                       }
                     }
                     prov2 <- mantelHaenszel(DATA, Group, correct = correct, 
-                      anchor = nodif,exact=exact)
+                      match=match, anchor = nodif,exact=exact)
                     stats2 <- prov2$resMH
                     if (min(prov2$Pval)>=alpha) dif2 <- NULL
                     else dif2 <- (1:ncol(DATA))[prov2$Pval<alpha]
@@ -120,14 +123,14 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
                 colnames(difPur) <- co
             }
             RES <- list(MH = stats1, Pval=prov1$Pval, alpha = alpha, DIFitems = DIFitems, 
-                correct = correct, exact=exact, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, nrPur = nrPur, 
+                correct = correct, exact=exact, match=prov1$match, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, nrPur = nrPur, 
                 difPur = difPur, convergence = noLoop, names = colnames(DATA), 
                 anchor.names=NULL, save.output = save.output, output = output)
         }
 }
 else{
-        if (!purify | !is.null(anchor)) {
-            PROV <- mantelHaenszel(DATA, Group, correct = correct,exact=exact,anchor=ANCHOR)
+        if (!purify | match[1]!="score" | !is.null(anchor)) {
+            PROV <- mantelHaenszel(DATA, Group, match=match, correct = correct,exact=exact,anchor=ANCHOR)
             if (MHstat == "MHChisq") 
                 STATS <- PROV$resMH
             else STATS <- log(PROV$resAlpha)/sqrt(PROV$varLambda)
@@ -137,7 +140,7 @@ else{
             RES <- list(MH = STATS, alphaMH = PROV$resAlpha, 
                 varLambda = PROV$varLambda, MHstat = MHstat, 
                 alpha = alpha, thr = Q, DIFitems = DIFitems, 
-                correct = correct, exact=exact, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, names = colnames(DATA), 
+                correct = correct, exact=exact, match=PROV$match, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, names = colnames(DATA), 
                 anchor.names=dif.anchor, save.output = save.output, output = output)
 if (!is.null(anchor)) {
 RES$MH[ANCHOR]<-NA
@@ -153,7 +156,7 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
             nrPur <- 0
             difPur <- NULL
             noLoop <- FALSE
-            prov1 <- mantelHaenszel(DATA, Group, correct = correct,exact=exact)
+            prov1 <- mantelHaenszel(DATA, Group, match=match, correct = correct,exact=exact)
             if (MHstat == "MHChisq") 
                 stats1 <- prov1$resMH
             else stats1 <- log(prov1$resAlpha)/sqrt(prov1$varLambda)
@@ -179,7 +182,7 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
                           nodif <- c(nodif, i)
                       }
                     }
-                    prov2 <- mantelHaenszel(DATA, Group, correct = correct, 
+                    prov2 <- mantelHaenszel(DATA, Group, match=match, correct = correct, 
                       anchor = nodif,exact=exact)
                     if (MHstat == "MHChisq") 
                       stats2 <- prov2$resMH
@@ -219,7 +222,7 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
             RES <- list(MH = stats1, alphaMH = prov1$resAlpha, 
                 varLambda = prov1$varLambda, MHstat = MHstat, 
                 alpha = alpha, thr = Q, DIFitems = DIFitems, 
-                correct = correct, exact=exact,p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, nrPur = nrPur, 
+                correct = correct, exact=exact, match=prov1$match, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, nrPur = nrPur, 
                 difPur = difPur, convergence = noLoop, names = colnames(DATA), 
                 anchor.names=NULL, save.output = save.output, output = output)
         }
@@ -314,7 +317,7 @@ else cat("The plot was not captured!","\n",sep="")
 }
 
 
-
+### 
 print.MH<-function (x, ...) 
 {
     res <- x
@@ -354,6 +357,10 @@ print.MH<-function (x, ...)
         else cat("Convergence reached after ", res$nrPur, word, 
             "\n", "\n", sep = "")
     }
+ if (res$match[1] == "score") 
+        cat("Matching variable: test score", "\n", "\n")
+    else cat("Matching variable: specified matching variable", 
+        "\n", "\n")
     if (is.null(res$anchor.names)) {
         itk <- 1:length(res$MH)
         cat("No set of anchor items was provided", "\n", "\n")

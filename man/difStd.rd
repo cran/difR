@@ -10,9 +10,9 @@
  }
 
 \usage{
-difStd(Data, group, focal.name, anchor = NULL, stdWeight = "focal", 
-  	thrSTD = 0.1, purify = FALSE, nrIter = 10, save.output = FALSE, 
-  	output = c("out", "default"))
+difStd(Data, group, focal.name, anchor = NULL, match = "score", 
+  	stdWeight = "focal", thrSTD = 0.1, purify = FALSE, nrIter = 10, 
+  	save.output = FALSE, output = c("out", "default"))
 \method{print}{PDIF}(x, ...)
 \method{plot}{PDIF}(x, pch = 8, number = TRUE, col = "red", save.plot = FALSE, 
   	save.options = c("plot", "default", "pdf"), ...)
@@ -23,6 +23,7 @@ difStd(Data, group, focal.name, anchor = NULL, stdWeight = "focal",
  \item{group}{numeric or character: either the vector of group membership or the column indicator (within \code{data}) of group membership. See \bold{Details}.}
  \item{focal.name}{numeric or character indicating the level of \code{group} which corresponds to the focal group.}
 \item{anchor}{either \code{NULL} (default) or a vector of item names (or identifiers) to specify the anchor items. See \bold{Details}.}
+ \item{match}{specifies the type of matching criterion. Can be either \code{"score"} (default) to compute the test score, or any continuous or discrete variable with the same length as the number of rows of \code{Data}. See \bold{Details}.}
  \item{stdWeight}{character: the type of weights used for the standardized P-DIF statistic. Possible values are \code{"focal"} (default),
                   \code{"reference"} and \code{"total"}. See \bold{Details}.}
  \item{thrSTD}{numeric: the threshold (cut-score) for standardized P-DIF statistic (default is 0.10).}
@@ -49,7 +50,8 @@ A list of class "PDIF" with the following arguments:
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the value of the \code{thrSTD} argument.}
   \item{DIFitems}{either the column indicators of the items which were detected as DIF items, or "No DIF item detected".}
-  \item{purification}{the value of \code{purify} option.} 
+ \item{match}{a character string, either \code{"score"} or \code{"matching variable"} depending on the \code{match} argument.}
+ \item{purification}{the value of \code{purify} option.} 
   \item{nrPur}{the number of iterations in the item purification process. Returned only if \code{purify} is \code{TRUE}.}
   \item{difPur}{a binary matrix with one row per iteration in the item purification process and one column per item. Zeros and ones in the \emph{i}-th 
    row refer to items which were classified respectively as non-DIF and DIF items at the (\emph{i}-1)-th step. The first row corresponds to the initial
@@ -76,6 +78,8 @@ A list of class "PDIF" with the following arguments:
  The vector of group membership must hold only two different values, either as numeric or character. The focal group is defined by
  the value of the argument \code{focal.name}. 
  
+ The matching criterion can be either the test score or any other continuous or discrete variable to be passed in the \code{\link{stdPDIF}} function. This is specified by the \code{match} argument. By default, it takes the value \code{"score"} and the test score (i.e. raw score) is computed. The second option is to assign to \code{match} a vector of continuous or discrete numeric values, which acts as the matching criterion. Note that for consistency this vector should not belong to the \code{Data} matrix.
+
  The threshold (or cut-score) for classifying items as DIF has to be set by the user by the argument \code{thrSTD}. Default value is 0.10 
  but Dorans (1989) also recommends value 0.05. For this reason it is not possible to provide asymptotic \emph{p}-values.
 
@@ -140,9 +144,9 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
     Universite du Quebec a Montreal \cr
     \email{sebastien.beland.1@hotmail.com}, \url{http://www.cdame.uqam.ca/} \cr
     David Magis \cr
-    Department of Education, University of Liege \cr
+    Department of Psychology, University of Liege \cr
     Research Group of Quantitative Psychology and Individual Differences, KU Leuven \cr
-    \email{David.Magis@ulg.ac.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
+    \email{David.Magis@uliege.be}, \url{http://ppw.kuleuven.be/okp/home/} \cr
     Gilles Raiche \cr
     Collectif pour le Developpement et les Applications en Mesure et Evaluation (Cdame) \cr
     Universite du Quebec a Montreal \cr
