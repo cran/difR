@@ -29,6 +29,7 @@ difLord<-function (Data, group, focal.name, model, c = NULL, engine = "ltm",
             mod <- as.character(ncol(irtParam))
             model <- switch(mod, `2` = "1PL", `5` = "2PL", `6` = "3PL", 
                 `9` = "3PL")
+DF<- switch(mod, `2` = 1, `5` = 2, `6` = 2, `9` = 3)
             if (ncol(irtParam) != 6) 
                 Guess <- NULL
             else {
@@ -85,6 +86,7 @@ difLord<-function (Data, group, focal.name, model, c = NULL, engine = "ltm",
                 Q <- switch(model, `1PL` = qchisq(1 - alpha, 
                   1), `2PL` = qchisq(1 - alpha, 2), `3PL` = qchisq(1 - 
                   alpha, 3))
+DF<-switch(model, `1PL` = 1, `2PL` = 2, `3PL` = 3)
                 m0 <- switch(model, `1PL` = itemParEst(d0, model = "1PL", 
                   engine = engine, discr = discr), `2PL` = itemParEst(d0, 
                   model = "2PL"), `3PL` = itemParEst(d0, model = "3PL"))
@@ -94,6 +96,7 @@ difLord<-function (Data, group, focal.name, model, c = NULL, engine = "ltm",
             }
             else {
                 Q <- qchisq(1 - alpha, 2)
+DF<-2
                 m0 <- itemParEst(d0, model = "3PL", c = Guess)
                 m1 <- itemParEst(d1, model = "3PL", c = Guess)
             }
@@ -121,10 +124,11 @@ difLord<-function (Data, group, focal.name, model, c = NULL, engine = "ltm",
         }
         if (!purify | !is.null(anchor)) {
             STATS <- LordChi2(m0, m1p)
+PVAL<-1-pchisq(STATS,DF)
             if ((max(STATS)) <= Q) 
                 DIFitems <- "No DIF item detected"
             else DIFitems <- (1:nrItems)[STATS > Q]
-            RES <- list(LordChi = STATS, alpha = alpha, thr = Q, 
+            RES <- list(LordChi = STATS, p.value=PVAL,alpha = alpha, thr = Q, 
                 DIFitems = DIFitems, purification = purify, model = model, 
                 c = Guess, engine = engine, discr = discr, p.adjust.method=p.adjust.method, adjusted.p=NULL, itemParInit = itemParInit, 
                 estPar = estPar, names = dataName, anchor.names = dif.anchor, 
@@ -144,11 +148,12 @@ difLord<-function (Data, group, focal.name, model, c = NULL, engine = "ltm",
             difPur <- NULL
             noLoop <- FALSE
             stats1 <- LordChi2(m0, m1p)
+PVAL<-1-pchisq(stats1,DF)
             if (max(stats1) <= Q) {
                 DIFitems <- "No DIF item detected"
                 noLoop <- TRUE
                 itemParFinal = rbind(m0, m1p)
-                RES <- list(LordChi = stats1, alpha = alpha, 
+                RES <- list(LordChi = stats1, p.value=PVAL,alpha = alpha, 
                   thr = Q, DIFitems = DIFitems, purification = purify, 
                   nrPur = nrPur, difPur = difPur, convergence = noLoop, 
                   model = model, c = Guess, engine = engine, 
@@ -208,7 +213,8 @@ difLord<-function (Data, group, focal.name, model, c = NULL, engine = "ltm",
                   rownames(difPur) <- ro
                   colnames(difPur) <- co
                 }
-                RES <- list(LordChi = stats2, alpha = alpha, 
+PVAL<-1-pchisq(stats2,DF)
+                RES <- list(LordChi = stats2, p.value=PVAL, alpha = alpha, 
                   thr = Q, DIFitems = dif2, purification = purify, 
                   nrPur = nrPur, difPur = difPur, convergence = noLoop, 
                   model = model, c = Guess, engine = engine, 

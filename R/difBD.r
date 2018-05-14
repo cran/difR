@@ -47,7 +47,7 @@ difBD<-function (Data, group, focal.name, anchor = NULL, match="score", BDstat =
             if (min(STATS[, 3]) >= alpha) 
                 DIFitems <- "No DIF item detected"
             else DIFitems <- (1:nrow(STATS))[STATS[, 3] < alpha]
-            RES <- list(BD = STATS, alpha = alpha, DIFitems = DIFitems, 
+            RES <- list(BD = STATS, p.value=STATS[,3], alpha = alpha, DIFitems = DIFitems, 
                 BDstat = BDstat, match=ifelse(match[1]=="score", "score",
 "matching variable"), p.adjust.method = p.adjust.method, 
                   adjusted.p = NULL, purification = purify, names = colnames(DATA), 
@@ -122,7 +122,7 @@ difBD<-function (Data, group, focal.name, anchor = NULL, match="score", BDstat =
                 rownames(difPur) <- ro
                 colnames(difPur) <- co
             }
-            RES <- list(BD = stats1, alpha = alpha, DIFitems = DIFitems, 
+            RES <- list(BD = stats1, p.value = stats1[,3], alpha = alpha, DIFitems = DIFitems, 
                 BDstat = BDstat, match=ifelse(match[1]=="score", "score",
 "matching variable"), p.adjust.method = p.adjust.method, 
                   adjusted.p = NULL, purification = purify, nrPur = nrPur, 

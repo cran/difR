@@ -10,6 +10,7 @@ S3method(plot,Lord)
 S3method(plot,MH)
 S3method(plot,PDIF)
 S3method(plot,Raj)
+S3method(plot,SIBTEST)
 S3method(plot,TID)
 S3method(plot,genLogistic)
 S3method(print,BD)
@@ -21,6 +22,7 @@ S3method(print,Lord)
 S3method(print,MH)
 S3method(print,PDIF)
 S3method(print,Raj)
+S3method(print,SIBTEST)
 S3method(print,TID)
 S3method(print,dichoDif)
 S3method(print,genDichoDif)
@@ -33,14 +35,14 @@ exportPattern(".")
 # Import all packages listed as Imports or Depends
 import(
   lme4,
-  ltm
+  ltm,
+  deltaPlotR
 )
 
 
 importFrom("grDevices", "dev.off", "jpeg", "pdf")
-  importFrom("graphics", "abline", "legend", "lines", "plot", "points",
-             "text")
-  importFrom("stats", "binomial", "coefficients", "cov", "deviance",
-             "glm", "mantelhaen.test", "pchisq", "pnorm", "qchisq",
-             "qnorm", "sd", "symnum", "vcov","p.adjust")
+  importFrom("graphics", "abline", "legend", "lines", "plot", "points", "text")
+  importFrom("stats", "binomial", "coefficients", "cov", "deviance", "glm", "mantelhaen.test", "pchisq", "pnorm", "qchisq", "qnorm", "sd", "symnum", "vcov","p.adjust")
   importFrom("utils", "capture.output")
+importFrom("mirt", "SIBTEST")
+importFrom("deltaPlotR", "deltaPlot", "diagPlot")

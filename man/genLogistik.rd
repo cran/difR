@@ -43,7 +43,7 @@ genLogistik(data, member, match = "score", anchor = 1:ncol(data),
 
 
 \details{
- This command computes the generalized logistic regression statistic (Magis, Raiche, Beland and Gerard, 2010) in the specific framework of differential item
+ This command computes the generalized logistic regression statistic (Magis, Raiche, Beland and Gerard, 2011) in the specific framework of differential item
  functioning among  \eqn{(J+1)} groups and \emph{J} is the number of focal groups. It forms the basic command of \code{\link{difGenLogistic}} and is specifically 
  designed for this call.
  
@@ -89,17 +89,18 @@ genLogistik(data, member, match = "score", anchor = 1:ncol(data),
  
 \references{
  Gomez-Benito, J., Dolores Hidalgo, M. and Padilla, J.-L. (2009). Efficacy of effect size measures in logistic regression: an application for detecting DIF. 
- \emph{Methodology, 5}, 18-25.
+ \emph{Methodology, 5}, 18-25. \doi{10.1027/1614-2241.5.1.18}
 
- Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
- \emph{Applied Measurement in Education, 14}, 329-349.
+ Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection. \emph{Applied Measurement in Education, 14}, 329-349. \doi{10.1207/S15324818AME1404_2}
 
- Magis, D., Raiche, G., Beland, S. and Gerard, P. (2010). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
- manuscript.
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
- Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692.
+ Magis, D., Raiche, G., Beland, S. and Gerard, P. (2011). A logistic regression procedure to detect differential item functioning among multiple groups. \emph{International Journal of Testing, 11}, 365--386. \doi{10.1080/15305058.2011.602810}
 
- Wilks, S. S. (1938). The large-sample distribution of the likelihood ratio for testing composite hypotheses. \emph{Annals of Mathematical Statistics, 9}, 60-62.
+ Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692. \doi{10.1093/biomet/78.3.691}
+
+ Wilks, S. S. (1938). The large-sample distribution of the likelihood ratio for testing composite hypotheses. \emph{Annals of Mathematical Statistics, 9}, 60-62. \doi{10.1214/aoms/1177732360}
 
  Zumbo, B. D. and Thomas, D. R. (1997). A measure of effect size for a model-based approach for studying DIF. Prince George, Canada: University of Northern British
  Columbia, Edgeworth Laboratory for Quantitative Behavioral Science.

@@ -58,6 +58,7 @@ difLogistic(Data, group, focal.name, anchor = NULL, member.type = "group",
 \value{
 A list of class "Logistic" with the following arguments:
   \item{Logistik}{the values of the logistic regression statistics.}
+ \item{p.value}{the vector of p-values for the logistic regression statistics.}
   \item{logitPar}{a matrix with one row per item and four columns, holding the fitted parameters of the best model (among the two tested models) for each item.}
   \item{logitSe}{a matrix with one row per item and four columns, holding the standard errors of the fitted parameters of the best model (among the two tested models) for each item.}
   \item{parM0}{the matrix of fitted parameters of the null model \eqn{M_0}, as returned by the \code{\link{Logistik}} command.}
@@ -117,7 +118,7 @@ The group membership can be either a vector of two distinct values, one for the 
  (Clauser and Mazor, 1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case
  a warning message is printed. Note that purification is possible only if the test score is considered as the matching criterion. Thus, \code{purify} is ignored when \code{match} is not \code{"score"}.
 
-Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF pruposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF purposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
 
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. By default it is \code{NULL} so that no anchor item is specified. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). Moreover, if the \code{match} argument is not set to \code{"score"}, anchor items will not be taken into account even if \code{anchor} is not \code{NULL}. 
 
@@ -155,31 +156,29 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
  and Practice, 17}, 31-44. 
 
  Finch, W.H. and French, B. (2007). Detection of crossing differential item functioning: a comparison of four methods. \emph{Educational and Psychological
- Measurement, 67}, 565-582. 
+ Measurement, 67}, 565-582. \doi{10.1177/0013164406296975}
  
  Gomez-Benito, J., Dolores Hidalgo, M. and Padilla, J.-L. (2009). Efficacy of effect size measures in logistic regression: an application for detecting DIF. 
- \emph{Methodology, 5}, 18-25.
+ \emph{Methodology, 5}, 18-25. \doi{10.1027/1614-2241.5.1.18}
 
  Hidalgo, M. D. and Lopez-Pina, J.A. (2004). Differential item functioning detection and effect size: a comparison between logistic regression and Mantel-Haenszel
- procedures. \emph{Educational and Psychological Measurement, 64}, 903-915. 
+ procedures. \emph{Educational and Psychological Measurement, 64}, 903-915.  \doi{10.1177/0013164403261769}
  
- Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
- \emph{Applied Measurement in Education, 14}, 329-349.
+ Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection. \emph{Applied Measurement in Education, 14}, 329-349. \doi{10.1207/S15324818AME1404_2}
 
-Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. 
+Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. \doi{10.1177/0013164412467033}
 
- Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection of dichotomous differential item functioning.
- \emph{Behavior Research Methods, 42}, 847-862.
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
- Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692.
+ Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692. \doi{10.1093/biomet/78.3.691}
 
- Swaminathan, H. and Rogers, H. J. (1990). Detecting differential item functioning using logistic regression procedures. \emph{Journal of Educational Measurement,
- 27}, 361-370.
+ Swaminathan, H. and Rogers, H. J. (1990). Detecting differential item functioning using logistic regression procedures. \emph{Journal of Educational 
+ Measurement, 27}, 361-370. \doi{10.1111/j.1745-3984.1990.tb00754.x}
  
- Zumbo, B.D. (1999). \emph{A handbook on the theory and methods of differential item functioning (DIF): logistic regression modelling as a unitary framework for
- binary and Likert-type (ordinal) item scores}. Ottawa, ON: Directorate of Human Resources Research and Evaluation, Department of National Defense. 
+ Zumbo, B.D. (1999). \emph{A handbook on the theory and methods of differential item functioning (DIF): logistic regression modelling as a unitary framework for binary and Likert-type (ordinal) item scores}. Ottawa, ON: Directorate of Human Resources Research and Evaluation, Department of National Defense. 
  
- Zumbo, B. D. and Thomas, D. R. (1997). A measure of effect size for a model-based approach for studying DIF. Prince George, Canada: University of Northern British
+ Zumbo, B. D. and Thomas, D. R. (1997). \emph{A measure of effect size for a model-based approach for studying DIF}. Prince George, Canada: University of Northern British
  Columbia, Edgeworth Laboratory for Quantitative Behavioral Science.
 }
 

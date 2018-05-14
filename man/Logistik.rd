@@ -94,7 +94,7 @@ where \code{Y} is the group variable. Parameters \eqn{\gamma} and \eqn{\delta} a
  The vector of group membership, specified with \code{member} argument, must hold only zeros and ones, a value of zero corresponding to the
  reference group and a value of one to the focal group.
 
- Option \code{anchor} sets the items which are considered as anchor items for computing the etst scores and related logistic regression DIF statistics. Items other than the anchor items and the tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is mainly designed to perform item purification. Note that this option is discarded when \code{match} is not \code{"score"}.
+ Option \code{anchor} sets the items which are considered as anchor items for computing the test scores and related logistic regression DIF statistics. Items other than the anchor items and the tested item are discarded. \code{anchor} must hold integer values specifying the column numbers of the corresponding anchor items. It is mainly designed to perform item purification. Note that this option is discarded when \code{match} is not \code{"score"}.
 
  The output contains: the selected DIF statistics (either the LRT or the Wald statistic) computed for each item, two matrices with the parameter estimates of
  both models (for each item) and two matrices of related standard error values. In addition, Nagelkerke's \eqn{R^2} coefficients (Nagelkerke, 1991) are computed for each model and the output returns both, the vectors of \eqn{R^2} coefficients for each model and the differences in these coefficients. Such differences are used as measures of effect size by the \code{\link{difLogistic}} command; see Gomez-Benito, Dolores Hidalgo and Padilla
@@ -103,20 +103,19 @@ where \code{Y} is the group variable. Parameters \eqn{\gamma} and \eqn{\delta} a
  
 \references{
  Gomez-Benito, J., Dolores Hidalgo, M. and Padilla, J.-L. (2009). Efficacy of effect size measures in logistic regression: an application for detecting DIF. 
- \emph{Methodology, 5}, 18-25.
+ \emph{Methodology, 5}, 18-25. \doi{10.1027/1614-2241.5.1.18}
 
- Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
- \emph{Applied Measurement in Education, 14}, 329-349.
+ Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection. \emph{Applied Measurement in Education, 14}, 329-349. \doi{10.1207/S15324818AME1404_2}
 
  Johnson, R. A. and Wichern, D. W. (1998). \emph{Applied multivariate statistical analysis (fourth edition)}. Upper Saddle River, NJ: Prentice-Hall.
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
- Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692.
+ Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692. \doi{10.1093/biomet/78.3.691}
 
- Swaminathan, H. and Rogers, H. J. (1990). Detecting differential item functioning using logistic regression procedures. \emph{Journal of Educational Measurement,
- 27}, 361-370.
+ Swaminathan, H. and Rogers, H. J. (1990). Detecting differential item functioning using logistic regression procedures. \emph{Journal of Educational 
+ Measurement, 27}, 361-370. \doi{10.1111/j.1745-3984.1990.tb00754.x}
 
  Zumbo, B. D. and Thomas, D. R. (1997). A measure of effect size for a model-based approach for studying DIF. Prince George, Canada: University of Northern British
  Columbia, Edgeworth Laboratory for Quantitative Behavioral Science.

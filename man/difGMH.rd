@@ -44,6 +44,7 @@ difGMH(Data, group, focal.names, anchor = NULL, match = "score", alpha = 0.05,
 \value{
  A list of class "GMH" with the following arguments:
   \item{GMH}{the values of the generalized Mantel-Haenszel statistics.}
+ \item{p.value}{the vector of p-values for the generalized Mantel-Haenszel statistics.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{DIFitems}{either the items which were detected as DIF items, or "No DIF item detected".}
@@ -87,7 +88,7 @@ difGMH(Data, group, focal.names, anchor = NULL, match = "score", alpha = 0.05,
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and Mazor,
  1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
 
-Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF pruposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF purposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
 
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified.
 
@@ -106,18 +107,16 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
 
 
 \references{
- Clauser, B. E. and Mazor, K. M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues
- and Practice, 17}, 31-44.
+ Clauser, B. E. and Mazor, K. M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues and Practice, 17}, 31-44.
 
-Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. 
+Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. \doi{10.1177/0013164412467033}
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
- Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures.
- \emph{Applied Measurement in Education, 14}, 235-259. 
+ Penfield, R. D. (2001). Assessing differential item functioning among multiple groups: a comparison of three Mantel-Haenszel procedures. \emph{Applied Measurement in Education, 14}, 235-259. \doi{10.1207/S15324818AME1403_3}
 
- Somes, G. W. (1986). The generalized Mantel-Haenszel statistic. \emph{The American Statistician, 40}, 106-108.
+ Somes, G. W. (1986). The generalized Mantel-Haenszel statistic. \emph{The American Statistician, 40}, 106-108. \doi{10.2307/2684866}
 }
  
 \author{

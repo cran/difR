@@ -51,11 +51,13 @@ difLogistic<-function (Data, group, focal.name, anchor = NULL, member.type = "gr
             ANCHOR <- 1:ncol(DATA)
             dif.anchor <- NULL
         }
+DDF<-ifelse(type=="both",2,1)
         if (!purify | match[1] != "score" | !is.null(anchor)) {
             PROV <- Logistik(DATA, Group, member.type = member.type, 
                 match = match, type = type, criterion = criterion, 
                 anchor = ANCHOR,all.cov=all.cov)
             STATS <- PROV$stat
+PVAL<-1-pchisq(STATS,DDF)
             deltaR2 <- PROV$deltaR2
             if (max(STATS) <= Q) {
                 DIFitems <- "No DIF item detected"
@@ -73,7 +75,7 @@ difLogistic<-function (Data, group, focal.name, anchor = NULL, member.type = "gr
                     ]
                 }
             }
-            RES <- list(Logistik = STATS, logitPar = logitPar, 
+            RES <- list(Logistik = STATS, p.value=PVAL,logitPar = logitPar, 
                 logitSe = logitSe, parM0 = PROV$parM0, seM0 = PROV$seM0, 
                 cov.M0= PROV$cov.M0,cov.M1= PROV$cov.M1,
                 deltaR2 = deltaR2, alpha = alpha, thr = Q, DIFitems = DIFitems, 
@@ -151,6 +153,7 @@ difLogistic<-function (Data, group, focal.name, anchor = NULL, member.type = "gr
                 }
                 prov1 <- prov2
                 stats1 <- stats2
+PVAL<-1-pchisq(stats1,DDF)
                 deltaR2 <- deltaR2
                 DIFitems <- (1:ncol(DATA))[stats1 > Q]
                 logitPar <- prov1$parM1
@@ -171,7 +174,7 @@ difLogistic<-function (Data, group, focal.name, anchor = NULL, member.type = "gr
                 rownames(difPur) <- ro
                 colnames(difPur) <- co
             }
-            RES <- list(Logistik = stats1, logitPar = logitPar, 
+            RES <- list(Logistik = stats1, p.value=PVAL,logitPar = logitPar, 
                 logitSe = logitSe, parM0 = prov1$parM0, seM0 = prov1$seM0, 
                 cov.M0= prov1$cov.M0,cov.M1= prov1$cov.M1,
                 deltaR2 = deltaR2, alpha = alpha, thr = Q, DIFitems = DIFitems, 

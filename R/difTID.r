@@ -1,9 +1,15 @@
 # DIF TRANSFORMED ITEM DIFFICULTIES (ANGOFF's DELTA METHOD)
 
-difTID<-function (Data, group, focal.name, anchor=NULL,props = NULL, thrTID = 1.5, purify = FALSE, nrIter = 10, save.output=FALSE, output=c("out","default")) 
+require(deltaPlotR)
+
+
+difTID<-function (Data, group, focal.name, thrTID = 1.5, 
+purify = FALSE, purType = "IPP1", nrIter = 10, alpha = 0.05,
+extreme = "constraint", const.range = c(0.001, 0.999), nrAdd = 1,
+save.output=FALSE, output=c("out","default")) 
 {
 internalTID<-function(){
-if (is.null(props)){
+
     if (length(group) == 1) {
         if (is.numeric(group)) {
             gr <- Data[, group]
@@ -24,118 +30,21 @@ if (is.null(props)){
     }
     Group <- rep(0, nrow(DATA))
     Group[gr == focal.name] <- 1
-
-PROPS<-matrix(NA,ncol(DATA),2)
-for (i in 1:ncol(DATA)){
-PROPS[i,1]<-mean(DATA[,i][Group==0],na.rm=TRUE)
-PROPS[i,2]<-mean(DATA[,i][Group==1],na.rm=TRUE)
-}
-itNames<-colnames(DATA)
-}
-
-else 
-{
-PROPS<-props
-itNames<-rownames(props)
-}
-Q <- thrTID
-if (!is.null(anchor)){
-dif.anchor<-anchor
-if (is.numeric(anchor)) ANCHOR<-anchor
-else{
-ANCHOR<-NULL
-for (i in 1:length(anchor)) ANCHOR[i]<-(1:ncol(DATA))[colnames(DATA)==anchor[i]]
-}
+RES<-deltaPlotR::deltaPlot(data=cbind(Group,DATA),type="response",group=1,focal.name=focal.name,
+thr = thrTID, purify = purify, purType = purType, maxIter = nrIter, 
+alpha =alpha, extreme = extreme, const.range = const.range, nrAdd = nrAdd, 
+ save.output = save.output,output = output)
+if (is.null(colnames(DATA))) {
+itNames<-1:ncol(DATA)
+number<-TRUE
 }
 else {
-ANCHOR<-1:ncol(DATA)
-dif.anchor<-NULL
+itNames<-colnames(DATA)
+number<-FALSE
 }
-    if (!purify | !is.null(anchor)) {
-        PROV <- trItemDiff(PROPS,anchor=ANCHOR)
-        STATS <- PROV$dist
-        if (max(abs(STATS)) <= Q) 
-            DIFitems <- "No DIF item detected"
-        else DIFitems <- (1:ncol(DATA))[abs(STATS) > Q]
-        RES <- list(Dj = STATS, prop=PROPS,delta=PROV$delta,axisPar=PROV$pars, thr = Q, DIFitems = DIFitems, 
-            purification = purify, names = itNames, anchor.names=dif.anchor,save.output=save.output,output=output)
-if (!is.null(anchor)) {
-RES$Dj[ANCHOR]<-NA
-RES$prop[ANCHOR,]<-NA
-RES$delta[ANCHOR,]<-NA
-for (i in 1:length(RES$DIFitems)){
-if (sum(RES$DIFitems[i]==ANCHOR)==1) RES$DIFitems[i]<-NA
-}
-RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
-}
-    }
-    else {
-        nrPur <- 0
-        difPur <- NULL
-        noLoop <- FALSE
-        prov1 <- trItemDiff(PROPS)
-        stats1 <- prov1$dist
-        if (max(abs(stats1)) <= Q) {
-            DIFitems <- "No DIF item detected"
-            noLoop <- TRUE
-        }
-        else {
-            dif <- (1:ncol(DATA))[abs(stats1) > Q]
-            difPur <- rep(0, length(stats1))
-            difPur[dif] <- 1
-            repeat {
-                if (nrPur >= nrIter) 
-                  break
-                else {
-                  nrPur <- nrPur + 1
-                  nodif <- NULL
-                  if (is.null(dif) == TRUE) 
-                    nodif <- 1:ncol(DATA)
-                  else {
-                    for (i in 1:ncol(DATA)) {
-                      if (sum(i == dif) == 0) 
-                        nodif <- c(nodif, i)
-                    }
-                  }
-                  prov2 <- trItemDiff(PROPS, anchor = nodif)
-                  stats2 <- prov2$dist
-                  if (max(abs(stats2)) <= Q) 
-                    dif2 <- NULL
-                  else dif2 <- (1:ncol(DATA))[abs(stats2) > Q]
-                  difPur <- rbind(difPur, rep(0, ncol(DATA)))
-                  difPur[nrPur + 1, dif2] <- 1
-                  if (length(dif) != length(dif2)) 
-                    dif <- dif2
-                  else {
-                    dif <- sort(dif)
-                    dif2 <- sort(dif2)
-                    if (sum(dif == dif2) == length(dif)) {
-                      noLoop <- TRUE
-                      break
-                    }
-                    else dif <- dif2
-                  }
-                }
-            }
-            stats1 <- stats2
-            prov1 <- prov2
-            DIFitems <- (1:ncol(DATA))[abs(stats1) > Q]
-        }
-        if (!is.null(difPur)) {
-            ro <- co <- NULL
-            for (ir in 1:nrow(difPur)) ro[ir] <- paste("Step", 
-                ir - 1, sep = "")
-            for (ic in 1:ncol(difPur)) co[ic] <- paste("Item", 
-                ic, sep = "")
-            rownames(difPur) <- ro
-            colnames(difPur) <- co
-        }
-        RES <- list(Dj = stats1, prop=PROPS,delta=prov1$delta,axisPar=prov1$pars, thr = Q, DIFitems = DIFitems, 
-            purification = purify, nrPur = nrPur, difPur = difPur, 
-            convergence = noLoop, names =itNames,anchor.names=dif.anchor,save.output=save.output,output=output)
-    }
-    class(RES) <- "TID"
-    return(RES)
+RES<-c(RES,list(names=itNames,number=number))
+class(RES)<-"TID"
+return(RES)
 }
 resToReturn<-internalTID()
 if (save.output){
@@ -149,47 +58,35 @@ return(resToReturn)
 
 
 
+## PLOT METHOD
 
-
-
-
-# METHODS
-plot.TID<-function (x, plot="dist", pch = 8, number = TRUE, col = "red", save.plot=FALSE,save.options=c("plot","default","pdf"),...) 
+plot.TID<-function (x, plot="dist",pch = 2, pch.mult = 17, axis.draw = TRUE, thr.draw = FALSE, 
+    dif.draw = c(1, 3), print.corr = FALSE, xlim = NULL, ylim = NULL, 
+    xlab = NULL, ylab = NULL, main = NULL, col="red", number=TRUE,save.plot = FALSE, 
+    save.options = c("plot", "default", "pdf"),...) 
 {
-internalTID<-function(){
+PLOT<-switch(plot,dist=1,delta=2)
+if(is.null(PLOT)) stop("'plot' must be either 'dist' or 'delta'",call.=FALSE)
+if (PLOT==2) deltaPlotR::diagPlot(x,pch = pch, pch.mult = pch.mult, 
+axis.draw = axis.draw, thr.draw = thr.draw, dif.draw = dif.draw, 
+print.corr = print.corr, xlim = xlim , ylim = ylim, xlab = xlab, 
+ylab = ylab, main = main, save.plot = save.plot, 
+    save.options = save.options)
+if (PLOT==1) {
+    internalTID <- function() {
     res <- x
-type<-switch(plot,dist=1,delta=2)
-if (is.null(type)) stop("'plot' must be either 'dist' or 'delta'!",call.=FALSE)    
-if (type==1){
-yl<-c(min(c(res$Dj,-abs(res$thr)),na.rm=TRUE)-0.1,max(c(res$Dj,abs(res$thr)),na.rm=TRUE)+0.1)
+yl<-c(min(c(res$Dist,-abs(res$thr)),na.rm=TRUE)-0.1,max(c(res$Dist,abs(res$thr)),na.rm=TRUE)+0.1)
+plot(res$Dist,xlab = "Item", ylab = "Perpendicular distance",ylim = yl, col="white", main = "Transformed Item Difficulties")
 if (!number){
-plot(res$Dj,xlab = "Item", ylab = "Perpendicular distance",ylim = yl, pch = pch, main = "Transformed Item Difficulties")
-if (!is.character(res$DIFitems)) points(res$DIFitems, res$Dj[res$DIFitems], pch = pch, col = col)
+text(1:length(res$Dist), res$Dist, res$names)
+if (!is.character(res$DIFitems)) text(res$DIFitems, res$Dist[res$DIFitems], res$names[res$DIFitems],col = col)
 }
-    else {
-  plot(res$Dj, xlab = "Item", ylab = "Perpendicular distance", ylim = yl, 
-            col = "white", main = "Transformed Item Difficulties")
-        text(1:length(res$Dj), res$Dj, 1:length(res$Dj))
-        if (!is.character(res$DIFitems)) text(res$DIFitems, res$Dj[res$DIFitems], res$DIFitems,  col = col)
+else{
+text(1:length(res$Dist), res$Dist, 1:length(res$Dist))
+if (!is.character(res$DIFitems)) text(res$DIFitems, res$Dist[res$DIFitems], res$DIFitems,col = col)
 }
 abline(h = -abs(res$thr))
 abline(h = abs(res$thr))
-}
-else{
-xl<-yl<-c(max(c(min(res$delta),1),na.rm=TRUE)-1,min(c(max(res$delta,na.rm=TRUE),25))+1)
-if (!number){
-plot(res$delta[,1],res$delta[,2],xlab = "Reference group", ylab = "Focal group",xlim=xl,ylim = yl, pch = pch, main = "Delta plot")
-if (!is.character(res$DIFitems)) points(res$delta[res$DIFitems,1],res$delta[res$DIFitems,2], pch = pch,col = col)
-}
-    else {
-  plot(res$delta[,1],res$delta[,2],xlab = "Reference group", ylab = "Focal group",xlim=xl,ylim = yl, col = "white", main = "Delta plot")
-        text(res$delta[,1],res$delta[,2], 1:length(res$Dj))
-        if (!is.character(res$DIFitems)) text(res$delta[res$DIFitems,1],res$delta[res$DIFitems,2], res$DIFitems, col = col)
-}
-abline(res$axisPar[1],res$axisPar[2],lty=1)
-abline(res$axisPar[1]+abs(res$thr)*sqrt(res$axisPar[2]^2+1),res$axisPar[2],lty=2)
-abline(res$axisPar[1]-abs(res$thr)*sqrt(res$axisPar[2]^2+1),res$axisPar[2],lty=2)
-}
 }
 internalTID()
 if (save.plot){
@@ -220,100 +117,211 @@ cat("The plot was captured and saved into","\n"," '",fileName,"'","\n","\n",sep=
 }
 else cat("The plot was not captured!","\n",sep="")
 }
+}
 
 
+## PRINT METHOD
 
-print.TID<-function (x, ...) 
+
+print.TID<-function (x, only.final = TRUE, ...) 
 {
     res <- x
     cat("\n")
-    cat("Detection of Differential Item Functioning using Transformed Item Difficulties", 
+    cat("Detection of Differential Item Functioning using Angoff's Delta method", 
         "\n")
-      if (res$purification & is.null(res$anchor.names)) pur <- "with "
-    else pur <- "without "
-    cat("(TID) method, ", pur, "item purification","\n", "\n", sep = "")
-    if (res$purification & is.null(res$anchor.names)) {
-        if (res$nrPur <= 1) 
-            word <- " iteration"
-        else word <- " iterations"
-        if (!res$convergence) {
-            cat("WARNING: no item purification convergence after ", 
-                res$nrPur, word, "\n", sep = "")
-            loop <- NULL
-            for (i in 1:res$nrPur) loop[i] <- sum(res$difPur[1, 
-                ] == res$difPur[i + 1, ])
-            if (max(loop) != length(res$Dj)) 
-                cat("(Note: no loop detected in less than ", 
-                  res$nrPur, word, ")", "\n", sep = "")
-            else cat("(Note: loop of length ", min((1:res$nrPur)[loop == 
-                length(res$Dj)]), " in the item purification process)", 
-                "\n", sep = "")
-            cat("WARNING: following results based on the last iteration of the purification", 
-                "\n", "\n")
+    if (res$purify) 
+        cat("  with item purification", "\n", "\n")
+    else cat("  without item purification", "\n", "\n")
+    if (res$purify) {
+        if (res$convergence) {
+            if (res$nrIter == 1) 
+                cat("Convergence reached after", res$nrIter, 
+                  "iteration", "\n", "\n")
+            else cat("Convergence reached after", res$nrIter, 
+                "iterations", "\n", "\n")
         }
-        else cat("Convergence reached after ", res$nrPur, word, "\n", "\n", sep = "")
+        else {
+            cat("WARNING: convergence was not reached after", 
+                res$maxIter, "iterations!", "\n", "\n")
+        }
+        if (res$nrIter > 1) {
+            if (res$purType == "IPP1") {
+                cat("Threshold kept fixed to", res$thr[1], "\n")
+                if (res$rule == "fixed") 
+                  cat(" (as fixed by the user [IPP1])", "\n", 
+                    "\n")
+                else cat(" (as computed from normal approximation [IPP1])", 
+                  "\n", "\n")
+            }
+            else {
+                cat("Threshold adjusted iteratively using normal approximation", 
+                  "\n")
+                cat(" and ", round(res$alpha * 100), "% significance level", 
+                  "\n", sep = "")
+                if (res$purType == "IPP2") 
+                  cat(" (only slope parameter updated [IPP2])", 
+                    "\n", "\n")
+                else cat(" (full update of the threshold [IPP3])", 
+                  "\n", "\n")
+            }
+        }
     }
-if (is.null(res$anchor.names)) {
-itk<-1:length(res$Dj)
-cat("No set of anchor items was provided", "\n", "\n")
-}
-else {
-itk<-(1:length(res$Dj))[!is.na(res$Dj)]
-cat("Anchor items (provided by the user):", "\n")
-if (is.numeric(res$anchor.names)) mm<-res$names[res$anchor.names]
-else mm<-res$anchor.names
-mm <- cbind(mm)
-rownames(mm) <- rep("", nrow(mm))
-colnames(mm) <- ""
-print(mm, quote = FALSE)
-cat("\n", "\n")
-}
- cat("Summary statistics:", "\n", "\n")
- pval <- round(abs(res$Dj), 4)
-    symb <- symnum(pval, c(0, 0.5, 1, 1.5,Inf), symbols = c("", 
-        "*", "**", "***"))
-    m1 <- cbind(round(res$prop[itk,],4),round(res$delta[itk,],4),round(res$Dj[itk], 4))
-    m1 <- noquote(cbind(format(m1, justify = "right"), symb[itk]))
-    if (!is.null(res$names)) rownames(m1) <- res$names[itk]
+    if (res$adjust.extreme == "constraint") 
+        cat("Extreme proportions adjusted by constraining to [", 
+            round(res$const.range[1], 3), "; ", res$const.range[2], 
+            "]", "\n", "\n", sep = "")
     else {
-        rn <- NULL
-        for (i in 1:nrow(m1)) rn[i] <- paste("Item", i, sep = "")
-        rownames(m1) <- rn[itk]
+        if (res$nrAdd == 1) 
+            cat("Extreme proportions adjusted by adding one success and one failure", 
+                "\n", "\n")
+        else cat("Extreme proportions adjusted by adding ", res$nrAdd, 
+            " successes and ", res$nrAdd, " failures", "\n", 
+            "\n", sep = "")
     }
-    colnames(m1) <- c("PropRef","PropFoc","DeltaRef","DeltaFoc","Dist.", "")
+    if (res$purify) 
+        cat("Statistics (after the first iteration):", "\n", 
+            "\n")
+    else cat("Statistics:", "\n", "\n")
+        m1 <- round(cbind(res$Props, res$Deltas, res$Dist[, 1]), 
+            4)
+        symb <- symnum(abs(as.numeric(res$Dist[, 1])), c(0, abs(res$thr[length(res$thr)]), 
+            Inf), symbols = c("", "***"))
+        m1 <- noquote(cbind(format(m1, justify = "right"), symb))
+        colnames(m1) <- c("Prop.Ref", "Prop.Foc", "Delta.Ref", 
+            "Delta.Foc", "Dist.", "")
+if (res$number){
+    rn <- NULL
+    for (i in 1:nrow(m1)) rn[i] <- paste("Item", i, sep = "")
+}
+else rn<-res$names
+    rownames(m1) <- rn
     print(m1)
     cat("\n")
-    cat("Class. codes: 0 '' 0.5 '*' 1.0 '**' 1.5 '***' ", 
-        "\n")
-    cat(" (for absolute values of 'Dist.')", "\n", "\n")
-    cat("Detection threshold: ", round(res$thr, 4), "\n", "\n", sep = "")
+    cat("Code: '***' if item is flagged as DIF", "\n", "\n")
+    if (res$purify) {
+        cat("Statistics (after the last iteration):", "\n", "\n")
+            m1 <- round(cbind(res$Props, res$Deltas, res$Dist[, 
+                ncol(res$Dist)]), 4)
+            symb <- symnum(abs(as.numeric(res$Dist[, ncol(res$Dist)])), 
+                c(0, abs(res$thr[length(res$thr)]), Inf), symbols = c("", 
+                  "***"))
+            m1 <- noquote(cbind(format(m1, justify = "right"), 
+                symb))
+            colnames(m1) <- c("Prop.Ref", "Prop.Foc", "Delta.Ref", 
+                "Delta.Foc", "Dist.", "")
+if (res$number){
+            rn <- NULL
+            for (i in 1:nrow(m1)) rn[i] <- paste("Item", i, sep = "")
+}
+else rn<-res$names
+            rownames(m1) <- rn
+        print(m1)
+        cat("\n")
+        cat("Code: '***' if item is flagged as DIF", "\n", "\n")
+    }
+    if (!only.final) {
+        cat("Perpendicular distances:", "\n", "\n")
+        m1 <- round(res$Dist, 4)
+        rc <- NULL
+        for (t in 1:ncol(res$Dist)) rc[t] <- paste("Iter", t, 
+            sep = "")
+        colnames(m1) <- rc
+        rn <- NULL
+        for (i in 1:nrow(m1)) rn[i] <- paste("Item", i, sep = "")
+        rownames(m1) <- rn
+        print(m1)
+        cat("\n")
+    }
+    myBool <- ifelse(!res$purify, TRUE, ifelse(res$nrIter == 
+        1, TRUE, FALSE))
+    if (myBool) {
+        cat("Parameters of the major axis:", "\n", "\n")
+        np <- round(rbind(res$axis.par), 4)
+        rownames(np) <- ""
+        colnames(np) <- c("a", "b")
+        print(np)
+        cat("\n")
+        if (res$rule == "norm") 
+            cat("Detection threshold: ", round(res$thr, 4), " (significance level: ", 
+                round(res$alpha * 100, 0), "%)", sep = "", "\n", 
+                "\n")
+        else cat("Detection threshold: ", round(res$thr, 4), 
+            sep = "", "\n", "\n")
+    }
+    else {
+        if (only.final) {
+            cat("Parameters of the major axis (first and last iterations only):", 
+                "\n", "\n")
+            if (is.null(dim(res$axis.par))) 
+                np <- round(rbind(res$axis.par, res$axis.par), 
+                  4)
+            else np <- round(rbind(res$axis.par[c(1, nrow(res$axis.par)), 
+                ]), 4)
+            rownames(np) <- c("First", "Last")
+            colnames(np) <- c("a", "b")
+            print(np)
+            cat("\n")
+            if (res$rule == "norm") {
+                cat("First and last detection thresholds: ", 
+                  round(res$thr[1], 4), " and ", round(res$thr[length(res$thr)], 
+                    4), sep = "", "\n")
+                cat(" (significance level: ", round(res$alpha * 
+                  100, 0), "%)", sep = "", "\n", "\n")
+            }
+            else cat("First and last detection thresholds: ", 
+                round(res$thr[1], 4), " and ", round(res$thr[length(res$thr)], 
+                  4), sep = "", "\n")
+        }
+        else {
+            cat("Parameters of the major axis:", "\n", "\n")
+            np <- round(rbind(res$axis.par), 4)
+            npr <- NULL
+            for (i in 1:nrow(res$axis.par)) npr[i] <- paste("Iter", 
+                i, sep = "")
+            rownames(np) <- npr
+            colnames(np) <- c("a", "b")
+            print(np)
+            cat("\n")
+            cat("Detection thresholds:", "\n", "\n")
+            mm <- rbind(res$thr)
+            rownames(mm) <- ""
+            cn <- NULL
+            for (i in 1:length(res$thr)) cn[i] <- paste("Iter", 
+                i, sep = "")
+            colnames(mm) <- cn
+            print(mm)
+            cat("\n")
+            if (res$rule == "norm") 
+                cat("(significance level: ", round(res$alpha * 
+                  100, 0), "%)", sep = "", "\n", "\n")
+            else cat("\n")
+        }
+    }
     if (is.character(res$DIFitems)) 
-        cat("Items detected as DIF items:", res$DIFitems, "\n", "\n")
+        cat("Items detected as DIF items:", res$DIFitems, "\n", 
+            "\n")
     else {
         cat("Items detected as DIF items:", "\n")
-   if (!is.null(res$names)) m2 <- res$names
-    else {
-        rn <- NULL
-        for (i in 1:length(res$Dj)) rn[i] <- paste("Item", i, sep = "")
-        m2 <- rn
-    }
-        m2 <- cbind(m2[res$DIFitems])
-        rownames(m2) <- rep("", nrow(m2))
-        colnames(m2) <- ""
-        print(m2, quote = FALSE)
-        cat("\n", "\n")
-    }
-    if (!res$save.output) cat("Output was not captured!","\n")
-    else {
-if (res$output[2]=="default") wd<-paste(getwd(),"/",sep="")
-else wd<-res$output[2]
-fileName<-paste(wd,res$output[1],".txt",sep="")
-cat("Output was captured and saved into file","\n"," '",fileName,"'","\n","\n",sep="")
+        namedif <- NULL
+        for (i in 1:length(res$DIFitems)) {
+if (res$number) namedif[i] <- paste("Item", res$DIFitems[i], sep = "")
+else namedif[i] <- res$names[res$DIFitems[i]]
 }
+        m3 <- cbind(namedif)
+        rownames(m3) <- rep("", length(res$DIFitems))
+        colnames(m3) <- ""
+        print(m3, quote = FALSE)
+        cat("\n")
+    }
+    if (!res$save.output) 
+        cat("Output was not captured!", "\n")
+    else {
+        if (res$output[2] == "default") 
+            wd <- file.path(getwd())
+        else wd <- res$output[2]
+        nameF <- paste(res$output[1], ".txt", sep = "")
+        fileName <- file.path(wd, nameF)
+        cat("Output was captured and saved into file", "\n", 
+            " '", fileName, "'", "\n", "\n", sep = "")
+    }
 }
-
-
-
-
-
-

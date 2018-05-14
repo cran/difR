@@ -113,12 +113,14 @@ difGenLord<-function (Data, group, focal.names, model, c = NULL, engine = "ltm",
             itemParInit <- irtParam
             estPar <- TRUE
         }
+DF<-nPar * nrFocal
         if (!purify | !is.null(anchor)) {
             STATS <- genLordChi2(irtParam, nrFocal)
+PVAL<-1-pchisq(STATS,DF)
             if ((max(STATS)) <= Q) 
                 DIFitems <- "No DIF item detected"
             else DIFitems <- (1:nrItems)[STATS > Q]
-            RES <- list(genLordChi = STATS, alpha = alpha, thr = Q, 
+            RES <- list(genLordChi = STATS, p.value=PVAL,alpha = alpha, thr = Q, 
                 df = nPar * nrFocal, DIFitems = DIFitems, p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, 
                 model = model, c = Guess, engine = engine, discr = discr, 
@@ -140,11 +142,12 @@ difGenLord<-function (Data, group, focal.names, model, c = NULL, engine = "ltm",
             difPur <- NULL
             noLoop <- FALSE
             stats1 <- genLordChi2(irtParam, nrFocal)
+PVAL<-1-pchisq(stats1,DF)
             if (max(stats1) <= Q) {
                 DIFitems <- "No DIF item detected"
                 noLoop <- TRUE
                 itemParFinal = irtParam
-                RES <- list(genLordChi = stats1, alpha = alpha, 
+                RES <- list(genLordChi = stats1, p.value=PVAL,alpha = alpha, 
                   thr = Q, df = nPar * nrFocal, DIFitems = DIFitems, 
                   p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, nrPur = nrPur, difPur = difPur, 
@@ -210,7 +213,8 @@ difGenLord<-function (Data, group, focal.names, model, c = NULL, engine = "ltm",
                   rownames(difPur) <- ro
                   colnames(difPur) <- co
                 }
-                RES <- list(genLordChi = stats2, alpha = alpha, 
+PVAL<-1-pchisq(stats2,DF)
+                RES <- list(genLordChi = stats2, p.value=PVAL,alpha = alpha, 
                   thr = Q, df = nPar * nrFocal, DIFitems = dif2, 
                   p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, nrPur = nrPur, difPur = difPur, 

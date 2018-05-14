@@ -24,11 +24,12 @@ difLRT<-function (Data, group, focal.name, alpha = 0.05, purify = FALSE,
         Group[gr == focal.name] <- 1
         if (!purify) {
             STATS <- LRT(DATA, Group)
+PVAL<-1-pchisq(STATS,1)
             if (max(STATS) <= qchisq(1 - alpha, 1)) 
                 DIFitems <- "No DIF item detected"
             else DIFitems <- (1:ncol(DATA))[STATS > qchisq(1 - 
                 alpha, 1)]
-            RES <- list(LRT = STATS, alpha = alpha, thr = qchisq(1 - 
+            RES <- list(LRT = STATS, p.value=PVAL,alpha = alpha, thr = qchisq(1 - 
                 alpha, 1), DIFitems = DIFitems, p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL,purification = purify, 
                 names = colnames(DATA), save.output = save.output, 
@@ -75,7 +76,8 @@ difLRT<-function (Data, group, focal.name, alpha = 0.05, purify = FALSE,
                 DIFitems <- (1:ncol(DATA))[stats1 > qchisq(1 - 
                   alpha, 1)]
             }
-            RES <- list(LRT = stats1, alpha = alpha, thr = qchisq(1 - 
+PVAL<-1-pchisq(stats1,1)
+            RES <- list(LRT = stats1, p.value=PVAL,alpha = alpha, thr = qchisq(1 - 
                 alpha, 1), DIFitems = DIFitems, p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, 
                 nrPur = nrPur, convergence = noLoop, names = colnames(DATA), 

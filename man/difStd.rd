@@ -118,23 +118,20 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
  Practice, 17}, 31-44. 
 
  Dorans, N. J. (1989). Two new approaches to assessing differential item functioning. Standardization and the Mantel-Haenszel method. \emph{Applied Measurement in
- Education, 2}, 217-233. 
+ Education, 2}, 217-233. \doi{10.1207/s15324818ame0203_3}
  
- Dorans, N. J. and Kulick, E. (1986). Demonstrating the utility of the standardization approach to assessing unexpected differential item performance on the
- Scholastic Aptitude Test. \emph{Journal of Educational Measurement, 23}, 355-368.
+ Dorans, N. J. and Kulick, E. (1986). Demonstrating the utility of the standardization approach to assessing unexpected differential item performance on the Scholastic Aptitude Test. \emph{Journal of Educational Measurement, 23}, 355-368. \doi{10.1111/j.1745-3984.1986.tb00255.x}
  
- Dorans, N. J., Schmitt, A. P. and Bleistein, C. A. (1992). The standardization approach to assessing comprehensive differential item functioning. \emph{Journal of
- Educational Measurement, 29},
- 309-319.
+ Dorans, N. J., Schmitt, A. P. and Bleistein, C. A. (1992). The standardization approach to assessing comprehensive differential item functioning. \emph{Journal of Educational Measurement, 29},
+ 309-319. \doi{10.1111/j.1745-3984.1992.tb00379.x}
 
- Holland, P. W. (1985, October). \emph{On the study of differential item performance without IRT}. Paper presented at the meeting of 
- Military Testing Association, San Diego (CA). 
+ Holland, P. W. (1985, October). \emph{On the study of differential item performance without IRT}. Paper presented at the meeting of Military Testing Association, San Diego (CA). 
 
  Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton,
  NJ: Educational Testing Service.
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 }
  
 

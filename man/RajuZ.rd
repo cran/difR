@@ -45,11 +45,11 @@ RajuZ(mR, mF, signed = FALSE)
  Cook, L. L. and Eignor, D. R. (1991). An NCME instructional module on IRT equating methods. \emph{Educational Measurement: Issues and Practice, 10}, 37-45.
  
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
- Raju, N.S. (1988). The area between two item characteristic curves. \emph{Psychometrika, 53}, 495-502. 
+ Raju, N.S. (1988). The area between two item characteristic curves. \emph{Psychometrika, 53}, 495-502. \doi{10.1007/BF02294403}
 
- Raju, N. S. (1990). Determining the significance of estimated signed and unsigned areas between two item response functions. \emph{Applied Psychological Measurement, 14}, 197-207.
+ Raju, N. S. (1990). Determining the significance of estimated signed and unsigned areas between two item response functions. \emph{Applied Psychological Measurement, 14}, 197-207. \doi{10.1177/014662169001400208}
  }
 
 \author{

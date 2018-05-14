@@ -7,6 +7,59 @@
 
 
 ------------------------------------
+- Changes in difR 5.0 (2018-05-08) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  The SIBTEST method is now available. It is 
+     implemented through the 'sibTest()' and 
+     'difSIBTEST()' functions that work similarly to
+     other DIF methods. These functions call the
+     'SIBTEST()' function from package 'mirt' (Chalmers,
+     2012).
+
+  o  Functions 'selectDif()' and 'dichoDif()' were 
+     updated accordingly.
+
+  o  All 'dif...()' functions return now an additional
+     argument called 'p.value' that directly provides
+     the p-values of the selected DIF method. This is
+     to simplify the extraction of the results for 
+     e.g., simulation studies. Many thanks to Phil
+     Chalmers (University fo Georgia, Athens, GA;
+     rphilip.chalmers@gmail.com) for suggesting this
+     improvement. See other poins below.
+
+  o  For 'difMH()' function, the $p.value output
+     argument replaces the former $Pval argument (which
+     was returned for exact MH statistic only).
+
+  o  For 'difStd()' function, the $p.value output
+     argument is not added since the DIF statistic has
+     no known NULL distribution.
+
+  o  The 'difTID()' function has been thoroughly 
+     rewritten in order to call the 'deltaPlot()' 
+     function from package 'deltaPlotR' instead, as it
+     is more complete than the former 'difTID()' 
+     function.
+
+  o  Consequently, the 'trItemDiff()' function was
+     removed and functions 'selectDif()' and 
+     'dichoDif()' were updated.
+
+
+
+MINOR UPDATES
+
+  o  DOI numbers were added to the references.
+
+  o  Some typos were fixed.
+
+
+
+------------------------------------
 - Changes in difR 4.8 (2018-04-28) -
 ------------------------------------
 

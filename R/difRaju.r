@@ -109,11 +109,12 @@ difRaju<-function (Data, group, focal.name, model, c = NULL, engine = "ltm",
         }
         if (!purify | !is.null(anchor)) {
             STATS <- RajuZ(m0, m1p, signed = signed)$res[, 3]
+PVAL<-2*(1-pnorm(STATS))
             if (max(abs(STATS)) <= qnorm(1 - alpha/2)) 
                 DIFitems <- "No DIF item detected"
             else DIFitems <- (1:nrItems)[abs(STATS) > qnorm(1 - 
                 alpha/2)]
-            RES <- list(RajuZ = STATS, alpha = alpha, thr = qnorm(1 - 
+            RES <- list(RajuZ = STATS, p.value=PVAL, alpha = alpha, thr = qnorm(1 - 
                 alpha/2), DIFitems = DIFitems, signed = signed, 
                 p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, model = model, c = Guess, 
@@ -136,10 +137,11 @@ difRaju<-function (Data, group, focal.name, model, c = NULL, engine = "ltm",
             noLoop <- FALSE
             stats1 <- RajuZ(m0, m1p, signed = signed)$res[, 3]
             if (max(abs(stats1)) <= qnorm(1 - alpha/2)) {
+PVAL<-2*(1-pnorm(stats1))
                 DIFitems <- "No DIF item detected"
                 noLoop <- TRUE
                 itemParFinal = rbind(m0, m1p)
-                RES <- list(RajuZ = stats1, alpha = alpha, thr = qnorm(1 - 
+                RES <- list(RajuZ = stats1, p.value=PVAL,alpha = alpha, thr = qnorm(1 - 
                   alpha/2), DIFitems = DIFitems, signed = signed, 
                   p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, nrPur = nrPur, difPur = difPur, 
@@ -202,7 +204,8 @@ difRaju<-function (Data, group, focal.name, model, c = NULL, engine = "ltm",
                   rownames(difPur) <- ro
                   colnames(difPur) <- co
                 }
-                RES <- list(RajuZ = stats2, alpha = alpha, thr = qnorm(1 - 
+PVAL<-2*(1-pnorm(stats2))
+                RES <- list(RajuZ = stats2, p.value=PVAL,alpha = alpha, thr = qnorm(1 - 
                   alpha/2), DIFitems = dif2, signed = signed, 
                   p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, nrPur = nrPur, difPur = difPur, 

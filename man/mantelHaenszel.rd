@@ -65,7 +65,7 @@ mantelHaenszel(data, member, match = "score", correct = TRUE, exact = FALSE,
 \references{
  Agresti, A. (1990). \emph{Categorical data analysis}. New York: Wiley.
 
- Agresti, A. (1992). A survey of exact inference for contingency tables. \emph{Statistical Science, 7}, 131-177.
+ Agresti, A. (1992). A survey of exact inference for contingency tables. \emph{Statistical Science, 7}, 131-177. \doi{10.1214/ss/1177011454}
 
  Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. 
  \emph{Research Report RR-85-43}. Princeton, NJ: Educational Testing Service.
@@ -74,7 +74,7 @@ mantelHaenszel(data, member, match = "score", correct = TRUE, exact = FALSE,
  and H. I. Braun (Ed.), \emph{Test validity}. Hillsdale, NJ: Lawrence Erlbaum Associates.
  
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
  Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. 
  \emph{Journal of the National Cancer Institute, 22}, 719-748.
@@ -82,8 +82,7 @@ mantelHaenszel(data, member, match = "score", correct = TRUE, exact = FALSE,
  Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray 
  (Eds.), \emph{Handbook of Statistics 26: Psychometrics} (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
 
- Philips, A., and Holland, P. W. (1987). Estimators of the Mantel-Haenszel log odds-ratio estimate. \emph{Biometrics, 43},
- 425-431.
+ Philips, A., and Holland, P. W. (1987). Estimators of the Mantel-Haenszel log odds-ratio estimate. \emph{Biometrics, 43}, 425-431. \doi{10.2307/2531824}
  }
 
 

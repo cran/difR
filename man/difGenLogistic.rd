@@ -59,7 +59,8 @@ difGenLogistic(Data, group, focal.names, anchor = NULL, match = "score",
 \value{
 A list of class "genLogistic" with the following arguments:
   \item{genLogistik}{the values of the generalized logistic regression statistics.}
-  \item{logitPar}{a matrix with one row per item and \eqn{2+J*2} columns, holding the fitted parameters of the best model (among the two tested models) for each
+ \item{p.value}{the vector of p-values for the generalized logistic regression statistics.}
+ \item{logitPar}{a matrix with one row per item and \eqn{2+J*2} columns, holding the fitted parameters of the best model (among the two tested models) for each
                  item.}
   \item{parM0}{the matrix of fitted parameters of the null model \eqn{M_0}, as returned by the \code{\link{Logistik}} command.}
   \item{covMat}{a 3-dimensional matrix of size \emph{p} x \emph{p} x \emph{K}, where \emph{p} is the number of estimated parameters and \emph{K} is the number of
@@ -88,7 +89,7 @@ A list of class "genLogistic" with the following arguments:
 
 
 \details{
- The generalized logistic regression method (Magis, Raiche, Beland and Gerard, 2010) allows for detecting both uniform and non-uniform differential item
+ The generalized logistic regression method (Magis, Raiche, Beland and Gerard, 2011) allows for detecting both uniform and non-uniform differential item
  functioning among multiple groups without requiring an item response model approach. It consists in fitting a logistic model with the matching criterion,
  the group membership and an interaction between both as covariates. The statistical significance of the parameters
  related to group membership and the group-score interaction is then evaluated by means of the usual likelihood-ratio
@@ -118,13 +119,11 @@ A list of class "genLogistic" with the following arguments:
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items
  (Clauser and Mazor, 1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
 
-Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF pruposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF purposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
 
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. By default it is \code{NULL} so that no anchor item is specified. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). Moreover, if the \code{match} argument is not set to \code{"score"}, anchor items will not be taken into account even if \code{anchor} is not \code{NULL}. 
 
- The measures of effect size are provided by the difference \eqn{\Delta R^2} between the \eqn{R^2} coefficients of the two nested models (Nagelkerke, 1991; 
- Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effect sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from
- Zumbo and Thomas (1997) and one from Jodoin and Gierl (2001). The output displays the \eqn{\Delta R^2} measures, together with the two classifications.
+ The measures of effect size are provided by the difference \eqn{\Delta R^2} between the \eqn{R^2} coefficients of the two nested models (Nagelkerke, 1991; Gomez-Benito, Dolores Hidalgo and Padilla, 2009). The effect sizes are classified as "negligible", "moderate" or "large". Two scales are available, one from Zumbo and Thomas (1997) and one from Jodoin and Gierl (2001). The output displays the \eqn{\Delta R^2} measures, together with the two classifications.
 
  The output of the \code{difGenLogistic}, as displayed by the \code{print.genLogistic} function, can be stored in a text file provided that \code{save.output} is set
  to \code{TRUE} (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the
@@ -151,23 +150,27 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
 }
 
 \references{
+Clauser, B.E. and Mazor, K.M. (1998). Using statistical procedures to identify differential item functioning test items. \emph{Educational Measurement: Issues
+ and Practice, 17}, 31-44. 
+
  Gomez-Benito, J., Dolores Hidalgo, M. and Padilla, J.-L. (2009). Efficacy of effect size measures in logistic regression: an application for detecting DIF. 
- \emph{Methodology, 5}, 18-25.
+ \emph{Methodology, 5}, 18-25. \doi{10.1027/1614-2241.5.1.18}
 
  Hidalgo, M. D. and Lopez-Pina, J.A. (2004). Differential item functioning detection and effect size: a comparison between logistic regression and Mantel-Haenszel
- procedures. \emph{Educational and Psychological Measurement, 64}, 903-915. 
+ procedures. \emph{Educational and Psychological Measurement, 64}, 903-915.  \doi{10.1177/0013164403261769}
  
- Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection.
- \emph{Applied Measurement in Education, 14}, 329-349.
+ Jodoin, M. G. and Gierl, M. J. (2001). Evaluating Type I error and power rates using an effect size measure with logistic regression procedure for DIF detection. \emph{Applied Measurement in Education, 14}, 329-349. \doi{10.1207/S15324818AME1404_2}
 
-Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. 
+Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. \doi{10.1177/0013164412467033}
 
- Magis, D., Raiche, G., Beland, S. and Gerard, P. (2010). A logistic regression procedure to detect differential item functioning among multiple groups. Unpublished 
- manuscript.
+ Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
- Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692.
+ Magis, D., Raiche, G., Beland, S. and Gerard, P. (2011). A logistic regression procedure to detect differential item functioning among multiple groups. \emph{International Journal of Testing, 11}, 365--386. \doi{10.1080/15305058.2011.602810}
 
- Zumbo, B. D. and Thomas, D. R. (1997). A measure of effect size for a model-based approach for studying DIF. Prince George, Canada: University of Northern British
+ Nagelkerke, N. J. D. (1991). A note on a general definition of the coefficient of determination. \emph{Biometrika, 78}, 691-692. \doi{10.1093/biomet/78.3.691}
+
+ Zumbo, B. D. and Thomas, D. R. (1997). \emph{A measure of effect size for a model-based approach for studying DIF}. Prince George, Canada: University of Northern British
  Columbia, Edgeworth Laboratory for Quantitative Behavioral Science.
 }
 

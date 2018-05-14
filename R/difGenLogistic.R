@@ -33,6 +33,7 @@ difGenLogistic<-function (Data, group, focal.names, anchor = NULL, match = "scor
             }
             Group <- rep(0, nrow(DATA))
             DF <- length(focal.names)
+DDF<-ifelse(type=="both",2*DF,DF)
             for (i in 1:DF) Group[gr == focal.names[i]] <- i
             Q <- switch(type, both = qchisq(1 - alpha, 2 * DF), 
                 udif = qchisq(1 - alpha, DF), nudif = qchisq(1 - 
@@ -55,6 +56,7 @@ difGenLogistic<-function (Data, group, focal.names, anchor = NULL, match = "scor
                 PROV <- genLogistik(DATA, Group, match = match, 
                   type = type, criterion = criterion, anchor = ANCHOR)
                 STATS <- PROV$stat
+PVAL<-1-pchisq(STATS,DDF)
                 deltaR2 <- PROV$deltaR2
                 covMat <- PROV$covMat
                 if (max(STATS) <= Q) {
@@ -67,7 +69,7 @@ difGenLogistic<-function (Data, group, focal.names, anchor = NULL, match = "scor
                   for (idif in 1:length(DIFitems)) logitPar[DIFitems[idif], 
                     ] <- PROV$parM0[DIFitems[idif], ]
                 }
-                RES <- list(genLogistik = STATS, logitPar = logitPar, 
+                RES <- list(genLogistik = STATS, p.value=PVAL,logitPar = logitPar, 
                   parM0 = PROV$parM0, covMat = covMat, deltaR2 = deltaR2, 
                   alpha = alpha, thr = Q, DIFitems = DIFitems, 
                   match = PROV$match, type = type, p.adjust.method = p.adjust.method, 
@@ -145,6 +147,7 @@ difGenLogistic<-function (Data, group, focal.names, anchor = NULL, match = "scor
                   }
                   prov1 <- prov2
                   stats1 <- stats2
+PVAL<-1-pchisq(stats1,DDF)
                   deltaR2 <- deltaR2
                   covMat <- covMat
                   DIFitems <- (1:ncol(DATA))[stats1 > Q]
@@ -161,7 +164,7 @@ difGenLogistic<-function (Data, group, focal.names, anchor = NULL, match = "scor
                   rownames(difPur) <- ro
                   colnames(difPur) <- co
                 }
-                RES <- list(genLogistik = stats1, logitPar = logitPar, 
+                RES <- list(genLogistik = stats1, p.value=PVAL,logitPar = logitPar, 
                   parM0 = prov1$parM0, covMat = covMat, deltaR2 = deltaR2, 
                   alpha = alpha, thr = Q, DIFitems = DIFitems, 
                   match = prov1$match, type = type, p.adjust.method = p.adjust.method, 

@@ -48,11 +48,12 @@ if (purify & match[1] != "score")
             }
             if (!purify | match[1] != "score" | !is.null(anchor)) {
                 STATS <- genMantelHaenszel(DATA, Group, match=match,anchor = ANCHOR)
-                if (max(STATS) <= qchisq(1 - alpha, DF)) 
+                PVAL<-1-pchisq(STATS,DF)
+if (max(STATS) <= qchisq(1 - alpha, DF)) 
                   DIFitems <- "No DIF item detected"
                 else DIFitems <- (1:ncol(DATA))[STATS > qchisq(1 - 
                   alpha, DF)]
-                RES <- list(GMH = STATS, alpha = alpha, thr = qchisq(1 - 
+                RES <- list(GMH = STATS, p.value=PVAL,alpha = alpha, thr = qchisq(1 - 
                   alpha, DF), DIFitems = DIFitems, 
 match=ifelse(match[1]=="score","score","matching variable"),p.adjust.method = p.adjust.method, 
                 adjusted.p = NULL, purification = purify, 
@@ -118,6 +119,7 @@ match=ifelse(match[1]=="score","score","matching variable"),p.adjust.method = p.
                     }
                   }
                   stats1 <- stats2
+PVAL<-1-pchisq(stats1,DF)
                   DIFitems <- (1:ncol(DATA))[stats1 > qchisq(1 - 
                     alpha, DF)]
                 }
@@ -130,7 +132,7 @@ match=ifelse(match[1]=="score","score","matching variable"),p.adjust.method = p.
                   rownames(difPur) <- ro
                   colnames(difPur) <- co
                 }
-                RES <- list(GMH = stats1, alpha = alpha, thr = qchisq(1 - 
+                RES <- list(GMH = stats1, p.value=PVAL,alpha = alpha, thr = qchisq(1 - 
                   alpha, DF), DIFitems = DIFitems, 
 match=ifelse(match[1]=="score","score","matching variable"),
 p.adjust.method = p.adjust.method, 

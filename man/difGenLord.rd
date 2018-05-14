@@ -56,6 +56,7 @@ difGenLord(Data, group, focal.names, model, c = NULL, engine = "ltm",
 \value{
 A list of class "GenLord" with the following arguments:
   \item{genLordChi}{the values of the generalized Lord's chi-squared statistics.}
+ \item{p.value}{the vector of p-values for the generalized Lord's chi-square statistics.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{df}{the degrees of freedom of the asymptotic null distribution of the statistics.}
@@ -91,48 +92,30 @@ A list of class "GenLord" with the following arguments:
  Both can be supplied, but in this case only the parameters in \code{irtParam} are used for computing generalized Lord's chi-squared statistic.
 
  The \code{Data} is a matrix whose rows correspond to the subjects and columns to the items.
- In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which 
- corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must 
- be a vector of same length as \code{nrow(Data)}.
+ In addition, \code{Data} can hold the vector of group membership. If so, \code{group} indicates the column of \code{Data} which corresponds to the group membership, either by specifying its name or by giving the column number. Otherwise, \code{group} must be a vector of same length as \code{nrow(Data)}.
 
  Missing values are allowed for item responses (not for group membership) but must be coded as \code{NA} values. They are discarded for item parameter estimation.
  
- The vector of group membership must hold at least three different values, either as numeric or character. The focal groups are defined by
- the values of the argument \code{focal.names}. 
+ The vector of group membership must hold at least three different values, either as numeric or character. The focal groups are defined by the values of the argument \code{focal.names}. 
  
- If the model is not the 1PL model, or if \code{engine} is equal to \code{"ltm"}, the selected IRT model is fitted using marginal maximum likelihood
- by means of the functions from the \code{ltm} package (Rizopoulos, 2006). Otherwise, the 1PL model is fitted as a generalized 
- linear mixed model, by means of the \code{glmer} function of the \code{lme4} package (Bates and Maechler, 2009).
+ If the model is not the 1PL model, or if \code{engine} is equal to \code{"ltm"}, the selected IRT model is fitted using marginal maximum likelihood by means of the functions from the \code{ltm} package (Rizopoulos, 2006). Otherwise, the 1PL model is fitted as a generalized linear mixed model, by means of the \code{glmer} function of the \code{lme4} package (Bates and Maechler, 2009).
 
- With the \code{"1PL"} model and the \code{"ltm"} engine, the common discrimination parameter is set equal to 1 by default. It is possible to fix another value
- through the argument\code{discr}. Alternatively, this common discrimination parameter can be estimated (though not returned) by fixing \code{discr} to 
+ With the \code{"1PL"} model and the \code{"ltm"} engine, the common discrimination parameter is set equal to 1 by default. It is possible to fix another value through the argument\code{discr}. Alternatively, this common discrimination parameter can be estimated (though not returned) by fixing \code{discr} to 
  \code{NULL}.
 
- The 3PL model can be fitted either unconstrained (by setting \code{c} to \code{NULL}) or by fixing the pseudo-guessing values. In the latter 
- case, the argument \code{c} is either a numeric vector of same length of the number of items, with one value per item pseudo-guessing parameter, 
- or a single value which is duplicated for all the items. If \code{c} is different from \code{NULL} then the 3PL model is always fitted (whatever the value of \code{model}).
+ The 3PL model can be fitted either unconstrained (by setting \code{c} to \code{NULL}) or by fixing the pseudo-guessing values. In the latter case, the argument \code{c} is either a numeric vector of same length of the number of items, with one value per item pseudo-guessing parameter, or a single value which is duplicated for all the items. If \code{c} is different from \code{NULL} then the 3PL model is always fitted (whatever the value of \code{model}).
 
- The \code{irtParam} matrix has a number of rows equal to the number of groups (reference and focal ones) times the number of items \emph{J}. The first \emph{J} 
- rows refer to the item parameter estimates in the reference group, while the next sets of \emph{J} rows correspond to the same items in each of 
- the focal groups. The number of columns depends on the selected IRT model: 2 for the 1PL model, 5 for the 2PL model, 6 for the constrained 3PL model
- and 9 for the unconstrained 3PL model. The columns of \code{irtParam} have to follow the same structure as the output of
- \code{itemParEst} command (the latter can actually be used to create the \code{irtParam} matrix). The number of focal groups has to be specified with
- argument \code{nrFocal} (default value is 2).
+ The \code{irtParam} matrix has a number of rows equal to the number of groups (reference and focal ones) times the number of items \emph{J}. The first \emph{J} rows refer to the item parameter estimates in the reference group, while the next sets of \emph{J} rows correspond to the same items in each of 
+ the focal groups. The number of columns depends on the selected IRT model: 2 for the 1PL model, 5 for the 2PL model, 6 for the constrained 3PL model and 9 for the unconstrained 3PL model. The columns of \code{irtParam} have to follow the same structure as the output of \code{itemParEst} command (the latter can actually be used to create the \code{irtParam} matrix). The number of focal groups has to be specified with argument \code{nrFocal} (default value is 2).
 
- In addition to the matrix of parameter estimates, one has to specify whether items in the focal groups were rescaled to those of the 
- reference group. If not, rescaling is performed by equal means anchoring (Cook and Eignor, 1991). Argument \code{same.scale} is used for 
- this choice (default option is \code{TRUE} and assumes therefore that the parameters are already placed on a same scale). 
+ In addition to the matrix of parameter estimates, one has to specify whether items in the focal groups were rescaled to those of the reference group. If not, rescaling is performed by equal means anchoring (Cook and Eignor, 1991). Argument \code{same.scale} is used for this choice (default option is \code{TRUE} and assumes therefore that the parameters are already placed on a same scale). 
 
- The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail
- probability of one minus \code{alpha} and \emph{p} degrees of freedom. The value of \emph{p} is the product of the number of focal groups by the number
- of item parameters to be tested (1 for the 1PL model, 2 for the 2PL model or the constrained 3PL model, and 3 for the unconstrained 3PL model).
+ The threshold (or cut-score) for classifying items as DIF is computed as the quantile of the chi-squared distribution with lower-tail probability of one minus \code{alpha} and \emph{p} degrees of freedom. The value of \emph{p} is the product of the number of focal groups by the number of item parameters to be tested (1 for the 1PL model, 2 for the 2PL model or the constrained 3PL model, and 3 for the unconstrained 3PL model).
  
- Item purification can be performed by setting \code{purify} to \code{TRUE}. In this case, the purification occurs in the equal means anchoring process: items 
- detected as DIF are iteratively removed from the set of items used for equal means anchoring, and the procedure is repeated until either the same items
- are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed.
- See Candell and Drasgow (1988) for further details.
+ Item purification can be performed by setting \code{purify} to \code{TRUE}. In this case, the purification occurs in the equal means anchoring process: items detected as DIF are iteratively removed from the set of items used for equal means anchoring, and the procedure is repeated until either the same items
+ are identified twice as functioning differently, or when \code{nrIter} iterations have been performed. In the latter case a warning message is printed. See Candell and Drasgow (1988) for further details.
 
-Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF pruposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF purposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
 
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to rescale the item parameters on a common metric. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified. If item parameters are provided thorugh the \code{irtParam} argument and if they are on the same scale (i.e. if \code{same.scale} is \code{TRUE}), then anchor items are not used (even if they are specified).
 
@@ -162,19 +145,18 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
 \references{
  Bates, D. and Maechler, M. (2009). lme4: Linear mixed-effects models using S4 classes. R package version 0.999375-31. http://CRAN.R-project.org/package=lme4
 
- Candell, G.L. and Drasgow, F. (1988). An iterative procedure for linking metrics and assessing item bias in item response theory. 
- \emph{Applied Psychological Measurement, 12}, 253-260. 
+ Candell, G.L. and Drasgow, F. (1988). An iterative procedure for linking metrics and assessing item bias in item response theory. \emph{Applied Psychological Measurement, 12}, 253-260. 
 
  Cook, L. L. and Eignor, D. R. (1991). An NCME instructional module on IRT equating methods. \emph{Educational Measurement: Issues and Practice, 10}, 37-45.
  
- Kim, S.-H., Cohen, A.S. and Park, T.-H. (1995). Detection of differential item functioning in multiple groups. \emph{Journal of Educational Measurement, 32}, 261-276. 
+ Kim, S.-H., Cohen, A.S. and Park, T.-H. (1995). Detection of differential item functioning in multiple groups. \emph{Journal of Educational Measurement, 32}, 261-276. \doi{10.1111/j.1745-3984.1995.tb00466.x}
 
-Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. 
+Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. \doi{10.1177/0013164412467033}
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
- Rizopoulos, D. (2006). ltm: An R package for latent variable modelling and item response theory analyses. \emph{Journal of Statistical Software, 17}, 1-25. URL: http://www.jstatsoft.org/v17/i05/
+ Rizopoulos, D. (2006). ltm: An R package for latent variable modelling and item response theory analyses. \emph{Journal of Statistical Software, 17}, 1--25. \doi{10.18637/jss.v017.i05}
 }
 
 \author{

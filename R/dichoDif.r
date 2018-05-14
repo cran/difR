@@ -5,12 +5,12 @@ dichoDif<-function (Data, group, focal.name, method, anchor = NULL, props = NULL
     exact = FALSE, stdWeight = "focal", thrSTD = 0.1, BDstat = "BD", 
     member.type = "group", match = "score", type = "both", criterion = "LRT", 
     model = "2PL", c = NULL, engine = "ltm", discr = 1, irtParam = NULL, 
-    same.scale = TRUE, signed = FALSE, purify = FALSE, nrIter = 10, 
+    same.scale = TRUE, signed = FALSE, purify = FALSE, purType = "IPP1", nrIter = 10, extreme = "constraint", const.range = c(0.001, 0.999), nrAdd = 1,
     p.adjust.method=NULL,save.output = FALSE, output = c("out", "default")) 
 {
     internalDicho <- function() {
         mets <- c("TID", "MH", "Std", "Logistic", "BD", "Lord", 
-            "Raju", "LRT")
+            "Raju", "LRT","SIBTEST")
         prov.met <- rep(0, length(method))
         for (i in 1:length(method)) {
             if (sum(method[i] == mets) == 1) 
@@ -32,8 +32,8 @@ dichoDif<-function (Data, group, focal.name, method, anchor = NULL, props = NULL
                   member.type = member.type, match = match, type = type, 
                   criterion = criterion, model = model, c = c, 
                   engine = engine, discr = discr, irtParam = irtParam, 
-                  same.scale = same.scale, signed = signed, purify = purify, 
-                  nrIter = nrIter, p.adjust.method = p.adjust.method, save.output = save.output, 
+                  same.scale = same.scale, signed = signed, purify = purify, purType=purType,
+                  nrIter = nrIter, extreme = extreme, const.range = const.range, nrAdd = nrAdd, p.adjust.method = p.adjust.method, save.output = save.output, 
                   output = output))
             else {
                 mat <- iters <- conv <- anchor.names <- NULL
@@ -47,11 +47,11 @@ dichoDif<-function (Data, group, focal.name, method, anchor = NULL, props = NULL
                     match = match, type = type, criterion = criterion, 
                     model = model, c = c, engine = engine, discr = discr, 
                     irtParam = irtParam, same.scale = same.scale, 
-                    signed = signed, purify = purify, nrIter = nrIter, 
+                    signed = signed, purify = purify, purType=purType, nrIter = nrIter, extreme = extreme, const.range = const.range, nrAdd = nrAdd, 
                     p.adjust.method = p.adjust.method)
                   if (method[met] != "LRT") 
                     anchor.names <- prov$anchor.names
-                  if (method[met] == "BD") 
+                  if (method[met] == "BD" | method[met]=="TID") 
                     mat <- cbind(mat, rep("NoDIF", nrow(prov[[1]])))
                   else mat <- cbind(mat, rep("NoDIF", length(prov[[1]])))
                   if (!is.character(prov$DIFitems)) 
@@ -66,6 +66,8 @@ dichoDif<-function (Data, group, focal.name, method, anchor = NULL, props = NULL
                 method2[method == "TID"] <- "T.I.D."
                 method2[method == "MH"] <- "M-H"
                 method2[method == "Std"] <- "Stand."
+                method2[method=="SIBTEST" & type=="udif"]<- "SIBTEST"
+                method2[method=="SIBTEST" & type!="udif"]<- "CSIBTEST"
                 colnames(mat) <- method2
                 if (!is.null(rname)) 
                   rownames(mat) <- rname
@@ -82,8 +84,8 @@ dichoDif<-function (Data, group, focal.name, method, anchor = NULL, props = NULL
                   match = match, type = type, criterion = criterion, 
                   model = model, c = c, engine = engine, discr = discr, 
                   irtParam = irtParam, same.scale = same.scale, 
-                  signed = signed, purification = purify, nrPur = iters, 
-                  convergence = conv, anchor.names = anchor.names, 
+                  signed = signed, purification = purify, purType=purType, nrPur = iters, 
+                  convergence = conv, anchor.names = anchor.names, extreme = extreme, const.range = const.range, nrAdd = nrAdd, 
                   p.adjust.method = p.adjust.method, save.output = save.output, output = output)
                 class(RES) <- "dichoDif"
                 return(RES)
@@ -124,6 +126,7 @@ print.dichoDif<-function (x, ...)
         methods2[methods == "Raju"] <- "Raju's area"
         methods2[methods == "Lord"] <- "Lord's chi-square test"
         methods2[methods == "LRT"] <- "Likelihood ratio test"
+        methods2[methods == "CSIBTEST"] <- "Crossing-SIBTEST"
         cat("Methods used:", "\n")
         for (i in 1:length(methods2)) cat(" ", methods2[i], "\n", 
             sep = "")

@@ -48,9 +48,9 @@ difMH(Data, group, focal.name , anchor = NULL, match = "score", MHstat = "MHChis
 \value{
 A list of class "MH" with the following arguments:
   \item{MH}{the values of the Mantel-Haenszel DIF statistics (either exact or asymptotic).}
+\item{p.value}{the p-values for the Mantel-Haenszel statistics (either exact or asymptotic).}
   \item{alphaMH}{the values of the mantel-Haenszel estimates of common odds ratios. Returned only if \code{exact} is \code{FALSE}.}
   \item{varLambda}{the values of the variances of the log odds-ratio statistics. Returned only if \code{exact} is \code{FALSE}.}
-  \item{Pval}{the exact P-values of the exact MH test. Returned only if \code{exact} is \code{TRUE}.}
   \item{MHstat}{the value of the \code{MHstat} argument. Returned only if \code{exact} is \code{FALSE}.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection. Returned only if \code{exact} is \code{FALSE}.}
@@ -98,7 +98,7 @@ A list of class "MH" with the following arguments:
  The threshold (or cut-score) for classifying items as DIF depends on the DIF statistic. With the Mantel-Haenszel chi-squared statistic (\code{MHstat=="MHChisq"}),
  it is computed as the quantile of the chi-square distribution with lower-tail probability of one minus \code{alpha} and with one degree of freedom. With 
  the log odds-ratio statistic (\code{MHstat=="logOR"}), it is computed as the quantile of the standard normal distribution with lower-tail probability of
- 1-\code{alpha}/2. WIth exact inference, it is simply the \code{alpha} level since exact P-values are returned.
+ 1-\code{alpha}/2. With exact inference, it is simply the \code{alpha} level since exact P-values are returned.
  
  By default, the continuity correction factor -0.5 is used (Holland and Thayer, 1988). One can nevertheless remove it by specifying \code{correct=FALSE}.
  
@@ -112,7 +112,7 @@ A list of class "MH" with the following arguments:
  tested item (if necessary). The process stops when either two successive applications of the method yield the same classifications of the items (Clauser and 
  Mazor, 1998), or when \code{nrIter} iterations are run without obtaining two successive identical classifications. In the latter case a warning message is printed. 
 
-Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF pruposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF purposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
 
 A pre-specified set of anchor items can be provided through the \code{anchor} argument. It must be a vector of either item names (which must match exactly the column names of \code{Data} argument) or integer values (specifying the column numbers for item identification). In case anchor items are provided, they are used to compute the test score (matching criterion), including also the tested item. None of the anchor items are tested for DIF: the output separates anchor items and tested items and DIF results are returned only for the latter. Note also that item purification is not activated when anchor items are provided (even if \code{purify} is set to \code{TRUE}). By default it is \code{NULL} so that no anchor item is specified.
 
@@ -133,32 +133,27 @@ A pre-specified set of anchor items can be provided through the \code{anchor} ar
 \references{
  Agresti, A. (1990). \emph{Categorical data analysis}. New York: Wiley.
 
- Agresti, A. (1992). A survey of exact inference for contingency tables. \emph{Statistical Science, 7}, 131-177.
+ Agresti, A. (1992). A survey of exact inference for contingency tables. \emph{Statistical Science, 7}, 131-177. \doi{10.1214/ss/1177011454}
 
  Holland, P. W. and Thayer, D. T. (1985). An alternative definition of the ETS delta scale of item difficulty. \emph{Research Report RR-85-43}. Princeton, NJ: 
  Educational Testing Service.
 
- Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Ed.), \emph{Test validity}.
- Hillsdale, NJ: Lawrence Erlbaum Associates.
+ Holland, P. W. and Thayer, D. T. (1988). Differential item performance and the Mantel-Haenszel procedure. In H. Wainer and H. I. Braun (Ed.), \emph{Test validity}. Hillsdale, NJ: Lawrence Erlbaum Associates.
  
-Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. 
+Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. \doi{10.1177/0013164412467033}
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
- Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer 
- Institute, 22}, 719-748.
+ Mantel, N. and Haenszel, W. (1959). Statistical aspects of the analysis of data from retrospective studies of disease. \emph{Journal of the National Cancer Institute, 22}, 719-748.
  
- Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray (Eds.), \emph{Handbook of Statistics 26: 
- Psychometrics} (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
+ Penfield, R. D., and Camilli, G. (2007). Differential item functioning and item bias. In C. R. Rao and S. Sinharray (Eds.), \emph{Handbook of Statistics 26: Psychometrics} (pp. 125-167). Amsterdam, The Netherlands: Elsevier.
 
- Philips, A., and Holland, P. W. (1987). Estimators of the Mantel-Haenszel log odds-ratio estimate. \emph{Biometrics, 43}, 425-431.
+ Philips, A., and Holland, P. W. (1987). Estimators of the Mantel-Haenszel log odds-ratio estimate. \emph{Biometrics, 43}, 425-431. \doi{10.2307/2531824}
 
- Raju, N. S., Bode, R. K. and Larsen, V. S. (1989). An empirical assessment of the Mantel-Haenszel statistic to detect differential item functioning. 
- \emph{Applied Measurement in Education, 2}, 1-13.
+ Raju, N. S., Bode, R. K. and Larsen, V. S. (1989). An empirical assessment of the Mantel-Haenszel statistic to detect differential item functioning. \emph{Applied Measurement in Education, 2}, 1-13. \doi{10.1207/s15324818ame0201_1}
  
- Uttaro, T. and Millsap, R. E. (1994). Factors influencing the Mantel-Haenszel procedure in the detection of differential item functioning. \emph{Applied 
- Psychological Measurement, 18}, 15-25.
+ Uttaro, T. and Millsap, R. E. (1994). Factors influencing the Mantel-Haenszel procedure in the detection of differential item functioning. \emph{Applied Psychological Measurement, 18}, 15-25. \doi{10.1177/014662169401800102}
  }
  
 

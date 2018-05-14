@@ -49,7 +49,7 @@ if (exact){
                 STATS <- PROV$resMH
             if (min(PROV$Pval) >=alpha) DIFitems <- "No DIF item detected"
             else DIFitems <- (1:ncol(DATA))[PROV$Pval < alpha]
-            RES <- list(MH = STATS, Pval=PROV$Pval, alpha = alpha, DIFitems = DIFitems, 
+            RES <- list(MH = STATS, p.value=PROV$Pval, alpha = alpha, DIFitems = DIFitems, 
                 correct = correct, exact=exact, match=PROV$match, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, names = colnames(DATA), 
                 anchor.names=dif.anchor,save.output = save.output, output = output)
 if (!is.null(anchor)) {
@@ -122,7 +122,7 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
                 rownames(difPur) <- ro
                 colnames(difPur) <- co
             }
-            RES <- list(MH = stats1, Pval=prov1$Pval, alpha = alpha, DIFitems = DIFitems, 
+            RES <- list(MH = stats1, p.value=prov1$Pval, alpha = alpha, DIFitems = DIFitems, 
                 correct = correct, exact=exact, match=prov1$match, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, nrPur = nrPur, 
                 difPur = difPur, convergence = noLoop, names = colnames(DATA), 
                 anchor.names=NULL, save.output = save.output, output = output)
@@ -131,13 +131,18 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
 else{
         if (!purify | match[1]!="score" | !is.null(anchor)) {
             PROV <- mantelHaenszel(DATA, Group, match=match, correct = correct,exact=exact,anchor=ANCHOR)
-            if (MHstat == "MHChisq") 
+            if (MHstat == "MHChisq"){ 
                 STATS <- PROV$resMH
-            else STATS <- log(PROV$resAlpha)/sqrt(PROV$varLambda)
+                PVAL<-1-pchisq(STATS,1)
+}
+            else {
+STATS <- log(PROV$resAlpha)/sqrt(PROV$varLambda)
+PVAL<-2*(1-pnorm(abs(STATS)))
+}
             if (max(abs(STATS),na.rm=TRUE) <= Q) 
                 DIFitems <- "No DIF item detected"
             else DIFitems <- (1:ncol(DATA))[is.na(STATS)==FALSE & abs(STATS) > Q]
-            RES <- list(MH = STATS, alphaMH = PROV$resAlpha, 
+            RES <- list(MH = STATS, p.value=PVAL, alphaMH = PROV$resAlpha, 
                 varLambda = PROV$varLambda, MHstat = MHstat, 
                 alpha = alpha, thr = Q, DIFitems = DIFitems, 
                 correct = correct, exact=exact, match=PROV$match, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, names = colnames(DATA), 
@@ -219,7 +224,9 @@ RES$DIFitems<-RES$DIFitems[!is.na(RES$DIFitems)]
                 rownames(difPur) <- ro
                 colnames(difPur) <- co
             }
-            RES <- list(MH = stats1, alphaMH = prov1$resAlpha, 
+if (MHstat=="MHChisq") PVAL<-1-pchisq(stats1,1)
+else PVAL<-2*(1-pnorm(abs(stats1)))
+            RES <- list(MH = stats1, p.value=PVAL,alphaMH = prov1$resAlpha, 
                 varLambda = prov1$varLambda, MHstat = MHstat, 
                 alpha = alpha, thr = Q, DIFitems = DIFitems, 
                 correct = correct, exact=exact, match=prov1$match, p.adjust.method=p.adjust.method, adjusted.p=NULL, purification = purify, nrPur = nrPur, 
@@ -393,7 +400,7 @@ print.MH<-function (x, ...)
         logOR = "Log odds-ratio statistic:")
     cat(met, "\n", "\n")
         if (res$exact) 
-            pval <- round(res$Pval, 4)
+            pval <- round(res$p.value, 4)
         else {
             if (res$MHstat == "MHChisq") 
                 pval <- round(1 - pchisq(res$MH, 1), 4)

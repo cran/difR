@@ -40,6 +40,7 @@ difLRT(Data, group, focal.name, alpha = 0.05, purify = FALSE, nrIter = 10,
 \value{
 A list of class "LRT" with the following arguments:
   \item{LRT}{the values of the likelihood-ratio statistics.}
+  \item{p.value}{the vector of p-values for the likelihood-ratio statistics.}
   \item{alpha}{the value of \code{alpha} argument.}
   \item{thr}{the threshold (cut-score) for DIF detection.}
   \item{DIFitems}{either the items which were detected as DIF items, or "No DIF item detected".}
@@ -86,7 +87,7 @@ A list of class "LRT" with the following arguments:
  identified as functioning differently. The process stops when either there is no new item detected as DIF, or when \code{nrIter} iterations 
  are run and new DIF items are nevertheless detected. In the latter case a warning message is printed. 
 
-Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF pruposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
+Adjustment for multiple comparisons is possible with the argument \code{p.adjust.method}. The latter must be an acronym of one of the available adjustment methods of the \code{\link{p.adjust}} function. According to Kim and Oshima (2013), Holm and Benjamini-Hochberg adjustments (set respectively by \code{"Holm"} and \code{"BH"}) perform best for DIF purposes. See \code{\link{p.adjust}} function for further details. Note that item purification is performed on original statistics and p-values; in case of adjustment for multiple comparisons this is performed \emph{after} item purification.
 
  The output of the \code{difLRT}, as displayed by the \code{print.LRT} function, can be stored in a text file provided that \code{save.output} is set to \code{TRUE} 
  (the default value \code{FALSE} does not execute the storage). In this case, the name of the text file must be given as a character string into the first component
@@ -108,10 +109,10 @@ Adjustment for multiple comparisons is possible with the argument \code{p.adjust
 \references{
  Bates, D. and Maechler, M. (2009). lme4: Linear mixed-effects models using S4 classes. R package version 0.999375-31. http://CRAN.R-project.org/package=lme4
  
-Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. 
+Kim, J., and Oshima, T. C. (2013). Effect of multiple testing adjustment in differential item functioning detection. \emph{Educational and Psychological Measurement, 73}, 458--470. \doi{10.1177/0013164412467033}
 
  Magis, D., Beland, S., Tuerlinckx, F. and De Boeck, P. (2010). A general framework and an R package for the detection
- of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862.
+ of dichotomous differential item functioning. \emph{Behavior Research Methods, 42}, 847-862. \doi{10.3758/BRM.42.3.847}
 
  Thissen, D., Steinberg, L. and Wainer, H. (1988). Use of item response theory in the study of group difference in trace lines. 
  In H. Wainer and H. Braun (Eds.), \emph{Test validity}. Hillsdale, NJ: Lawrence Erlbaum Associates.
