@@ -21,14 +21,14 @@ items<-as.factor(items)
 
 
 res<-NULL
-nodif<-glmer(y ~items + (1|pp) -1 + member,family=binomial, REML=FALSE)
+nodif<-glmer(y ~items + (1|pp) -1 + member,family=binomial)
 
 for (item in 1:C){
 X<-rep(0,N*C)
 mi<-(item-1)*N+1
 ma<-item*N
 X[mi:ma]<-1
-dif<-glmer(y ~items + (1|pp) -1 + member + member:X,family=binomial, REML=FALSE)
+dif<-glmer(y ~items + (1|pp) -1 + member + member:X,family=binomial)
 
 res[item]<-deviance(nodif)-deviance(dif)
 }

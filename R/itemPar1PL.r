@@ -27,8 +27,7 @@ else mod <- rasch(data)
             items <- rep(1, N)
             for (i in 2:C) items <- c(items, rep(i, N))
             items <- as.factor(items)
-            mod <- glmer(y ~ items + (1 | pp) - 1, family = binomial, 
-                REML = FALSE)
+            mod <- glmer(y ~ items + (1 | pp) - 1, family = binomial)
             par <- summary(mod)@coefs[, 1:2]
             par[, 1] <- -par[, 1]
         }

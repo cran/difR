@@ -31,8 +31,8 @@
  \tabular{ll}{
   Package: \tab difR \cr
   Type:    \tab Package \cr
-  Version: \tab 5.0 \cr
-  Date:    \tab 2018-05-08\cr
+  Version: \tab 5.1 \cr
+  Date:    \tab 2020-05-10\cr
   Depends: \tab R (>= 3.0.0) \cr
   Imports: \tab mirt, ltm, lme4, deltaPlotR \cr
   License: \tab GPL \cr

@@ -1,7 +1,7 @@
-ef9b96fea069f103871845da5b53e109 *DESCRIPTION
+f98ca9306e060ac8d021f970aad530cf *DESCRIPTION
 7be38426b25a5e82214b7ec46148570a *NAMESPACE
-cb3a68b219a519d8ea9004f78634ab7c *NEWS
-f6b428317a879858599581481087e733 *R/LRT.R
+8e3ece3d3b5da08916fb781c42d8fc4e *NEWS
+206246c86207190c53daf078801c2158 *R/LRT.R
 452b816f1542bc845b5657c10b32af2e *R/Logistik.R
 04a5fc5fd62660277d048dcb827ac441 *R/LordChi2.r
 ac2d1a7d93bb0cc4df3168b892f34975 *R/RajuZ.r
@@ -25,7 +25,7 @@ ae3bc6f903e17a3c91a43df56d3ca807 *R/difSIBTEST.R
 d0d7146b7787d7b3500b5be35cf1f946 *R/genLogistik.R
 c5fb376d2ad47c5f59a18277059fff70 *R/genLordChi2.r
 5c3ed5197b272203e0da2833276368ec *R/genMantelHaenszel.r
-3873169d674b642660b627a687a61355 *R/itemPar1PL.r
+9569f609d92649119597c0de689ffae1 *R/itemPar1PL.r
 7b3ba4073e8b3a10ee7f3a06f1afd7ab *R/itemPar2PL.r
 be0a9e51400226acbf6ca86c2f953b40 *R/itemPar3PL.r
 bb4457786c092015fa6cccb0d59f3a70 *R/itemPar3PLconst.r
@@ -38,10 +38,9 @@ b057ca5bbd98b8e2e9e48b37f9355803 *R/sibTest.R
 070b682b21e714d3127df9c1d83a5575 *R/stdPDIF.r
 487168b7c5c9c56aa9ff3f2a249e8441 *R/subtestLogistic.R
 2744c7c8fe93546bb62a3877495c27c4 *TODO
-94464ab9ae1ac10c289a36b6997a1eea *build/partial.rdb
-b661b5d7d3a057ab822193c0f1439a7d *data/verbal.txt.gz
+7fc3ca5bc5fbb577be5436e1647bb95a *build/partial.rdb
+b09973fc6d91f86de65c1cc5d08591f3 *data/verbal.txt
 a80effb42be438fb2e8b59dd5060382b *inst/CITATION
-e6b261ed5b9ffde51a020e866f8ac3f5 *inst/doc/Note.pdf
 a85dd600b0db05bf20a83b11fb453f1d *man/LRT.Rd
 545c4ce755d3de64c3a74b05f2de5196 *man/Logistik.rd
 4fef4481e8afb5fdbbea076090b04a97 *man/LordChi2.rd
@@ -58,7 +57,7 @@ d4eaf311e9b0d66282972238231c03e8 *man/difLRT.rd
 6fcaf058faaa614da8af65b66fc71061 *man/difLogistic.rd
 b97ad278453ca68f77142a9b552bb567 *man/difLord.rd
 7cc3b6662843da64154d4a5ab81d745a *man/difMH.rd
-75616c9102a666cda85015d3810d9138 *man/difR-package.Rd
+77e3207a4d4aff78d65701b11a975f9f *man/difR-package.Rd
 1b67c7e7247c189bfabf72e42b2a2dd5 *man/difRaju.rd
 616ec860c6fc0f05e5426d3d545081bf *man/difSIBTEST.rd
 0539ae122cbd08084683d7afce3b80f2 *man/difStd.rd

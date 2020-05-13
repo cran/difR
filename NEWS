@@ -7,6 +7,16 @@
 
 
 ------------------------------------
+- Changes in difR 5.1 (2020-05-10) -
+------------------------------------
+
+MAJOR UPDATES
+
+  o  Option REML=FALSE as removed from LRT() and 
+     itemPar1PL function for compatibility.
+
+
+------------------------------------
 - Changes in difR 5.0 (2018-05-08) -
 ------------------------------------
 
